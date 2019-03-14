@@ -35,7 +35,7 @@ public class FrontEndImpl extends LibraryServicePOA {
 
   @Override
   public String listItem(String managerId) {
-    return null;
+    return "listItemCalled";
   }
 
   @Override

@@ -1,0 +1,5 @@
+start orbd -ORBInitialPort 8090&  //use this to start naming service
+-ORBInitialHost localhost -ORBInitialPort 8090    // use this in program argument of FE
+
+
+
