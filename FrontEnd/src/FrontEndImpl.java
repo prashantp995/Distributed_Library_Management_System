@@ -10,6 +10,9 @@ public class FrontEndImpl extends LibraryServicePOA {
 
   @Override
   public String findItem(String userId, String itemName) {
+    ClientRequestModel request = new ClientRequestModel(
+        FrontEndConstants.METHOD_FIND_ITEM, userId);
+    request.setItemName(itemName);
     return null;
   }
 
@@ -47,4 +50,6 @@ public class FrontEndImpl extends LibraryServicePOA {
   public String exchangeItem(String userId, String oldItemId, String newItemID) {
     return null;
   }
+
+
 }

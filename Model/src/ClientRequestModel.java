@@ -11,6 +11,7 @@ public class ClientRequestModel implements Serializable {
   private String itemId;
   private String userId;
   private int numberOfDays;
+  private int requestId;
 
   public String getMethodName() {
     return methodName;
@@ -71,5 +72,13 @@ public class ClientRequestModel implements Serializable {
   public ClientRequestModel(String methodName, String userId) {
     this.methodName = methodName;
     this.userId = userId;
+  }
+
+  public int getRequestId() {
+    return requestId;
+  }
+
+  public void setRequestId(int requestId) {
+    this.requestId = requestId;
   }
 }
