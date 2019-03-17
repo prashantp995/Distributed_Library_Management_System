@@ -39,6 +39,7 @@ public class ConcurrentSequencer extends Thread implements Serializable {
       ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
       synchronized (sequencerMain.sequenceNumber) {
         objForRM.setRequestId(++sequencerMain.sequenceNumber);
+        objForRM.setFrontEndPort(request.getPort());
         //sequencer Added
       }
       //convert to byte updatedByteArray to send replica managers

@@ -12,6 +12,15 @@ public class ClientRequestModel implements Serializable {
   private String userId;
   private int numberOfDays;
   private int requestId;
+  private int frontEndPort;
+
+  public int getFrontEndPort() {
+    return frontEndPort;
+  }
+
+  public void setFrontEndPort(int frontEndPort) {
+    this.frontEndPort = frontEndPort;
+  }
 
   public String getMethodName() {
     return methodName;

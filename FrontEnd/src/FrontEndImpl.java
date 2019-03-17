@@ -1,10 +1,6 @@
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.io.*;
+import java.net.*;
+
 import org.omg.CORBA.ORB;
 
 public class FrontEndImpl extends LibraryServicePOA {
@@ -48,16 +44,20 @@ public class FrontEndImpl extends LibraryServicePOA {
   public String listItem(String managerId) {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_LIST_ITEM, managerId);
+    DatagramSocket socket;
     try {
-      sendRequest(request);
+      socket = new DatagramSocket();
+      sendRequest(socket,request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      return reply.trim();
     } catch (IOException e) {
       e.printStackTrace();
+      return "Unsuccessful";
     }
-    //generate ClientRequestModel Object
-    //sendToSeq
-    //waitForReply From RequestHandler
     //Validate and Return Response
-    return "listItemCalled";
   }
 
   @Override
@@ -70,8 +70,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     return null;
   }
 
-  private void sendRequest(ClientRequestModel call) throws IOException {
-    DatagramSocket socket = new DatagramSocket();
+  private void sendRequest(DatagramSocket socket,ClientRequestModel call) throws IOException {
     ByteArrayOutputStream bs = new ByteArrayOutputStream();
     ObjectOutputStream os = new ObjectOutputStream(bs);
     os.writeObject(call);

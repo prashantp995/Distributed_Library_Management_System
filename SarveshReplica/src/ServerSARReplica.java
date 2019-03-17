@@ -65,7 +65,7 @@ public class ServerSARReplica implements ServerInterface{
         next_User_ID = 1003;
         next_Manager_ID = 1002;
         lock = new Object();
-        logFile = new File("/home/sarvesh/CORBALibrarySystem/src/Logs/log_" + library + ".log");
+        logFile = new File("Log.log");
         try{
             if(!logFile.exists())
                 logFile.createNewFile();

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -28,6 +29,7 @@ public class ConcurrentRequestHandler extends Thread {
   public void run() {
     try {
       ip = InetAddress.getByName("localhost");
+      String responseString = "";
       byteArrayOutputStream = new ByteArrayOutputStream();
       oos = new ObjectOutputStream(byteArrayOutputStream);
       byteArrayInputStream = new ByteArrayInputStream(request.getData());
@@ -39,8 +41,12 @@ public class ConcurrentRequestHandler extends Thread {
           .getServerObject(replicaName,
               objForRM.getUserId().substring(0, 3));
       if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
-        String response = serverInterface.listItem(objForRM.getUserId());
+        responseString = serverInterface.listItem(objForRM.getUserId());
       }
+      DatagramSocket socket = new DatagramSocket();
+      DatagramPacket response = new DatagramPacket(responseString.getBytes(),responseString.length(),
+              request.getAddress(),objForRM.getFrontEndPort());
+      socket.send(response);
     } catch (UnknownHostException e) {
       e.printStackTrace();
     } catch (IOException e) {
