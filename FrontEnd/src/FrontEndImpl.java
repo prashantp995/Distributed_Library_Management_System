@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import org.omg.CORBA.ORB;
 
@@ -45,6 +46,17 @@ public class FrontEndImpl extends LibraryServicePOA {
 
   @Override
   public String listItem(String managerId) {
+    ClientRequestModel request = new ClientRequestModel(
+        FrontEndConstants.METHOD_LIST_ITEM, managerId);
+    try {
+      sendRequest(request);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    //generate ClientRequestModel Object
+    //sendToSeq
+    //waitForReply From RequestHandler
+    //Validate and Return Response
     return "listItemCalled";
   }
 
@@ -58,8 +70,8 @@ public class FrontEndImpl extends LibraryServicePOA {
     return null;
   }
 
-  private void sendRequest(ClientRequestModel call, DatagramSocket socket) throws IOException {
-
+  private void sendRequest(ClientRequestModel call) throws IOException {
+    DatagramSocket socket = new DatagramSocket();
     ByteArrayOutputStream bs = new ByteArrayOutputStream();
     ObjectOutputStream os = new ObjectOutputStream(bs);
     os.writeObject(call);
@@ -67,7 +79,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     bs.close();
     byte[] sendBuffer = bs.toByteArray();
     DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length,
-        sequencerAddress.getAddress(), sequencerAddress.getPort());
+        InetAddress.getByName("localhost"), sequencerAddress.getPort());
     socket.send(sendPacket);
   }
 }
