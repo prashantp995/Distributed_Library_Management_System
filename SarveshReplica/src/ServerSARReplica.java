@@ -37,7 +37,7 @@ enum ServerDetails{
 }
 
 
-public class ServerSARReplica {
+public class ServerSARReplica implements ServerInterface{
 
     protected final HashMap<String, User> user;
     protected final HashMap<String,Manager> manager;
@@ -135,7 +135,7 @@ public class ServerSARReplica {
     }
 
     /**It shows all the available books in that library to the manager.*/
-    public String listAvailability(String managerID) {
+    public String listItem(String managerID) {
         if(managerID.charAt(3) != 'M') {
             String message =
                     "Item availability Request : Server : " + library +
@@ -398,7 +398,7 @@ public class ServerSARReplica {
     }
 
     /**It adds the given userID to the waiting list for given itemID with numberOfDays.*/
-    public String addToQueue(String userID, String itemID, int numberOfDays) {
+    public String addUserInWaitingList(String userID, String itemID, int numberOfDays) {
         if(waitingQueue.containsKey(itemID)){
             waitingQueue.get(itemID).put(userID,numberOfDays);
         }else{
