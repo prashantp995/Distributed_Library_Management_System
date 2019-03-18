@@ -33,13 +33,28 @@ public class Client {
         logger = ClientUtilities
             .setupLogger(Logger.getLogger("UserLogger"), username + ".log", false);
         setupConnectionInfo();
-        performValidOperation(username);
+        if (validateUser(username)) {
+          performValidOperation(username);
+        } else {
+          System.out.println("User name is not valid" + username);
+          System.exit(0);
+        }
+
 
       } else {
         System.out.println("Given user Name is not in valid format");
       }
     }
 
+  }
+
+  private static boolean validateUser(String username) {
+    logger
+        .info("validation of " + username + "starts");
+    boolean response = libraryService.validateUserName(username);
+    logger.info("Response Received from the server is " + response);
+    System.out.println("Response Received from the server is " + response);
+    return response;
   }
 
   /**
