@@ -742,6 +742,11 @@ public class McgServer implements Runnable, ServerInterface {
         return reply;
     }
 
+    @Override
+    public String validateUser(String userId) {
+        return "true";
+    }
+
     /**This method is not directly associated with any user input but it is called whenever the item is made available(availability becomes non zero).
      * @param itemId
      * @return

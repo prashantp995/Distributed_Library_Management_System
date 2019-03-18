@@ -778,6 +778,12 @@ public class MonServer implements Runnable, ServerInterface{
         logger.info(reply);
         return reply;
     }
+
+    @Override
+    public String validateUser(String userId) {
+        return "true";
+    }
+
     public String getItemAvailability(String itemId){
         logger.info("getItemAvailability");
         logger.info(itemId);
