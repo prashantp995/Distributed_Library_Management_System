@@ -70,7 +70,14 @@ public class FrontEndImpl extends LibraryServicePOA {
     return null;
   }
 
-  private void sendRequest(DatagramSocket socket,ClientRequestModel call) throws IOException {
+  @Override
+  public boolean validateUserName(String userId) {
+    ClientRequestModel request = new ClientRequestModel(
+        FrontEndConstants.METHOD_VALIDATE_USER_NAME, userId);
+    return true;
+  }
+
+  private void sendRequest(DatagramSocket socket, ClientRequestModel call) throws IOException {
     ByteArrayOutputStream bs = new ByteArrayOutputStream();
     ObjectOutputStream os = new ObjectOutputStream(bs);
     os.writeObject(call);
