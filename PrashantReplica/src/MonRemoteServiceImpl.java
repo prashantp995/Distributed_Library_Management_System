@@ -539,6 +539,11 @@ public class MonRemoteServiceImpl implements ServerInterface {
     return LibConstants.FAIL;
   }
 
+  @Override
+  public String validateUser(String userId) {
+    return "TRUE";
+  }
+
   /**
    * This function is to perform exchange
    *

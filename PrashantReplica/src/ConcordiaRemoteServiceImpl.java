@@ -280,6 +280,11 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
     return LibConstants.FAIL;
   }
 
+  @Override
+  public String validateUser(String userId) {
+    return "true";
+  }
+
   /**
    * This function is to perform exchange
    *
