@@ -410,7 +410,7 @@ public class ServerSARReplica implements ServerInterface{
     }
 
     /**validate the client*/
-    public String validateClient(String clientID) {
+    public String validateUser(String clientID) {
         if(clientID == null){
             writeToLogFile("Validate clientID request : clientID : "+ clientID);
             return "false";

@@ -71,10 +71,22 @@ public class FrontEndImpl extends LibraryServicePOA {
   }
 
   @Override
-  public boolean validateUserName(String userId) {
+  public String validateUserName(String userId) {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_VALIDATE_USER_NAME, userId);
-    return true;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket,request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      return reply.trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "false";
+    }
   }
 
   private void sendRequest(DatagramSocket socket, ClientRequestModel call) throws IOException {

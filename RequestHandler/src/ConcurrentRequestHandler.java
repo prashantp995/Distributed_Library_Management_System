@@ -43,6 +43,9 @@ public class ConcurrentRequestHandler extends Thread {
       if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
         responseString = serverInterface.listItem(objForRM.getUserId());
       }
+      if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
+        responseString = serverInterface.validateUser(objForRM.getUserId());
+      }
       DatagramSocket socket = new DatagramSocket();
       DatagramPacket response = new DatagramPacket(responseString.getBytes(),responseString.length(),
               request.getAddress(),objForRM.getFrontEndPort());

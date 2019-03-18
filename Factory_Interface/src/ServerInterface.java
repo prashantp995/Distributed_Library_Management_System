@@ -15,4 +15,6 @@ public interface ServerInterface {
   String addUserInWaitingList(String userId, String ItemId, int numberOfDays);
 
   String exchangeItem(String userId, String oldItemId, String newItemID);
+
+  String validateUser(String userId);
 }
