@@ -37,7 +37,14 @@ public class ServerFactory {
       case "Rohit":
         break;
       case "Shivam":
-        break;
+        switch (lib){
+          case "CON":
+            return ConServer.getConcordiaObject();
+          case "MCG":
+            return McgServer.getMcGillObject();
+          case "MON":
+            return null;
+        }
     }
     return null;
   }

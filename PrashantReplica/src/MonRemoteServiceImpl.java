@@ -806,7 +806,7 @@ public class MonRemoteServiceImpl implements ServerInterface {
     } catch (Exception re) {
       MonRemoteServiceImpl.getMontrealObject().logger.info("Exception " + re);
     } finally {
-      Utilities.closeLoggerHandlers(MonRemoteServiceImpl.getMontrealObject().logger);
+      ClientUtilities.closeLoggerHandlers(MonRemoteServiceImpl.getMontrealObject().logger);
       socket.close();
     }
   }

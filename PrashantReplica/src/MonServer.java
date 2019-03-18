@@ -77,7 +77,7 @@ public class MonServer {
     } catch (Exception re) {
       logger.info("Exception " + re);
     } finally {
-      Utilities.closeLoggerHandlers(logger);
+      ClientUtilities.closeLoggerHandlers(logger);
       socket.close();
     }
   }

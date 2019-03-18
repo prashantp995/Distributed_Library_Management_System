@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 
-public class Utilities {
+public class ClientUtilities {
 
   private static final String LOG_DIR = FileSystems.getDefault().getPath(".") + "\\Client\\logs\\";
 

@@ -27,10 +27,10 @@ public class Client {
       System.out.println("Enter your username: ");
       Scanner scanner = new Scanner(System.in);
       String username = scanner.nextLine();
-      if (Utilities.validateUserName(username)) {
+      if (ClientUtilities.validateUserName(username)) {
         valid = true;
         determineUniversity(username);
-        logger = Utilities
+        logger = ClientUtilities
             .setupLogger(Logger.getLogger("UserLogger"), username + ".log", false);
         setupConnectionInfo();
         performValidOperation(username);
@@ -105,7 +105,7 @@ public class Client {
             }
             if (choice == 0) {
               valid = true;
-              Utilities.closeLoggerHandlers(logger);
+              ClientUtilities.closeLoggerHandlers(logger);
               System.exit(0);
               break;
             }
@@ -140,7 +140,7 @@ public class Client {
             choice = scanner.nextInt();
             if (choice == 0) {
               valid = false;
-              Utilities.closeLoggerHandlers(logger);
+              ClientUtilities.closeLoggerHandlers(logger);
               System.exit(0);
               break;
             }
@@ -375,7 +375,7 @@ public class Client {
       itemId = getItemId();
       System.out.println("Please Enter number Of days");
       numberOfDays = scanner.nextInt();
-      if (Utilities.validateItemIdAndNumberOfDays(itemId, numberOfDays)) {
+      if (ClientUtilities.validateItemIdAndNumberOfDays(itemId, numberOfDays)) {
         valid = true;
         logger.info(
             username + " Requested to Borrow Item " + itemId + " for " + numberOfDays + " days.");
