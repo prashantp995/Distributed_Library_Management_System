@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 //TODO Remove this class as it is merged with remote impl
-public class MonServer {
+public class MontrealServer {
 
   static MonRemoteServiceImpl exportedObj;
 
