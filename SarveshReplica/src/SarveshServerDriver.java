@@ -1,7 +1,7 @@
 
 
 /**Server Driver to initialize the server objects and delegate UDP servers*/
-public class ServerDriver {
+public class SarveshServerDriver {
     public static void main(String[] args) {
         try{
             // create and initialize the ORB //// get reference to rootpoa & activate the POAManager
