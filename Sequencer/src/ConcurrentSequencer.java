@@ -60,17 +60,17 @@ public class ConcurrentSequencer extends Thread implements Serializable {
     try {
       DatagramPacket rm1packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
           sequencerMain.replica1Port);
-      DatagramPacket rm2packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
-          sequencerMain.replica2Port);
-      DatagramPacket rm3packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
-          sequencerMain.replica3Port);
-      DatagramPacket rm4packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
-          sequencerMain.replica4Port);
+//      DatagramPacket rm2packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
+//          sequencerMain.replica2Port);
+//      DatagramPacket rm3packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
+//          sequencerMain.replica3Port);
+//      DatagramPacket rm4packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
+//          sequencerMain.replica4Port);
       DatagramSocket socket = new DatagramSocket();
       socket.send(rm1packet);
-      socket.send(rm2packet);
-      socket.send(rm3packet);
-      socket.send(rm4packet);
+//      socket.send(rm2packet);
+//      socket.send(rm3packet);
+//      socket.send(rm4packet);
     } catch (Exception e) {
       e.printStackTrace();
     }

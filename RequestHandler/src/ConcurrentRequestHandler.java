@@ -43,15 +43,20 @@ public class ConcurrentRequestHandler extends Thread {
       if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
         responseString = serverInterface.listItem(objForRM.getUserId());
       }
+      String[] responseArray = responseString.split(":");
+      ResponseModel sendToFE = new ResponseModel();
+      sendToFE.setClientId(objForRM.getUserId());
+      sendToFE.setRequestId(objForRM.getRequestId());
+      sendToFE.setResponse(responseArray[0]);
+      sendToFE.setStatus(responseArray[1]);
+      sendToFE.setNote(responseArray[2]);
+
+
       DatagramSocket socket = new DatagramSocket();
       DatagramPacket response = new DatagramPacket(responseString.getBytes(),responseString.length(),
               request.getAddress(),objForRM.getFrontEndPort());
       socket.send(response);
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
     }
 

@@ -137,24 +137,19 @@ public class ServerSARReplica implements ServerInterface{
     /**It shows all the available books in that library to the manager.*/
     public String listItem(String managerID) {
         if(managerID.charAt(3) != 'M') {
-            String message =
-                    "Item availability Request : Server : " + library +
-                            " Manager : " + managerID +
-                            "Status : Unsuccessful. " +
-                            "\nNote : You are not allowed to use this feature.";
+            String message = "RESPONSE:Unsuccessful:You are not allowed to use this feature.";
             writeToLogFile(message);
             return message;
         }
-        String reply =  "Item availability Request : Server : " + library +
-                " Manager : " + managerID +
-                "Status : Successful. " +
-                "\nAvailability:\n";
+        String reply =  "";
         Iterator<Map.Entry<String, Item>> iterator;
         synchronized (lock) { iterator = item.entrySet().iterator(); }
         while(iterator.hasNext()){
             Map.Entry<String, Item> pair = iterator.next();
             reply += "\n" + pair.getValue().getItemName() + " " + pair.getValue().getItemCount() + "\n";
         }
+        reply +=":Successful:NOTE";
+
         writeToLogFile(reply);
         return reply;
     }
