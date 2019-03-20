@@ -45,7 +45,7 @@ public class ConcurrentSequencer extends Thread implements Serializable {
       //convert to byte updatedByteArray to send replica managers
       oos.writeObject(objForRM);
       updatedByteArray = byteArrayOutputStream.toByteArray();
-      forwardRequestToReplica(updatedByteArray);
+      forwardRequestToRequestHandler(updatedByteArray);
     } catch (UnknownHostException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -56,7 +56,7 @@ public class ConcurrentSequencer extends Thread implements Serializable {
 
   }
 
-  private void forwardRequestToReplica(byte[] updatedByteArray) {
+  private void forwardRequestToRequestHandler(byte[] updatedByteArray) {
     try {
       DatagramPacket rm1packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
           sequencerMain.replica1Port);
