@@ -14,9 +14,10 @@ public class ServerDriver {
             rootpoa.the_POAManager().activate();*/
 
 
-            ConServer cs = new ConServer();
-            MonServer ms = new MonServer();
-            McgServer mc = new McgServer();
+            /*ConServer cs = ConServer.getConcordiaObject();*/
+            ConServer cs = (ConServer) ServerFactory.getServerObject("Shivam","CON");
+            MonServer ms = (MonServer) ServerFactory.getServerObject("Shivam","MON");
+            McgServer mc = (McgServer) ServerFactory.getServerObject("Shivam","MCG");
             InterServComServer mcg = new InterServComServer(1,args,mc);
             InterServComServer mon = new InterServComServer(2,args,ms);
             InterServComServer con = new InterServComServer(3,args,cs);

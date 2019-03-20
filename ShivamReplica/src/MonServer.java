@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class MonServer implements Runnable, ServerInterface{
     private ORB orb;
     private static final long serialVersionUID = 1L;
-    static MonServer monServerObject;
+   /* static MonServer monServerObject;
 
     static {
         try {
@@ -21,7 +21,7 @@ public class MonServer implements Runnable, ServerInterface{
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private HashMap<String, DataModel> monLibrary = new HashMap<String, DataModel>();
     private HashMap<String, ArrayList<DataModel>> monWaitlist = new HashMap<>();
@@ -103,9 +103,9 @@ public class MonServer implements Runnable, ServerInterface{
             e.printStackTrace();
         }
     }
-    public static MonServer getMontrealObject(){
+   /* public static MonServer getMontrealObject(){
         return monServerObject;
-    }
+    }*/
     /**
      * @throws IOException
      * @throws ClassNotFoundException

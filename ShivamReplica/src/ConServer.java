@@ -1,4 +1,3 @@
-import org.omg.CORBA.ORB;
 
 import java.io.*;
 import java.net.*;
@@ -11,16 +10,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConServer implements Runnable, ServerInterface {
-    static ConServer conServerObject;
-
-    static {
-        try {
-            conServerObject = new ConServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+   /* try{
+        static ConServer conServerObject = new ConServer();
+    }catch(Exception e){
+        return null;
     }
-
+*/
     private HashMap<String, DataModel> conLibrary = new HashMap<String, DataModel>();
     final private HashMap<String, ArrayList<DataModel>> conWaitlist = new HashMap<>();
     private ArrayList<String> removedItems = new ArrayList<>();
@@ -30,6 +25,8 @@ public class ConServer implements Runnable, ServerInterface {
     private Object lock;
     int MCG = 13131;
     int MON = 13132;
+    private final static Logger logger = Logger.getLogger(ConServer.class.getName());
+    static private FileHandler fileTxt;
 
     /**
      * The class constructor that initiates and engenders new books, users, and managers at the very beginning.
@@ -55,10 +52,9 @@ public class ConServer implements Runnable, ServerInterface {
         System.out.println(book2);
         System.out.println(book3);
         lock = new Object();
-        logger.setLevel(Level.INFO);
         fileTxt = new FileHandler("ConcordiaServerLog.txt");
         logger.addHandler(fileTxt);
-
+        logger.setLevel(Level.INFO);
         for (int i = 1; i < 10; i++) {
             DataModel user = new DataModel();
             user.setUserId("CONU000" + i);
@@ -95,8 +91,7 @@ public class ConServer implements Runnable, ServerInterface {
     }*/
 
 
-    private final static Logger logger = Logger.getLogger(ConServer.class.getName());
-    static private FileHandler fileTxt;
+
 
     public void run() {
         try {
@@ -107,9 +102,9 @@ public class ConServer implements Runnable, ServerInterface {
             e.printStackTrace();
         }
     }
-    public static ConServer getConcordiaObject(){
+   /* public static ConServer getConcordiaObject(){
         return conServerObject;
-    }
+    }*/
 
     /**
      * @throws IOException

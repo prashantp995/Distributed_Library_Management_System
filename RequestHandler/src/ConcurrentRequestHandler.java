@@ -61,6 +61,8 @@ public class ConcurrentRequestHandler extends Thread {
       socket.send(response);
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
   }

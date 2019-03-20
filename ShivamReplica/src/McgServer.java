@@ -14,7 +14,7 @@ public class McgServer implements Runnable, ServerInterface {
     private ORB orb;
 
     private static final long serialVersionUID = 1L;
-    static McgServer mcgServerObject;
+   /* static McgServer mcgServerObject;
 
     static {
         try {
@@ -22,7 +22,7 @@ public class McgServer implements Runnable, ServerInterface {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private HashMap<String, DataModel> mcgLibrary = new HashMap<String, DataModel>();
     private HashMap<String, ArrayList<DataModel>> mcgWaitlist = new HashMap<>();
@@ -109,9 +109,9 @@ public class McgServer implements Runnable, ServerInterface {
             e.printStackTrace();
         }
     }
-    public static McgServer getMcGillObject(){
+    /*public static McgServer getMcGillObject(){
         return mcgServerObject;
-    }
+    }*/
     /**
      * @throws IOException
      * @throws ClassNotFoundException
@@ -122,8 +122,8 @@ public class McgServer implements Runnable, ServerInterface {
         DatagramSocket aSocket = new DatagramSocket(9987);
         byte[] buffer = new byte[1000];
         DatagramPacket request = new DatagramPacket(buffer,buffer.length);
+            System.out.println("mcgwait");
         aSocket.receive(request);
-        System.out.println("mcgwait");
         ObjectInputStream iStream ;
         iStream = new ObjectInputStream(new ByteArrayInputStream(request.getData()));
         DataModel pack = (DataModel) iStream.readObject();

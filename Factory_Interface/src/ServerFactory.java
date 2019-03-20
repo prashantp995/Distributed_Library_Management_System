@@ -3,8 +3,11 @@ public class ServerFactory {
   private static ServerSARReplica serverSARReplicaConcordia;
   private static ServerSARReplica serverSARReplicaMontreal;
   private static ServerSARReplica serverSARReplicaMcGill;
+  private static ConServer conServer;
+  private static MonServer monServer;
+  private static McgServer mcgServer;
 
-  public static ServerInterface getServerObject(String serverName, String lib) {
+  public static ServerInterface getServerObject(String serverName, String lib) throws Exception {
 
     switch (serverName) {
       case "Sarvesh":
@@ -39,11 +42,19 @@ public class ServerFactory {
       case "Shivam":
         switch (lib){
           case "CON":
-            return ConServer.getConcordiaObject();
+            if(conServer==null){
+              conServer = new ConServer();
+            }
+            return conServer;
           case "MCG":
-            return McgServer.getMcGillObject();
+            if(mcgServer==null)
+              mcgServer = new McgServer();
+            return mcgServer;
           case "MON":
-            return null;
+            if(monServer==null){
+              monServer=new MonServer();
+            }
+            return monServer;
         }
     }
     return null;
