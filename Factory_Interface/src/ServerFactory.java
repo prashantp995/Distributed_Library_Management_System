@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class ServerFactory {
 
   private static ServerSARReplica serverSARReplicaConcordia;
@@ -6,6 +8,9 @@ public class ServerFactory {
   private static ConServer conServer;
   private static MonServer monServer;
   private static McgServer mcgServer;
+  private static Server_Base concordiaLib;
+  private static Server_Base mcgillLib;
+  private static Server_Base montrealuLib;
 
   public static ServerInterface getServerObject(String serverName, String lib) throws Exception {
 
@@ -15,22 +20,21 @@ public class ServerFactory {
       case "Pras":
         return getObjForPrashantReplica(lib);
       case "Rohit":
-
-        break;
+        return getRohitServerObject(lib);
       case "Shivam":
-        switch (lib){
+        switch (lib) {
           case "CON":
-            if(conServer==null){
+            if (conServer == null) {
               conServer = new ConServer();
             }
             return conServer;
           case "MCG":
-            if(mcgServer==null)
+            if (mcgServer == null)
               mcgServer = new McgServer();
             return mcgServer;
           case "MON":
-            if(monServer==null){
-              monServer=new MonServer();
+            if (monServer == null) {
+              monServer = new MonServer();
             }
             return monServer;
           default:
@@ -79,4 +83,31 @@ public class ServerFactory {
         return null;
     }
   }
+
+  public static Server_Base getRohitServerObject(String lib) {
+    if (lib.equalsIgnoreCase("CON")) {
+      try {
+        concordiaLib = new Server_Base("CONCORDIA");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return concordiaLib;
+    } else if (lib.equalsIgnoreCase("MCG")) {
+      try {
+        mcgillLib = new Server_Base("MCGILL");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return mcgillLib;
+    } else if (lib.equalsIgnoreCase("MON")) {
+      try {
+        montrealuLib = new Server_Base("MONTREALU");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return montrealuLib;
+    }
+    return null;
+  }
+
 }

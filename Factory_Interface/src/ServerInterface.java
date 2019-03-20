@@ -17,4 +17,5 @@ public interface ServerInterface {
   String exchangeItem(String userId, String oldItemId, String newItemID);
 
   String validateUser(String userId);
+
 }
