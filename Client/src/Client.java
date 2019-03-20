@@ -51,10 +51,13 @@ public class Client {
   private static boolean validateUser(String username) {
     logger
         .info("validation of " + username + "starts");
-    boolean response = Boolean.parseBoolean(libraryService.validateUserName(username));
+    String response = libraryService.validateUserName(username);
     logger.info("Response Received from the server is " + response);
     System.out.println("Response Received from the server is " + response);
-    return response;
+    if (response.contains("true")) {
+      return true;
+    }
+    return false;
   }
 
   /**

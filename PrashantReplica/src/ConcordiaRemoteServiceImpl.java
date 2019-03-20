@@ -282,7 +282,7 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
 
   @Override
   public String validateUser(String userId) {
-    return "true";
+    return "true" + ":Successful:NOTE";
   }
 
   /**
