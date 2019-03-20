@@ -11,33 +11,11 @@ public class ServerFactory {
 
     switch (serverName) {
       case "Sarvesh":
-        switch (lib) {
-          case "CON":
-            if (serverSARReplicaConcordia == null) {
-              serverSARReplicaConcordia = new ServerSARReplica(lib);
-              return serverSARReplicaConcordia;
-            } else {
-              return serverSARReplicaConcordia;
-            }
-          case "MCG":
-            if (serverSARReplicaMcGill == null) {
-              serverSARReplicaMcGill = new ServerSARReplica(lib);
-              return serverSARReplicaMcGill;
-            } else {
-              return serverSARReplicaMcGill;
-            }
-          case "MON":
-            if (serverSARReplicaMontreal == null) {
-              serverSARReplicaMontreal = new ServerSARReplica(lib);
-              return serverSARReplicaMontreal;
-            } else {
-              return serverSARReplicaMontreal;
-            }
-        }
-        break;
+        return getSarveshServerObject(lib);
       case "Pras":
         return getObjForPrashantReplica(lib);
       case "Rohit":
+
         break;
       case "Shivam":
         switch (lib){
@@ -55,10 +33,13 @@ public class ServerFactory {
               monServer=new MonServer();
             }
             return monServer;
+          default:
+            return null;
         }
     }
     return null;
   }
+
 
   private static ServerInterface getObjForPrashantReplica(String lib) {
     if (lib.equalsIgnoreCase("CON")) {
@@ -69,5 +50,33 @@ public class ServerFactory {
       return McGillRemoteServiceImpl.getMcGillObject();
     }
     return null;
+  }
+
+  public static ServerSARReplica getSarveshServerObject(String lib) {
+    switch (lib) {
+      case "CON":
+        if (serverSARReplicaConcordia == null) {
+          serverSARReplicaConcordia = new ServerSARReplica(lib);
+          return serverSARReplicaConcordia;
+        } else {
+          return serverSARReplicaConcordia;
+        }
+      case "MCG":
+        if (serverSARReplicaMcGill == null) {
+          serverSARReplicaMcGill = new ServerSARReplica(lib);
+          return serverSARReplicaMcGill;
+        } else {
+          return serverSARReplicaMcGill;
+        }
+      case "MON":
+        if (serverSARReplicaMontreal == null) {
+          serverSARReplicaMontreal = new ServerSARReplica(lib);
+          return serverSARReplicaMontreal;
+        } else {
+          return serverSARReplicaMontreal;
+        }
+      default:
+        return null;
+    }
   }
 }
