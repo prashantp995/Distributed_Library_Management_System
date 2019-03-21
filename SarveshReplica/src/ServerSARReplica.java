@@ -53,6 +53,7 @@ public class ServerSARReplica implements ServerInterface{
     private final Object lock;
 
 
+
     public ServerSARReplica(String library){
 
         this.library = library;
@@ -137,7 +138,7 @@ public class ServerSARReplica implements ServerInterface{
     /**It shows all the available books in that library to the manager.*/
     public String listItem(String managerID) {
         if(managerID.charAt(3) != 'M') {
-            String message = "RESPONSE:Unsuccessful:You are not allowed to use this feature.";
+            String message = "You are not allowed to use this feature" + ServerConstants.FAILURE;
             writeToLogFile(message);
             return message;
         }
@@ -148,8 +149,7 @@ public class ServerSARReplica implements ServerInterface{
             Map.Entry<String, Item> pair = iterator.next();
             reply += "\n" + pair.getValue().getItemName() + " " + pair.getValue().getItemCount() + "\n";
         }
-        reply +=":Successful:NOTE";
-
+        reply += ServerConstants.SUCCESS;
         writeToLogFile(reply);
         return reply;
     }
@@ -408,30 +408,30 @@ public class ServerSARReplica implements ServerInterface{
     public String validateUser(String clientID) {
         if(clientID == null){
             writeToLogFile("Validate clientID request : clientID : "+ clientID);
-            return "false";
+            return "false"+ ServerConstants.FAILURE;
         }
         else if(clientID.charAt(3) == 'U'){
             String message;
             if(!user.containsKey(clientID)){
-                writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Unsuccessful");
-                return "false";
+                writeToLogFile("Client Validate:Unsuccessful:Invalid UserID " + clientID);
+                return "false" + ServerConstants.FAILURE;
             }else{
                 writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Successful");
-                message = "true";
+                message = "true" + ServerConstants.SUCCESS;
                 return message;
             }
         }
         else if(clientID.charAt(3) == 'M'){
             if(!manager.containsKey(clientID)){
                 writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Unsuccessful");
-                return "false";
+                return "false" + ServerConstants.FAILURE;
             }else{
                 writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Successful");
-                return  "true";
+                return "true" + ServerConstants.SUCCESS;
             }
         }
         writeToLogFile("Validate clientID request : clientID : "+ clientID + " Status : Unsuccessful");
-        return "false";
+        return "false" + ServerConstants.FAILURE;
     }
 
     /**used by the user to exchange an item with another, first we return the item,

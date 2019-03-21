@@ -52,7 +52,6 @@ public class ConcurrentRequestHandler extends Thread {
       sendToFE.setRequestId(objForRM.getRequestId());
       sendToFE.setResponse(responseArray[0]);
       sendToFE.setStatus(responseArray[1]);
-      sendToFE.setNote(responseArray[2]);
 
 
       DatagramSocket socket = new DatagramSocket();

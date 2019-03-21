@@ -10,7 +10,7 @@ import java.util.logging.SimpleFormatter;
 public class RequestHandlerMain extends Thread {
 
   DatagramSocket requestHandlerSocket = null;
-  int requestHandlerPort = 9002; //change this based on your implementation
+  int requestHandlerPort = 9001; //change this based on your implementation
   static Logger logger = null;
 
   public static void main(String[] args) {
