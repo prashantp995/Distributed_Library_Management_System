@@ -80,7 +80,7 @@ public class ServerSARReplica implements ServerInterface{
     }
 
     private void init(){
-        String initManagerID = library + "M" + 1001;
+        String initManagerID = library + "M" + 0001;
         Manager initManager = new Manager(initManagerID);
         manager.put(initManagerID,initManager);
         writeToLogFile("Initial manager created.");

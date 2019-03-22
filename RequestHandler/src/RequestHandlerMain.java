@@ -10,12 +10,23 @@ import java.util.logging.SimpleFormatter;
 public class RequestHandlerMain extends Thread {
 
   DatagramSocket requestHandlerSocket = null;
-  int requestHandlerPort = 9001; //change this based on your implementation
+  int requestHandlerPort; //change this based on your implementation
   static Logger logger = null;
 
   public static void main(String[] args) {
-    RequestHandlerMain requestHandlerMain = new RequestHandlerMain();
+    RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
+    RequestHandlerMain requestHandlerMain1 = new RequestHandlerMain(9001);
+    RequestHandlerMain requestHandlerMain2 = new RequestHandlerMain(9002);
+    RequestHandlerMain requestHandlerMain3 = new RequestHandlerMain(9004);
     requestHandlerMain.start();
+    requestHandlerMain1.start();
+    requestHandlerMain2.start();
+    requestHandlerMain3.start();
+
+  }
+
+  public RequestHandlerMain(int requestHandlerPort) {
+    this.requestHandlerPort = requestHandlerPort;
   }
 
   @Override

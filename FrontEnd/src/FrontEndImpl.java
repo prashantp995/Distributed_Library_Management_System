@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 import org.omg.CORBA.ORB;
 
@@ -50,9 +51,16 @@ public class FrontEndImpl extends LibraryServicePOA {
       sendRequest(socket,request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      return reply.trim();
+      ArrayList<String> replies = new ArrayList<>();
+      for(int i=0;i<3;i++){
+        socket.receive(requestReceived);
+        String reply = new String(requestReceived.getData());
+        reply.trim();
+        System.out.println(reply);
+        replies.add(reply);
+      }
+      System.out.println(replies);
+      return replies.toString();
     } catch (IOException e) {
       e.printStackTrace();
       return "Unsuccessful";
@@ -80,9 +88,16 @@ public class FrontEndImpl extends LibraryServicePOA {
       sendRequest(socket,request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      return reply.trim();
+      ArrayList<String> replies = new ArrayList<>();
+      for(int i=0;i<3;i++){
+        socket.receive(requestReceived);
+        String reply = new String(requestReceived.getData());
+        reply.trim();
+        System.out.println(reply);
+        replies.add(reply);
+      }
+      System.out.println(replies);
+      return replies.toString();
     } catch (IOException e) {
       e.printStackTrace();
       return "false";

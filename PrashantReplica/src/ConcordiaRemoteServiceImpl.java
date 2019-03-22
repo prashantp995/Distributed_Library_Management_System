@@ -47,7 +47,7 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
   }
 
   private void initManagerID() {
-    managerId.add("CONM1111");
+    managerId.add("CONM0001");
     managerId.add("CONM1112");
   }
 
