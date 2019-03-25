@@ -23,21 +23,34 @@ public class FrontEndImpl extends LibraryServicePOA {
 
   @Override
   public String returnItem(String userId, String itemID) {
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_RETURN_ITEM,
+        userId);
+    request.setItemId(itemID);
     return null;
   }
 
   @Override
   public String borrowItem(String userId, String itemID, int numberOfDays) {
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_BORROW_ITEM,
+        itemID,
+        userId, numberOfDays);
     return null;
   }
 
   @Override
   public String addItem(String userId, String itemID, String itemName, int quantity) {
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_ADD_ITEM, userId);
+    request.setItemId(itemID);
+    request.setItemName(itemName);
+    request.setQuantity(quantity);
     return null;
   }
 
   @Override
   public String removeItem(String managerId, String itemId, int quantity) {
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_RETURN_ITEM,
+        managerId);
+    request.setQuantity(quantity);
     return null;
   }
 
