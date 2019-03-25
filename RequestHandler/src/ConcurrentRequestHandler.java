@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class ConcurrentRequestHandler extends Thread {
 
@@ -40,12 +39,7 @@ public class ConcurrentRequestHandler extends Thread {
       ServerInterface serverInterface = ServerFactory
           .getServerObject(replicaName,
               objForRM.getUserId().substring(0, 3));
-      if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
-        responseString = serverInterface.listItem(objForRM.getUserId());
-      }
-      if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
-        responseString = serverInterface.validateUser(objForRM.getUserId());
-      }
+      responseString = getResponse(objForRM, serverInterface);
       String[] responseArray = responseString.split(":");
       ResponseModel sendToFE = new ResponseModel();
       sendToFE.setClientId(objForRM.getUserId());
@@ -61,6 +55,46 @@ public class ConcurrentRequestHandler extends Thread {
       e.printStackTrace();
     }
 
+  }
+
+  private String getResponse(ClientRequestModel objForRM,
+      ServerInterface serverInterface) {
+    String responseString = null;
+    if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
+      responseString = serverInterface.listItem(objForRM.getUserId());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
+      responseString = serverInterface.validateUser(objForRM.getUserId());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_ITEM)) {
+      responseString = serverInterface
+          .addItem(objForRM.getUserId(), objForRM.getItemId(), objForRM.getItemName(),
+              objForRM.getQuantity());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
+      responseString = serverInterface
+          .addUserInWaitingList(objForRM.getUserId(), objForRM.getItemId(),
+              objForRM.getNumberOfDays());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
+      responseString = serverInterface
+          .borrowItem(objForRM.getUserId(), objForRM.getItemId(),
+              objForRM.getNumberOfDays());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
+      //objForRM.getItemId() is oldItemID
+      responseString = serverInterface
+          .exchangeItem(objForRM.getUserId(), objForRM.getItemId(), objForRM.getNewItemId());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_REMOVE_ITEM)) {
+      responseString = serverInterface
+          .removeItem(objForRM.getUserId(), objForRM.getItemId(), objForRM.getQuantity());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
+      responseString = serverInterface
+          .returnItem(objForRM.getUserId(), objForRM.getItemId());
+    }
+    return responseString;
   }
 
   public static String getReplicaNameFromPort(int port) {

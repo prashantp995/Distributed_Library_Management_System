@@ -8,11 +8,13 @@ public class ClientRequestModel implements Serializable {
 
   private String methodName;
   private String itemName;
-  private String itemId;
+  private String itemId; //can be used as old item id for the exchange operation
   private String userId;
   private int numberOfDays;
   private int requestId;
   private int frontEndPort;
+  private int quantity;
+  private String newItemId; //this is for the exchange operation
 
   public int getFrontEndPort() {
     return frontEndPort;
@@ -60,6 +62,22 @@ public class ClientRequestModel implements Serializable {
 
   public void setNumberOfDays(int numberOfDays) {
     this.numberOfDays = numberOfDays;
+  }
+
+  public String getNewItemId() {
+    return newItemId;
+  }
+
+  public void setNewItemId(String newItemId) {
+    this.newItemId = newItemId;
+  }
+
+  public int getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
   }
 
   public ClientRequestModel(String methodName, String itemId, String userId) {
