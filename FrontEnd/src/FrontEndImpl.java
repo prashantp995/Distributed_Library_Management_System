@@ -39,8 +39,8 @@ public class FrontEndImpl extends LibraryServicePOA {
 
   @Override
   public String addItem(String userId, String itemID, String itemName, int quantity) {
-    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_ADD_ITEM, userId);
-    request.setItemId(itemID);
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_ADD_ITEM, itemID,
+        userId);
     request.setItemName(itemName);
     request.setQuantity(quantity);
     return null;
@@ -49,7 +49,7 @@ public class FrontEndImpl extends LibraryServicePOA {
   @Override
   public String removeItem(String managerId, String itemId, int quantity) {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_REMOVE_ITEM,
-        managerId);
+        itemId, managerId);
     request.setQuantity(quantity);
     return null;
   }
@@ -61,11 +61,11 @@ public class FrontEndImpl extends LibraryServicePOA {
     DatagramSocket socket;
     try {
       socket = new DatagramSocket();
-      sendRequest(socket,request);
+      sendRequest(socket, request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
       ArrayList<String> replies = new ArrayList<>();
-      for(int i=0;i<3;i++){
+      for (int i = 0; i < 3; i++) {
         socket.receive(requestReceived);
         String reply = new String(requestReceived.getData());
         reply.trim();
@@ -82,12 +82,18 @@ public class FrontEndImpl extends LibraryServicePOA {
   }
 
   @Override
-  public String addUserInWaitingList(String userId, String ItemId, int numberOfDays) {
+  public String addUserInWaitingList(String userId, String itemId, int numberOfDays) {
+    ClientRequestModel request = new ClientRequestModel(
+        FrontEndConstants.METHOD_ADD_USER_IN_WAITLIST,
+        itemId, userId, numberOfDays);
     return null;
   }
 
   @Override
   public String exchangeItem(String userId, String oldItemId, String newItemID) {
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_EXCHANGE_ITEM,
+        oldItemId, userId);
+    request.setNewItemId(newItemID);
     return null;
   }
 
@@ -98,11 +104,11 @@ public class FrontEndImpl extends LibraryServicePOA {
     DatagramSocket socket;
     try {
       socket = new DatagramSocket();
-      sendRequest(socket,request);
+      sendRequest(socket, request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
       ArrayList<String> replies = new ArrayList<>();
-      for(int i=0;i<3;i++){
+      for (int i = 0; i < 3; i++) {
         socket.receive(requestReceived);
         String reply = new String(requestReceived.getData());
         reply.trim();
