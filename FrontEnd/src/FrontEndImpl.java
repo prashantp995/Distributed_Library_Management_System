@@ -48,7 +48,7 @@ public class FrontEndImpl extends LibraryServicePOA {
 
   @Override
   public String removeItem(String managerId, String itemId, int quantity) {
-    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_RETURN_ITEM,
+    ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_REMOVE_ITEM,
         managerId);
     request.setQuantity(quantity);
     return null;
