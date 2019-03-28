@@ -1,7 +1,11 @@
-import java.io.*;
-import java.net.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
-
 import org.omg.CORBA.ORB;
 
 public class FrontEndImpl extends LibraryServicePOA {
@@ -18,7 +22,24 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_FIND_ITEM, userId);
     request.setItemName(itemName);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      ArrayList<String> replies = new ArrayList<>();
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply.trim();
+      System.out.println(reply);
+      replies.add(reply);
+      System.out.println(replies);
+      return replies.toString();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -105,10 +126,11 @@ public class FrontEndImpl extends LibraryServicePOA {
     try {
       socket = new DatagramSocket();
       sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+
       ArrayList<String> replies = new ArrayList<>();
       for (int i = 0; i < 3; i++) {
+        byte[] requestBuffer = new byte[1000];
+        DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
         socket.receive(requestReceived);
         String reply = new String(requestReceived.getData());
         reply.trim();
