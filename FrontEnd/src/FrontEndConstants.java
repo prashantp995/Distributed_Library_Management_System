@@ -11,5 +11,6 @@ public class FrontEndConstants {
   static final String METHOD_ADD_USER_IN_WAITLIST = "addUserInWaitList";
   static final String METHOD_RETURN_ITEM = "returnItem";
   static final String METHOD_VALIDATE_USER_NAME = "validateUser";
+  static final int NUMBER_OF_REPLICA = 3;
 
 }
