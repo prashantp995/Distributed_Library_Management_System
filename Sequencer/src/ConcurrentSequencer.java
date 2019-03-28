@@ -30,7 +30,7 @@ public class ConcurrentSequencer extends Thread implements Serializable {
   @Override
   public void run() {
     try {
-      ip = InetAddress.getByName("localhost");
+      ip = InetAddress.getByName("230.1.1.5");
       byteArrayOutputStream = new ByteArrayOutputStream();
       oos = new ObjectOutputStream(byteArrayOutputStream);
       byteArrayInputStream = new ByteArrayInputStream(request.getData());
@@ -60,16 +60,16 @@ public class ConcurrentSequencer extends Thread implements Serializable {
     try {
       DatagramPacket rm1packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
           sequencerMain.replica1Port);
-     DatagramPacket rm2packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
+     /*DatagramPacket rm2packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
          sequencerMain.replica2Port);
         DatagramPacket rm3packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
-          sequencerMain.replica3Port);
+          sequencerMain.replica3Port);*/
       /*DatagramPacket rm4packet = new DatagramPacket(updatedByteArray, updatedByteArray.length, ip,
           sequencerMain.replica4Port);
     */  DatagramSocket socket = new DatagramSocket();
       socket.send(rm1packet);
-      socket.send(rm2packet);
-      socket.send(rm3packet);
+      /*socket.send(rm2packet);
+      socket.send(rm3packet);*/
       /*socket.send(rm4packet);*/
     } catch (Exception e) {
       e.printStackTrace();

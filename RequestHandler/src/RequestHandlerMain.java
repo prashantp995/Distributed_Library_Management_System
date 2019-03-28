@@ -1,6 +1,6 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.nio.file.FileSystems;
 import java.util.logging.FileHandler;
@@ -9,19 +9,19 @@ import java.util.logging.SimpleFormatter;
 
 public class RequestHandlerMain extends Thread {
 
-  DatagramSocket requestHandlerSocket = null;
+  MulticastSocket requestHandlerSocket = null;
   int requestHandlerPort; //change this based on your implementation
   static Logger logger = null;
 
   public static void main(String[] args) {
-    RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
-    RequestHandlerMain requestHandlerMain1 = new RequestHandlerMain(9001);
-    RequestHandlerMain requestHandlerMain2 = new RequestHandlerMain(9002);
-    RequestHandlerMain requestHandlerMain3 = new RequestHandlerMain(9004);
-    requestHandlerMain.start();
-    requestHandlerMain1.start();
+    //RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
+    //  RequestHandlerMain requestHandlerMain1 = new RequestHandlerMain(9001);
+    RequestHandlerMain requestHandlerMain2 = new RequestHandlerMain(9001);
+    // RequestHandlerMain requestHandlerMain3 = new RequestHandlerMain(9004);
+    // requestHandlerMain.start();
+    // requestHandlerMain1.start();
     requestHandlerMain2.start();
-    requestHandlerMain3.start();
+    // requestHandlerMain3.start();
 
   }
 
@@ -33,8 +33,10 @@ public class RequestHandlerMain extends Thread {
   public void run() {
     byte requestBuffer[] = new byte[1000];
     try {
-      requestHandlerSocket = new DatagramSocket(requestHandlerPort);
+      requestHandlerSocket = new MulticastSocket(requestHandlerPort);
     } catch (SocketException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
     try {
@@ -48,9 +50,13 @@ public class RequestHandlerMain extends Thread {
         System.out.println("RequestHandler is listening at " + requestHandlerPort);
         logger.info("Sequencer is listening at " + requestHandlerPort);
         requestHandlerSocket.receive(requestReceived);
+        System.out.println("Request received");
+        String requestReceivedFromSeq = new String(requestReceived.getData());
+        System.out.println(requestReceivedFromSeq.trim());
         //once request received , there should be new unique thread to handle the request.
         //Concurrent Sequencer will handle the request
-        ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this, requestReceived);
+        ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
+            requestReceived);
         concurrentSequencer.start();
       } catch (IOException e) {
         e.printStackTrace();

@@ -46,8 +46,9 @@ public class ConcurrentRequestHandler extends Thread {
       sendToFE.setRequestId(objForRM.getRequestId());
       sendToFE.setResponse(responseArray[0]);
       DatagramSocket socket = new DatagramSocket();
-      DatagramPacket response = new DatagramPacket(responseString.getBytes(),responseString.length(),
-              request.getAddress(),objForRM.getFrontEndPort());
+      DatagramPacket response = new DatagramPacket(responseString.getBytes(),
+          responseString.length(),
+          request.getAddress(), objForRM.getFrontEndPort());
       socket.send(response);
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
@@ -93,6 +94,9 @@ public class ConcurrentRequestHandler extends Thread {
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
       responseString = serverInterface
           .returnItem(objForRM.getUserId(), objForRM.getItemId());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
+      responseString = serverInterface.findItem(objForRM.getUserId(), objForRM.getItemName());
     }
     return responseString;
   }
