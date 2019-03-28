@@ -1,4 +1,3 @@
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ class MessageHandler implements Runnable{
     private ByteArrayOutputStream byteArrayOutputStream;
     private ObjectOutputStream oos;
     private DatagramSocket frontEndSocket;
+
     InetSocketAddress sequencerAddress = new InetSocketAddress(9090);
 
     public MessageHandler(DatagramSocket frontEndSocket, DatagramPacket receiver){

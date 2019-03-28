@@ -18,6 +18,8 @@ public class FrontEndMain {
 
   public static void main(String[] args) {
     try {
+      Thread frontEndUDP = new Thread(new FrontEndUDP());
+      frontEndUDP.start();
       ORB orb = ORB.init(args, null);
       POA rootpoa =
           (POA) orb.resolve_initial_references("RootPOA");
