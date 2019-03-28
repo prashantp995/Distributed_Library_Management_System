@@ -11,6 +11,7 @@ import org.omg.CORBA.ORB;
 public class FrontEndImpl extends LibraryServicePOA {
 
   InetSocketAddress sequencerAddress = new InetSocketAddress(9090);
+  InetSocketAddress udpFrontEndAddress = new InetSocketAddress(9006);
   private ORB orb;
 
   public void setORB(ORB orb_val) {
@@ -28,14 +29,11 @@ public class FrontEndImpl extends LibraryServicePOA {
       sendRequest(socket, request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      ArrayList<String> replies = new ArrayList<>();
       socket.receive(requestReceived);
       String reply = new String(requestReceived.getData());
-      reply.trim();
+      reply = reply.trim();
       System.out.println(reply);
-      replies.add(reply);
-      System.out.println(replies);
-      return replies.toString();
+      return reply;
     } catch (IOException e) {
       e.printStackTrace();
       return "Unsuccessful";
@@ -47,7 +45,22 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_RETURN_ITEM,
         userId);
     request.setItemId(itemID);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
+      System.out.println(reply);
+      return reply;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -55,7 +68,21 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_BORROW_ITEM,
         itemID,
         userId, numberOfDays);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
+      return reply;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -64,7 +91,21 @@ public class FrontEndImpl extends LibraryServicePOA {
         userId);
     request.setItemName(itemName);
     request.setQuantity(quantity);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
+      return reply;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -72,7 +113,21 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_REMOVE_ITEM,
         itemId, managerId);
     request.setQuantity(quantity);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
+      return reply;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -85,16 +140,11 @@ public class FrontEndImpl extends LibraryServicePOA {
       sendRequest(socket, request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      ArrayList<String> replies = new ArrayList<>();
-      for (int i = 0; i < 3; i++) {
         socket.receive(requestReceived);
         String reply = new String(requestReceived.getData());
-        reply.trim();
+        reply = reply.trim();
         System.out.println(reply);
-        replies.add(reply);
-      }
-      System.out.println(replies);
-      return replies.toString();
+      return reply;
     } catch (IOException e) {
       e.printStackTrace();
       return "Unsuccessful";
@@ -107,7 +157,21 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_ADD_USER_IN_WAITLIST,
         itemId, userId, numberOfDays);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
+      return reply;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -115,7 +179,21 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_EXCHANGE_ITEM,
         oldItemId, userId);
     request.setNewItemId(newItemID);
-    return null;
+    DatagramSocket socket;
+    try {
+      socket = new DatagramSocket();
+      sendRequest(socket, request);
+      byte[] requestBuffer = new byte[1000];
+      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
+      return reply;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return "Unsuccessful";
+    }
   }
 
   @Override
@@ -128,17 +206,14 @@ public class FrontEndImpl extends LibraryServicePOA {
       sendRequest(socket, request);
 
       ArrayList<String> replies = new ArrayList<>();
-      for (int i = 0; i < 3; i++) {
         byte[] requestBuffer = new byte[1000];
         DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
         socket.receive(requestReceived);
         String reply = new String(requestReceived.getData());
-        reply.trim();
+        reply = reply.trim();
         System.out.println(reply);
         replies.add(reply);
-      }
-      System.out.println(replies);
-      return replies.toString();
+        return reply;
     } catch (IOException e) {
       e.printStackTrace();
       return "false";
@@ -153,7 +228,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     bs.close();
     byte[] sendBuffer = bs.toByteArray();
     DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length,
-        InetAddress.getByName("localhost"), sequencerAddress.getPort());
+        InetAddress.getByName("localhost"), udpFrontEndAddress.getPort());
     socket.send(sendPacket);
   }
 }

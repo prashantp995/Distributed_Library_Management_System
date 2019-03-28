@@ -35,9 +35,11 @@ public class ConcurrentRequestHandler extends Thread {
       ois = new ObjectInputStream(byteArrayInputStream);
       //need to add sequence number in the client request
       ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
+/*
       String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
+*/
       ServerInterface serverInterface = ServerFactory
-          .getServerObject(replicaName,
+          .getServerObject("Shivam",
               objForRM.getUserId().substring(0, 3));
       responseString = getResponse(objForRM, serverInterface);
       String[] responseArray = responseString.split(":");
@@ -49,6 +51,7 @@ public class ConcurrentRequestHandler extends Thread {
       DatagramPacket response = new DatagramPacket(responseString.getBytes(),
           responseString.length(),
           request.getAddress(), objForRM.getFrontEndPort());
+      System.out.println("Sending: "+responseString);
       socket.send(response);
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
@@ -98,7 +101,7 @@ public class ConcurrentRequestHandler extends Thread {
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
       responseString = serverInterface.findItem(objForRM.getUserId(), objForRM.getItemName());
     }
-    return responseString;
+    return responseString+":Shivam";
   }
 
   public static String getReplicaNameFromPort(int port) {

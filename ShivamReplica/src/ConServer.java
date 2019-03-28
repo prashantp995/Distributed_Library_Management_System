@@ -816,7 +816,7 @@ public class ConServer implements Runnable, ServerInterface {
 
     @Override
     public String validateUser(String userId) {
-        return "true";
+        return "123";
     }
 
     public String getItemAvailability(String itemId) {

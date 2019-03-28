@@ -35,7 +35,9 @@ public class RequestHandlerMain extends Thread {
     byte requestBuffer[] = new byte[1000];
     try {
       requestHandlerSocket = new MulticastSocket(requestHandlerPort);
-      requestHandlerSocket.joinGroup(InetAddress.getByName("230.1.1.5"));
+      InetAddress ip = InetAddress.getByName("230.1.1.5");
+      System.out.println(ip.isMulticastAddress());
+      requestHandlerSocket.joinGroup(ip);
     } catch (SocketException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -52,6 +54,7 @@ public class RequestHandlerMain extends Thread {
         System.out.println("RequestHandler is listening at " + requestHandlerPort);
         logger.info("Sequencer is listening at " + requestHandlerPort);
         requestHandlerSocket.receive(requestReceived);
+
         System.out.println("Request received");
         String requestReceivedFromSeq = new String(requestReceived.getData());
         System.out.println(requestReceivedFromSeq.trim());

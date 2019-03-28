@@ -596,7 +596,7 @@ public class McgServer implements Runnable, ServerInterface {
      * @param userType
      * @return
      */
-    public boolean validate(String userId, String userType)
+    public String validateUser(String userId, String userType)
     {
         logger.info("Validate");
         logger.info(userId+"\t"+userType);
@@ -605,14 +605,18 @@ public class McgServer implements Runnable, ServerInterface {
                 Iterator<DataModel> iter = users.iterator();
                 while (iter.hasNext()) {
                     if (iter.next().getUserId().startsWith(userId)) {
-                        return true;
+                        return "true"+":Successful";
                     }
                 }
-                return false;
+                return "false"+"";
             }
         }
         else
-            return managers.contains(userId);
+            if(managers.contains(userId))
+                return "true";
+            else
+                return "false";
+
     }
 
     /**This method is called when a user wants to borrow a book but the availability is zero and the users wishes to be added to the waitlist of that book.
