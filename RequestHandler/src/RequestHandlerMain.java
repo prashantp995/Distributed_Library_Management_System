@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.nio.file.FileSystems;
@@ -34,6 +35,7 @@ public class RequestHandlerMain extends Thread {
     byte requestBuffer[] = new byte[1000];
     try {
       requestHandlerSocket = new MulticastSocket(requestHandlerPort);
+      requestHandlerSocket.joinGroup(InetAddress.getByName("230.1.1.5"));
     } catch (SocketException e) {
       e.printStackTrace();
     } catch (IOException e) {
