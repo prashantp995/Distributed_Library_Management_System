@@ -87,7 +87,6 @@ public class ConcurrentRequestHandler extends Thread {
               objForRM.getNumberOfDays());
     } else if (objForRM.getMethodName()
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
-      //objForRM.getItemId() is oldItemID
       responseString = serverInterface
           .exchangeItem(objForRM.getUserId(), objForRM.getItemId(), objForRM.getNewItemId());
     } else if (objForRM.getMethodName()
@@ -102,7 +101,7 @@ public class ConcurrentRequestHandler extends Thread {
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
       responseString = serverInterface.findItem(objForRM.getUserId(), objForRM.getItemName());
     }
-    return responseString+":Shivam";
+    return responseString;
   }
 
   public static String getReplicaNameFromPort(int port) {

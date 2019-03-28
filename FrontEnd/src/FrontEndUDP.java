@@ -1,3 +1,5 @@
+import javafx.scene.chart.PieChart;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -60,16 +62,17 @@ class MessageHandler implements Runnable{
             ClientRequestModel requestModel = (ClientRequestModel) ois.readObject();
             sendRequest(mySocket,requestModel);
             ArrayList<String> replies = new ArrayList<>();
-            for (int i = 0 ; i < 4 ; i++){
+            for (int i = 0 ; i < 3 ; i++){
                 byte[] buffer = new byte[1024];
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
                 mySocket.receive(messageFromRH);
                 String reply = new String(messageFromRH.getData());
                 reply.trim();
-                System.out.println(reply);
+                System.out.println(reply.trim());
                 replies.add(reply);
             }
-
+            DatagramPacket response = new DatagramPacket(replies.get(0).getBytes(),replies.get(0).length(),receiver.getAddress(),receiver.getPort());
+            frontEndSocket.send(response);
         }catch (IOException | ClassNotFoundException c){
             c.printStackTrace();
         }
