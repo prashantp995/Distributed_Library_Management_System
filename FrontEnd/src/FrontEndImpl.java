@@ -23,21 +23,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_FIND_ITEM, userId);
     request.setItemName(itemName);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
@@ -45,22 +31,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_RETURN_ITEM,
         userId);
     request.setItemId(itemID);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
@@ -68,21 +39,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_BORROW_ITEM,
         itemID,
         userId, numberOfDays);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
@@ -91,21 +48,7 @@ public class FrontEndImpl extends LibraryServicePOA {
         userId);
     request.setItemName(itemName);
     request.setQuantity(quantity);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
@@ -113,27 +56,18 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_REMOVE_ITEM,
         itemId, managerId);
     request.setQuantity(quantity);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
   public String listItem(String managerId) {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_LIST_ITEM, managerId);
+    return returnResult(request);
+    //Validate and Return Response
+  }
+
+  private String returnResult(ClientRequestModel request) {
     DatagramSocket socket;
     try {
       socket = new DatagramSocket();
@@ -149,7 +83,6 @@ public class FrontEndImpl extends LibraryServicePOA {
       e.printStackTrace();
       return "Unsuccessful";
     }
-    //Validate and Return Response
   }
 
   @Override
@@ -157,21 +90,7 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_ADD_USER_IN_WAITLIST,
         itemId, userId, numberOfDays);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
@@ -179,45 +98,14 @@ public class FrontEndImpl extends LibraryServicePOA {
     ClientRequestModel request = new ClientRequestModel(FrontEndConstants.METHOD_EXCHANGE_ITEM,
         oldItemId, userId);
     request.setNewItemId(newItemID);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-      byte[] requestBuffer = new byte[1000];
-      DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-      socket.receive(requestReceived);
-      String reply = new String(requestReceived.getData());
-      reply = reply.trim();
-      System.out.println(reply);
-      return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "Unsuccessful";
-    }
+    return returnResult(request);
   }
 
   @Override
   public String validateUserName(String userId) {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_VALIDATE_USER_NAME, userId);
-    DatagramSocket socket;
-    try {
-      socket = new DatagramSocket();
-      sendRequest(socket, request);
-
-      ArrayList<String> replies = new ArrayList<>();
-        byte[] requestBuffer = new byte[1000];
-        DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-        socket.receive(requestReceived);
-        String reply = new String(requestReceived.getData());
-        reply = reply.trim();
-        System.out.println(reply);
-        replies.add(reply);
-        return reply;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return "false";
-    }
+    return returnResult(request);
   }
 
   private void sendRequest(DatagramSocket socket, ClientRequestModel call) throws IOException {

@@ -80,7 +80,7 @@ public class ServerSARReplica implements ServerInterface{
     }
 
     private void init(){
-        String initManagerID = library + "M" + 0001;
+        String initManagerID = library + "M" + "0001";
         Manager initManager = new Manager(initManagerID);
         manager.put(initManagerID,initManager);
         writeToLogFile("Initial manager created.");
@@ -414,24 +414,24 @@ public class ServerSARReplica implements ServerInterface{
             String message;
             if(!user.containsKey(clientID)){
                 writeToLogFile("Client Validate:Unsuccessful:Invalid UserID " + clientID);
-                return "false" + ServerConstants.FAILURE;
+                return "false" + ServerConstants.FAILURE + "Sarvesh";
             }else{
                 writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Successful");
-                message = "true" + ServerConstants.SUCCESS;
+                message = "true" + ServerConstants.SUCCESS + "Sarvesh";
                 return message;
             }
         }
         else if(clientID.charAt(3) == 'M'){
             if(!manager.containsKey(clientID)){
                 writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Unsuccessful");
-                return "false" + ServerConstants.FAILURE;
+                return "false" + ServerConstants.FAILURE + "Sarvesh";
             }else{
                 writeToLogFile("Validate clientID request : clientID : "+ clientID +" Status : Successful");
-                return "true" + ServerConstants.SUCCESS;
+                return "true" + ServerConstants.SUCCESS + "Sarvesh";
             }
         }
         writeToLogFile("Validate clientID request : clientID : "+ clientID + " Status : Unsuccessful");
-        return "false" + ServerConstants.FAILURE;
+        return "false" + ServerConstants.FAILURE + "Sarvesh";
     }
 
     /**used by the user to exchange an item with another, first we return the item,

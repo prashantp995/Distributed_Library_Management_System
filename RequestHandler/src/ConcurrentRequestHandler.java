@@ -38,8 +38,9 @@ public class ConcurrentRequestHandler extends Thread {
 /*
       String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
 */
+      String replicaName = "Sarvesh";
       ServerInterface serverInterface = ServerFactory
-          .getServerObject("Shivam",
+          .getServerObject(replicaName,
               objForRM.getUserId().substring(0, 3));
       responseString = getResponse(objForRM, serverInterface);
       String[] responseArray = responseString.split(":");
@@ -51,7 +52,7 @@ public class ConcurrentRequestHandler extends Thread {
       DatagramPacket response = new DatagramPacket(responseString.getBytes(),
           responseString.length(),
           request.getAddress(), objForRM.getFrontEndPort());
-      System.out.println("Sending: "+responseString);
+        System.out.println(responseString);
       socket.send(response);
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
