@@ -68,4 +68,12 @@ public class Item {
     public void setItemCount(Integer itemCount) {
         this.itemCount = itemCount;
     }
+
+    @Override
+    public String toString() {
+        return "itemName='" + itemName + '\'' +
+                ", itemId='" + itemID + '\'' +
+                ", quantity=" + itemCount
+                ;
+    }
 }
