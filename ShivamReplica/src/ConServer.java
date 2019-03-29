@@ -36,36 +36,29 @@ public class ConServer implements Runnable, ServerInterface {
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
-        book1.setItemName("CLRS");
-        book2.setItemName("DS");
-        book3.setItemName("PDA");
-        book1.setQuantity(4);
-        book2.setQuantity(2);
-        book3.setQuantity(0);
+        book1.setItemName("DSD");
+        book2.setItemName("ALGO");
+        book1.setQuantity(5);
+        book2.setQuantity(0);
         book1.setItemId("CON0001");
         book2.setItemId("CON0002");
-        book3.setItemId("CON0003");
         conLibrary.put("CON0001", book1);
         conLibrary.put("CON0002", book2);
-        conLibrary.put("CON0003", book3);
         System.out.println(book1);
         System.out.println(book2);
-        System.out.println(book3);
         lock = new Object();
         fileTxt = new FileHandler("ConcordiaServerLog.txt");
         logger.addHandler(fileTxt);
         logger.setLevel(Level.INFO);
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 3; i++) {
             DataModel user = new DataModel();
             user.setUserId("CONU000" + i);
             users.add(user);
         }
-        for (int i = 1; i <= 3; i++) {
-            managers.add("CONM000" + i);
-        }
+            managers.add("CONM0001");
 
 
-        ArrayList<DataModel> wait = new ArrayList<>();
+       /* ArrayList<DataModel> wait = new ArrayList<>();
         ArrayList<DataModel> wait02 = new ArrayList<>();
         ArrayList<DataModel> wait03 = new ArrayList<>();
         DataModel waitBook[] = new DataModel[3];
@@ -78,7 +71,7 @@ public class ConServer implements Runnable, ServerInterface {
         }
         conWaitlist.put("CON0003", wait03);
         conWaitlist.put("CON0002", wait02);
-        conWaitlist.put("CON0001", wait);
+        conWaitlist.put("CON0001", wait);*/
 
         new Thread(this);
 
@@ -294,8 +287,8 @@ public class ConServer implements Runnable, ServerInterface {
 
         logger.info("listItem");
         logger.info(managerId);
-        Iterator<Map.Entry<String, DataModel>> iter = conLibrary.entrySet().iterator();
-        while (iter.hasNext()) {
+       /* Iterator<Map.Entry<String, DataModel>> iter = conLibrary.entrySet().iterator();
+       while (iter.hasNext()) {
             Map.Entry<String, DataModel> entry = iter.next();
             reply = reply.concat(entry.getKey());
             reply = reply.concat("  ");
@@ -304,8 +297,10 @@ public class ConServer implements Runnable, ServerInterface {
             reply = reply.concat("  ");
             reply = reply.concat(values.getQuantity().toString());
             reply = reply.concat("\n");
-        }
-
+        }*/
+       ArrayList<DataModel> returnList = new ArrayList<>(conLibrary.values());
+       reply = returnList.toString();
+        System.out.println(reply);
         logger.info(reply);
         return reply;
     }
@@ -816,7 +811,7 @@ public class ConServer implements Runnable, ServerInterface {
 
     @Override
     public String validateUser(String userId) {
-        return "123";
+        return "true";
     }
 
     public String getItemAvailability(String itemId) {

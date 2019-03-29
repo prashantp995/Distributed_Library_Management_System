@@ -47,18 +47,24 @@ public class MonServer implements Runnable, ServerInterface{
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
-        book1.setItemName("CLRS");
-        book2.setItemName("DS");
-        book3.setItemName("PDA");
-        book1.setQuantity(4);
-        book2.setQuantity(2);
+        book1.setItemName("DSD");
+        book2.setItemName("ALGO");
+        /*book3.setItemName("PDA");*/
+        book1.setQuantity(5);
+        book2.setQuantity(0);
+/*
         book3.setQuantity(0);
+*/
         book1.setItemId("MON0001");
         book2.setItemId("MON0002");
+/*
         book3.setItemId("MON0003");
+*/
         monLibrary.put("MON0001", book1);
         monLibrary.put("MON0002", book2);
+/*
         monLibrary.put("MON0003", book3);
+*/
         lock = new Object();
 
         logger.setLevel(Level.INFO);
@@ -66,19 +72,20 @@ public class MonServer implements Runnable, ServerInterface{
         logger.addHandler(fileTxt);
         System.out.println(book1);
         System.out.println(book2);
+/*
         System.out.println(book3);
+*/
 
 
-        for(int i=1;i<10;i++) {
+        for(int i=1;i<3;i++) {
             DataModel user = new DataModel();
             user.setUserId("MONU000"+i);
             users.add(user);
         }
-        for(int i=1;i<3;i++) {
-            managers.add("MONM000"+i);
-        }
+            managers.add("MONM0001");
 
-        ArrayList<DataModel> wait02 = new ArrayList<>();
+
+        /*ArrayList<DataModel> wait02 = new ArrayList<>();
         ArrayList<DataModel> wait03 = new ArrayList<>();
         ArrayList<DataModel> wait = new ArrayList<>();
         DataModel waitBook[] = new DataModel[3];
@@ -91,7 +98,7 @@ public class MonServer implements Runnable, ServerInterface{
         }
         monWaitlist.put("MON0003", wait03);
         monWaitlist.put("MON0002", wait02);
-        monWaitlist.put("MON0001", wait);
+        monWaitlist.put("MON0001", wait);*/
         Thread t = new Thread(this);
 
     }
