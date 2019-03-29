@@ -1,10 +1,9 @@
 
+import javafx.collections.ArrayChangeListener;
+
 import java.io.*;
 import java.net.*;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 
 enum ServerDetails{
@@ -84,22 +83,19 @@ public class ServerSARReplica implements ServerInterface{
         Manager initManager = new Manager(initManagerID);
         manager.put(initManagerID,initManager);
         writeToLogFile("Initial manager created.");
-        String initUserID1001 = library + "U" + 1001;
-        String initUserID1002 = library + "U" + 1002;
+        String initUserID1001 = library + "U" + "0001";
+        String initUserID1002 = library + "U" + "0002";
         User initUser1001 = new User(initUserID1001);
         User initUser1002 = new User(initUserID1002);
         user.put(initUserID1001,initUser1001);
         user.put(initUserID1002,initUser1002);
         writeToLogFile("Initial users created.");
-        String initItemID1001 = library + 1001;
-        String initItemID1002 = library + 1002;
-        String initItemID1003 = library + 1003;
-        Item initItem1001 = new Item(initItemID1001,"Distributed Systems",1);
-        Item initItem1002 = new Item(initItemID1002,"Parallel Programming",6);
-        Item initItem1003 = new Item(initItemID1003,"Algorithm Designs",7);
+        String initItemID1001 = library + "0001";
+        String initItemID1002 = library + "0002";
+        Item initItem1001 = new Item(initItemID1001,"DSD",5);
+        Item initItem1002 = new Item(initItemID1002,"ALGO",0);
         item.put(initItemID1001,initItem1001);
         item.put(initItemID1002,initItem1002);
-        item.put(initItemID1003,initItem1003);
         writeToLogFile("Initial items created.");
     }
 
@@ -121,16 +117,14 @@ public class ServerSARReplica implements ServerInterface{
         synchronized (lock) {
             iterator = item.entrySet().iterator();
         }
+        ArrayList<Item> itemList = new ArrayList<>();
         while(iterator.hasNext()){
             Map.Entry<String, Item> pair = iterator.next();
             if(pair.getValue().getItemName().equals(itemName))
-                reply = reply + "\n" + pair.getKey() + " " +pair.getValue().getItemCount();
+                itemList.add(pair.getValue());
         }
         reply += findAtOtherLibrary(itemName);
-        reply = reply + "\nFind Request : Server : " + library +
-                " User : " + userID +
-                " Item :" + itemName +
-                " Status : Successful ";
+
         writeToLogFile(reply);
         return reply;
     }
@@ -143,12 +137,8 @@ public class ServerSARReplica implements ServerInterface{
             return message;
         }
         String reply =  "";
-        Iterator<Map.Entry<String, Item>> iterator;
-        synchronized (lock) { iterator = item.entrySet().iterator(); }
-        while(iterator.hasNext()){
-            Map.Entry<String, Item> pair = iterator.next();
-            reply += "\n" + pair.getValue().getItemName() + " " + pair.getValue().getItemCount() + "\n";
-        }
+        ArrayList<Item> itemList = new ArrayList<>(item.values());
+        reply = itemList.toString();
         reply += ServerConstants.SUCCESS;
         writeToLogFile(reply);
         return reply;
