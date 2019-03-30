@@ -73,7 +73,6 @@ public class Item {
     public String toString() {
         return "itemName='" + itemName + '\'' +
                 ", itemId='" + itemID + '\'' +
-                ", quantity=" + itemCount
-                ;
+                ", quantity=" + itemCount;
     }
 }

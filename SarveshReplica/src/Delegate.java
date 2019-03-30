@@ -10,10 +10,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class Delegate implements Runnable{
 
@@ -94,20 +91,20 @@ class RequestHandler implements Runnable {
         switch (request[1]){
             case "borrowFromOther" :
                 if(request.length != 5){
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                     break;
                 }
                 userID = request[2];
                 itemID = request[3];
                 numberOfDays = Integer.parseInt(request[4]);
                 if(!myServer.item.containsKey(itemID)){
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                     break;
                 }
                 Item requestedItem;
                 synchronized (lock) {requestedItem = myServer.item.get(itemID);}
                 if(requestedItem.getItemCount() == 0){
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                     break;
                 }
                 User currentUser = new User(userID);
@@ -116,11 +113,12 @@ class RequestHandler implements Runnable {
                 myServer.decrementItemCount(itemID);
                 if (myServer.borrow.containsKey(currentUser)) {
                     if (myServer.borrow.get(currentUser).containsKey(requestedItem)) {
-                        reply = "Unsuccessful";
+                        reply = "Unsuccessful"+ServerConstants.FAILURE;
                         break;
                     } else {
                         synchronized (lock) {entry = myServer.borrow.get(currentUser);
-                            myServer.borrow.remove(currentUser);}
+                            myServer.borrow.remove(currentUser);
+                        }
                     }
                 } else {
                     entry = new HashMap<>();
@@ -134,22 +132,24 @@ class RequestHandler implements Runnable {
 
             case "findAtOther" :
                 if(request.length != 3){
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                     break;
                 }
                 itemName = request[2];
                 Iterator<Map.Entry<String, Item>> iterator;
+                ArrayList<Item> items = new ArrayList<>();
                 synchronized (lock) {iterator = myServer.item.entrySet().iterator();}
                 while(iterator.hasNext()){
                     Map.Entry<String, Item> pair = iterator.next();
                     if(pair.getValue().getItemName().equals(itemName))
-                        reply = reply + "\n" + pair.getKey() + " " +pair.getValue().getItemCount();
+                        items.add(pair.getValue());
                 }
+                reply = items.toString();
                 break;
 
             case "returnToOther" :
                 if(request.length != 4){
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                     break;
                 }
                 userID = request[2];
@@ -160,12 +160,12 @@ class RequestHandler implements Runnable {
                     if(myServer.borrow.containsKey(currentUser)){
                     value = myServer.borrow.get(currentUser).entrySet().iterator();
                     }else{
-                        reply = "Unsuccessful";
+                        reply = "Unsuccessful"+ServerConstants.FAILURE;
                         break;
                     }
                 }
                 if(!value.hasNext()){
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                     break;
                 }
                 boolean status = false;
@@ -184,9 +184,9 @@ class RequestHandler implements Runnable {
                     }
                 }
                 if (status) {
-                    reply = "Successful";
+                    reply = "Successful"+ServerConstants.SUCCESS;
                 }else{
-                    reply = "Unsuccessful";
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
                 }
                 break;
 

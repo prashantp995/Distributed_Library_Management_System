@@ -1,4 +1,5 @@
 
+import com.sun.security.ntlm.Server;
 import javafx.collections.ArrayChangeListener;
 
 import java.io.*;
@@ -65,7 +66,8 @@ public class ServerSARReplica implements ServerInterface{
         next_User_ID = 1003;
         next_Manager_ID = 1002;
         lock = new Object();
-        logFile = new File("Log.log");
+        logFile = new File("/home/sarvesh/IdeaProjects/Distributed_Library_Management_System_new/SarveshReplica/src/Logs/"
+                +library+"_Log.log");
         try{
             if(!logFile.exists())
                 logFile.createNewFile();
@@ -101,17 +103,6 @@ public class ServerSARReplica implements ServerInterface{
 
     /**used to find the given item name in all library and return the itemID and availability.*/
     public String findItem(String userID, String itemName) {
-        if(userID.charAt(3) != 'U') {
-            String message =
-                    "Find Request : Server : " + library +
-                            " User : " + userID +
-                            " Item :" + itemName +
-                            " Status : Unsuccessful " +
-                            "\nNote : You are not allowed to use this feature.";
-            writeToLogFile(message);
-            return message;
-        }
-
         String reply = "";
         Iterator<Map.Entry<String, Item>> iterator;
         synchronized (lock) {
@@ -123,20 +114,16 @@ public class ServerSARReplica implements ServerInterface{
             if(pair.getValue().getItemName().equals(itemName))
                 itemList.add(pair.getValue());
         }
+        reply += itemList.toString();
         reply += findAtOtherLibrary(itemName);
-
+        reply += ServerConstants.SUCCESS;
         writeToLogFile(reply);
         return reply;
     }
 
     /**It shows all the available books in that library to the manager.*/
     public String listItem(String managerID) {
-        if(managerID.charAt(3) != 'M') {
-            String message = "You are not allowed to use this feature" + ServerConstants.FAILURE;
-            writeToLogFile(message);
-            return message;
-        }
-        String reply =  "";
+        String reply;
         ArrayList<Item> itemList = new ArrayList<>(item.values());
         reply = itemList.toString();
         reply += ServerConstants.SUCCESS;
@@ -148,20 +135,8 @@ public class ServerSARReplica implements ServerInterface{
      * book return unsuccessful note. Returned book will be automatically given*/
     public String returnItem(String userID, String itemID) {
         User currentUser;
-        String message =
-                "Return Request : Server : " + library +
-                        " User : " + userID +
-                        " Item :" + itemID +
-                        "Status : ";
-        if(userID.charAt(3) == 'U')
-            currentUser = user.get(userID);
-        else{
-            message += "Unsuccessful. " +
-                    "\nNote : You are not allowed to use this feature.";
-            writeToLogFile(message);
-            return message;
-        }
-
+        String message ="";
+        currentUser = user.get(userID);
         if(!itemID.substring(0,3).equals(library)){
             message = returnToOtherLibrary(userID,itemID);
             return message;
@@ -171,8 +146,7 @@ public class ServerSARReplica implements ServerInterface{
             Iterator<Map.Entry<Item,Integer>> value;
             synchronized (lock){ value = set.entrySet().iterator(); }
             if(!value.hasNext()){
-                message +="Unsuccessful. " +
-                        "\nNote : You have no borrowed item.";
+                message ="You have no borrowed item."+ServerConstants.FAILURE;
                 writeToLogFile(message);
                 return message;
             }
@@ -185,14 +159,13 @@ public class ServerSARReplica implements ServerInterface{
                     }
                     increamentItemCount(itemID);
                     automaticAssignmentOfBooks(itemID);
-                    message += " Successful";
+                    message = " Successful" + ServerConstants.SUCCESS;
                     writeToLogFile(message);
                     return message;
                 }
             }
         }
-        message += " Unsuccessful" +
-                "\nNote: Item have never been borrowed";
+        message = "Item have never been borrowed"+ServerConstants.FAILURE;
         writeToLogFile(message);
         return message;
     }
@@ -200,9 +173,7 @@ public class ServerSARReplica implements ServerInterface{
 
     public String borrowItem(String userID, String itemID, int numberOfDays) {
         User currentUser = user.get(userID);
-        String reply =  "Borrow Request : Server : " + library +
-                " User : " + userID +
-                " Item :" + itemID;
+        String reply = "";
         if(!item.containsKey(itemID)){
             reply = borrowFromOtherLibrary(userID,itemID,numberOfDays);
             writeToLogFile(reply);
@@ -212,13 +183,13 @@ public class ServerSARReplica implements ServerInterface{
         Item requestedItem;
         requestedItem = item.get(itemID);
         if(requestedItem.getItemCount() == 0){
-            return "waitList";
+            return "waitList" + ServerConstants.SUCCESS;
         }else {
             HashMap<Item,Integer> entry;
             if (borrow.containsKey(currentUser)) {
                 if (borrow.get(currentUser).containsKey(requestedItem)) {
-                    reply += "\n Note : User have already borrowed." +
-                            "\n Status : Unsuccessful";
+                    reply = "User have already borrowed." + ServerConstants.FAILURE;
+                    writeToLogFile(reply);
                     return reply;
                 } else {
                     entry = borrow.get(currentUser);
@@ -232,7 +203,7 @@ public class ServerSARReplica implements ServerInterface{
                 borrow.put(currentUser, entry);
             }
             decrementItemCount(itemID);
-            reply += "\n Status : Successful";
+            reply = "Successful" + ServerConstants.SUCCESS;
             borrowedItemDays.put(itemID,numberOfDays);
             writeToLogFile(reply);
             return reply;
@@ -241,15 +212,7 @@ public class ServerSARReplica implements ServerInterface{
 
     /**String addItem(String managerID, String itemID,String itemName, int quantity)*/
     public String addItem(String managerID, String itemID, String itemName, int quantity) {
-        String message =
-                "Add Item Request : Server : " + library +
-                        " Manager : " + managerID ;
-        if(managerID.charAt(3) != 'M'){
-            message += "Unsuccessful. " +
-                    "\nNote : You are not allowed to use this feature.";
-            writeToLogFile(message);
-            return message;
-        }
+        String message;
         Item currentItem;
         if(authenticateItemID(itemID)){
             if(item.containsKey(itemID)){
@@ -260,36 +223,22 @@ public class ServerSARReplica implements ServerInterface{
                 currentItem = new Item(itemID,itemName,quantity);
             }
             synchronized (lock){item.put(itemID,currentItem);}
-            message +=  " Item :" + itemID +
-                    "Status : Successful.";
+            message =  "Successful"+ ServerConstants.SUCCESS;
             automaticAssignmentOfBooks(itemID);
             writeToLogFile(message);
             return message;
         }
-        message +=  " Item :" + itemID +
-                "Status : Unsuccessful." +
-                "\n Note : Invalid ItemID.";
+        message =  "Unsuccessful" + ServerConstants.FAILURE;
         writeToLogFile(message);
         return message;
     }
 
     /**used by the manager to remove the item completely or decrease the quantity of it.*/
     public String removeItem(String managerID, String itemID, int quantity) {
-        String message =
-                "Remove Request : Server : " + library +
-                        " Manager : " + managerID +
-                        " Item :" + itemID +
-                        "Status : ";
+        String message;
 
-        if(managerID.charAt(3) != 'M') {
-            message += "Unsuccessful. " +
-                    "\nNote : You are not allowed to use this feature.";
-            writeToLogFile(message);
-            return message;
-        }
         if(!item.containsKey(itemID)){
-            message += "Unsuccessful. " +
-                    "\nNote : The item do not exist in inventory.";
+            message = "The item do not exist in inventory." + ServerConstants.FAILURE;
             writeToLogFile(message);
             return message;
         }
@@ -303,8 +252,7 @@ public class ServerSARReplica implements ServerInterface{
                     borrow.get(pair.getKey()).remove(currentItem);
                 }
             }
-            message+= " Successful." +
-                    "\nNote : All items have been removed.";
+            message = "Successful" + ServerConstants.SUCCESS;
             writeToLogFile(message);
             return message;
         }else if(currentItem.getItemCount() < quantity){
@@ -312,9 +260,9 @@ public class ServerSARReplica implements ServerInterface{
             synchronized (lock){item.remove(itemID);
                 currentItem.setItemCount(0);
                 item.put(itemID,currentItem);}
-            message+= " Partially successful." +
-                    "\nNote : Number of items in the inventory is less than desired quantity." +
-                    "\n Balance quantity :" + quantity;
+            message = "Partially successful." +
+                    " Note - Number of items in the inventory is less than desired quantity." +
+                    " Balance quantity - " + quantity + ServerConstants.SUCCESS;
             writeToLogFile(message);
             return message;
         }else if(currentItem.getItemCount() > quantity){
@@ -323,18 +271,18 @@ public class ServerSARReplica implements ServerInterface{
                 item.remove(itemID);
                 item.put(itemID,currentItem);
             }
-            message += "Successful.";
+            message  = "Successful " + ServerConstants.SUCCESS;
             writeToLogFile(message);
             return message;
         }else{
             synchronized (lock){item.remove(itemID);}
-            message += "Successful.";
+            message = "Successful" + ServerConstants.SUCCESS;
             writeToLogFile(message);
             return message;
         }
     }
 
-    /**allows the manager to create a user for that library. It returns new userID.*/
+  /*  /**allows the manager to create a user for that library. It returns new userID.*//*
     public String createUser(String managerID) {
         if(managerID.charAt(3) != 'M'){
             String message =
@@ -356,9 +304,9 @@ public class ServerSARReplica implements ServerInterface{
                         " Status : Successful.";
         writeToLogFile(message);
         return  message;
-    }
+    }*/
 
-    /**allows the manager to create a manager for that library. It returns new managerID.*/
+   /* /**allows the manager to create a manager for that library. It returns new managerID.*//*
     public String createManager(String managerID) {
         if(managerID.charAt(3) != 'M'){
             String message =
@@ -381,6 +329,7 @@ public class ServerSARReplica implements ServerInterface{
         writeToLogFile(message);
         return  message;
     }
+*/
 
     /**It adds the given userID to the waiting list for given itemID with numberOfDays.*/
     public String addUserInWaitingList(String userID, String itemID, int numberOfDays) {
@@ -391,7 +340,7 @@ public class ServerSARReplica implements ServerInterface{
             userList.put(userID,numberOfDays);
             waitingQueue.put(itemID,userList);
         }
-        return "Add to queue : User ID : "+ userID + " Item ID : " + itemID;
+        return "Successful"+ServerConstants.SUCCESS;
     }
 
     /**validate the client*/
@@ -429,11 +378,7 @@ public class ServerSARReplica implements ServerInterface{
      * the whole operation is successful otherwise not.*/
     public String exchangeItem(String userID, String newItemID, String oldItemID) {
         User currentUser = user.get(userID);
-        String reply =  "Exchange Request : Server : " + library +
-                " User : " + userID +
-                " old Item :" + oldItemID +
-                " New Item : " + newItemID +
-                " Status : ";
+        String reply ;
         boolean libraryItemBorrow;
             switch (newItemID.substring(0, 3)) {
                 case "CON":
@@ -460,23 +405,19 @@ public class ServerSARReplica implements ServerInterface{
                     /*Forth borrow new item.*/
                     borrowReply = borrowItem(userID, newItemID, numberOfDays);
                     if (borrowReply.substring(borrowReply.length() - 10).equals("Successful")) {
-                        reply += "Successful";
+                        reply = "Successful" + ServerConstants.SUCCESS;
                     } else {
-                        reply += "Unsuccessful\n" +
-                                "Note : Error in borrowing the new book.";
+                        reply = "Error in borrowing the new book." + ServerConstants.FAILURE;
                     }
                 } else {
-                    reply += "Unsuccessful\n" +
-                            "Note : Error in returning the old book.";
+                    reply = "Error in returning the old book.";
                 }
             }else{
-                reply += "Unsuccessful\n"+
-                        "Note : mentioned new item not available or you have already " +
-                        "borrowed one item from other library.";
+                reply = "mentioned new item not available or you have already " +
+                        "borrowed one item from other library." + ServerConstants.FAILURE;
             }
         }else{
-            reply += "Unsuccessful\n"+
-                    "Note : you have not borrowed the mentioned old item.";
+            reply = "you have not borrowed the mentioned old item." + ServerConstants.FAILURE;
         }
         return reply;
     }
@@ -486,10 +427,7 @@ public class ServerSARReplica implements ServerInterface{
     public String borrowFromOtherLibrary(String userID, String itemID, Integer numberOfDays){
         User currentUser;
         synchronized (lock) { currentUser = user.get(userID); }
-        String reply =  "Borrow Request : Server : " + library +
-                " User : " + userID +
-                " Item :" + itemID +
-                " Delegated Library : " + itemID.substring(0,3);
+        String reply = "";
         try {
             DatagramSocket mySocket = new DatagramSocket();
             InetAddress host = InetAddress.getLocalHost();
@@ -517,11 +455,10 @@ public class ServerSARReplica implements ServerInterface{
                 mySocket.receive(receivedReply);
                 result = new String(receivedReply.getData()).trim();
             }else{
-                reply += "Note : You have already borrowed from this library." +
-                        "Status : Unsuccessful";
+                reply = "You have already borrowed from this library." + ServerConstants.FAILURE ;
             }
-            if(result.equals("Successful")){
-                reply += "Status : " + result;
+            if(result.contains("Successful")){
+                reply = result;
                 boolean[] isOutsourced;
                 synchronized (lock) {isOutsourced = currentUser.getOutsourced();}
                 isOutsourced[serverDetails.getIndex()] = true;
@@ -543,7 +480,6 @@ public class ServerSARReplica implements ServerInterface{
                     borrowed.put(curruntItem,numberOfDays);
                     borrow.put(currentUser,borrowed);
                 }
-
             }else{
                 reply = "waitList";
             }
@@ -566,7 +502,7 @@ public class ServerSARReplica implements ServerInterface{
 
     /**finds the given item name in other library and returns the itemID and availability.*/
     private String findAtOtherLibrary(String itemName){
-        String reply = "\n";
+        String reply = "";
         try{
             DatagramSocket mySocket = new DatagramSocket();
             InetAddress host = InetAddress.getLocalHost();
@@ -638,12 +574,8 @@ public class ServerSARReplica implements ServerInterface{
             DatagramPacket receivedReply = new DatagramPacket(receive,receive.length);
             mySocket.receive(receivedReply);
             String message = new String(receivedReply.getData()).trim();
-            if(message.equals("Successful")){
-                reply =  "Return Request : Server : " + library +
-                        " User : " + userID +
-                        " Item :" + itemID +
-                        " Delegated Library : " + serverDetails.getLibrary() +
-                        " Status : Successful";
+            if(message.contains("Successful")){
+                reply =  "Successful" + ServerConstants.SUCCESS;
                 Item curruntItem;
                 curruntItem = item.get(itemID);
                 curruntItem.setItemCount(curruntItem.getItemCount()-1);
@@ -654,13 +586,8 @@ public class ServerSARReplica implements ServerInterface{
                 isOutsourced[serverDetails.getIndex()] = false;
                 synchronized (lock) {currentUser.setOutsourced(isOutsourced);}
                 borrowedItemDays.remove(itemID);
-
             }else{
-                reply =  "Return Request : Server : " + library +
-                        " User : " + userID +
-                        " Item :" + itemID +
-                        " Delegated Library : " + serverDetails.getLibrary() +
-                        " Status : Unsuccessful";
+                reply = "Unsuccessful" + ServerConstants.FAILURE;
             }
         }catch (SocketException e){
             writeToLogFile("Socket Exception");
