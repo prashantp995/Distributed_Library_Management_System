@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import org.omg.CORBA.ORB;
 
-public class ConcordiaRemoteServiceImpl implements ServerInterface {
+public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterface {
 
   HashMap<String, LibraryModel> data = new HashMap<>();
   HashMap<String, ArrayList<String>> currentBorrowers = new HashMap<>();
@@ -20,17 +20,26 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
   HashSet<String> userIds = new HashSet<>();
   HashSet<String> completelyRemovedItems = new HashSet<String>();//removed items by Manager
   Logger logger = null;
+  DatagramPacket packet;
   private static final String lib = LibConstants.CON_REG;
   private ORB orb;
   static ConcordiaRemoteServiceImpl exportedObj;
+  private byte[] buf;
+  private DatagramSocket socket;
 
+  public ConcordiaRemoteServiceImpl(DatagramPacket packet, byte[] buf,
+      DatagramSocket socket) {
+    this.packet = packet;
+    this.buf = buf;
+    this.socket = socket;
+  }
 
   protected ConcordiaRemoteServiceImpl(Logger logger) {
     super();
     initManagerID();
     initUserID();
-    data.put("CON1012", new LibraryModel("DSD", 5));
-    data.put("CON1013", new LibraryModel("ALGO", 0));
+    data.put("CON0001", new LibraryModel("DSD", 5));
+    data.put("CON0002", new LibraryModel("ALGO", 0));
     this.logger = logger;
     this.logger.info("Valid Manager Ids" + managerId.toString());
     this.logger.info("Valid User Ids" + userIds.toString());
@@ -38,9 +47,6 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
 
   }
 
-  public ConcordiaRemoteServiceImpl() {
-    this.logger = logger;
-  }
 
   public void setORB(ORB orb_val) {
     orb = orb_val;
@@ -48,12 +54,11 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
 
   private void initManagerID() {
     managerId.add("CONM0001");
-    managerId.add("CONM1112");
   }
 
   private void initUserID() {
-    userIds.add("CONU1111");
-    userIds.add("CONU1112");
+    userIds.add("CONU0001");
+    userIds.add("CONU0002");
   }
 
 
@@ -394,15 +399,11 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
   }
 
   private String getData(HashMap<String, LibraryModel> data) {
-    StringBuilder response = new StringBuilder();
+    ArrayList<LibraryModel> response = new ArrayList<>();
     for (Entry<String, LibraryModel> letterEntry : data.entrySet()) {
-      String letter = letterEntry.getKey();
-      response.append("ItemId " + letter);
       LibraryModel libraryModel = letterEntry.getValue();
-      response.append(" IeamName " + libraryModel.getItemName());
-      response.append(" Quantity " + libraryModel.getQuantity() + "\n");
-      response.append(" WaitingList " + libraryModel.getWaitingList() + "\n");
-      response.append(" Current Borrowers" + libraryModel.getCurrentBorrowerList() + "\n");
+      libraryModel.setItemId(letterEntry.getKey());
+      response.add(libraryModel);
     }
     return response.toString();
   }
@@ -761,63 +762,63 @@ public class ConcordiaRemoteServiceImpl implements ServerInterface {
     DatagramSocket socket = new DatagramSocket(LibConstants.UDP_CON_PORT);
 
     byte[] buf = new byte[1000];
-
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        boolean running = true;
-        System.out.println("UDP Server is listening on port" + LibConstants.UDP_CON_PORT);
-        DatagramPacket reponsePacket = null;
-        while (running) {
-          DatagramPacket packet
-              = new DatagramPacket(buf, buf.length);
-          try {
-            socket.receive(packet);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-
-          InetAddress address = packet.getAddress();
-          int port = packet.getPort();
-          packet = new DatagramPacket(buf, buf.length, address, port);
-          String received
-              = new String(packet.getData(), 0, packet.getLength());
-          byte[] data = packet.getData();
-          ByteArrayInputStream in = new ByteArrayInputStream(data);
-          ObjectInputStream is = null;
-          try {
-            is = new ObjectInputStream(in);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          try {
-            assert is != null;
-            UdpRequestModel request = (UdpRequestModel) is.readObject();
-            ConcordiaRemoteServiceImpl.getConcordiaObject().logger
-                .info(request.getMethodName() + " is called by " + address + ":" + port);
-            String response = null;
-            reponsePacket = getDatagramPacket(reponsePacket, address, port, request, response,
-                ConcordiaRemoteServiceImpl.getConcordiaObject(),
-                ConcordiaRemoteServiceImpl.getConcordiaObject().logger);
-            ConcordiaRemoteServiceImpl.getConcordiaObject().logger
-                .info("sending response " + reponsePacket.getData().toString());
-
-          } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          try {
-            socket.send(reponsePacket);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-        socket.close();
+    boolean running = true;
+    System.out.println("UDP Server is listening on port" + LibConstants.UDP_CON_PORT);
+    while (running) {
+      DatagramPacket packet
+          = new DatagramPacket(buf, buf.length);
+      try {
+        socket.receive(packet);
+        ConcordiaRemoteServiceImpl concordiaRemoteService = new ConcordiaRemoteServiceImpl(packet,
+            buf, socket);
+        concordiaRemoteService.start();
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-    };
-    runnable.run();
+    }
 
+
+  }
+
+  @Override
+  public void run() {
+
+    InetAddress address = packet.getAddress();
+    int port = packet.getPort();
+    String received
+        = new String(packet.getData(), 0, packet.getLength());
+    byte[] data = packet.getData();
+    DatagramPacket reponsePacket = null;
+    ByteArrayInputStream in = new ByteArrayInputStream(data);
+    ObjectInputStream is = null;
+    try {
+      is = new ObjectInputStream(in);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    try {
+
+      assert is != null;
+      UdpRequestModel request = (UdpRequestModel) is.readObject();
+      ConcordiaRemoteServiceImpl.getConcordiaObject().logger
+          .info(request.getMethodName() + " is called by " + address + ":" + port);
+      String response = null;
+      reponsePacket = getDatagramPacket(reponsePacket, address, port, request, response,
+          ConcordiaRemoteServiceImpl.getConcordiaObject(),
+          ConcordiaRemoteServiceImpl.getConcordiaObject().logger);
+      ConcordiaRemoteServiceImpl.getConcordiaObject().logger
+          .info("sending response " + reponsePacket.getData().toString());
+
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    try {
+      socket.send(reponsePacket);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
 

@@ -27,8 +27,8 @@ public class MonRemoteServiceImpl implements ServerInterface {
     super();
     initManagerID();
     initUserID();
-    data.put("MON1012", new LibraryModel("DSD", 1));
-    data.put("MON1013", new LibraryModel("ALGO", 0));
+    data.put("MON0001", new LibraryModel("DSD", 5));
+    data.put("MON0002", new LibraryModel("ALGO", 0));
     this.logger = logger;
     this.logger.info("Valid Manager Ids" + managerIds.toString());
     this.logger.info("Valid User Ids" + userIds.toString());
@@ -45,13 +45,12 @@ public class MonRemoteServiceImpl implements ServerInterface {
   }
 
   private void initManagerID() {
-    managerIds.add("MONM1111");
-    managerIds.add("MONM1112");
+    managerIds.add("MONM0001");
   }
 
   private void initUserID() {
-    userIds.add("MONU1111");
-    userIds.add("MONU1112");
+    userIds.add("MONU0001");
+    userIds.add("MONU0002");
   }
 
 
