@@ -587,28 +587,7 @@ public class MonServer implements Runnable, ServerInterface{
             return "Exception: " + e.getStackTrace();
         }
     }
-    /**This method checks if the Id provided by the client is valid or not.
-     * @param userId
-     *
-     * @return
-     */
-    public boolean validate(String userId)
-    {
-        String userType = userId.substring(3,4);
-        logger.info("Validate");
-        logger.info(userId+"\t"+userType);
-        if(userType.equals("U")) {
-            Iterator<DataModel> iter = users.iterator();
-            while (iter.hasNext()) {
-                if (iter.next().getUserId().startsWith(userId)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        else
-            return managers.contains(userId);
-    }
+
     /**This method is called when a user wants to borrow a book but the availability is zero and the users wishes to be added to the waitlist of that book.
      * @param userId
      * @param itemId
@@ -786,9 +765,32 @@ public class MonServer implements Runnable, ServerInterface{
         return reply;
     }
 
+    /**This method checks if the Id provided by the client is valid or not.
+     * @param userId
+     *
+     * @return
+     */
     @Override
     public String validateUser(String userId) {
-        return "true";
+        logger.info("Validate");
+        String userType = userId.substring(3,4);
+        logger.info(userId+"\t"+userType);
+        if(userType.equals("U")) {
+            synchronized (lock) {
+                Iterator<DataModel> iter = users.iterator();
+                while (iter.hasNext()) {
+                    if (iter.next().getUserId().startsWith(userId)) {
+                        return "true"+ServerConstants.SUCCESS;
+                    }
+                }
+                return "false"+ServerConstants.FAILURE;
+            }
+        }
+        else
+        if(managers.contains(userId))
+            return "true";
+        else
+            return "false";
     }
 
     public String getItemAvailability(String itemId){

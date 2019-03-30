@@ -445,7 +445,7 @@ public class ConServer implements Runnable, ServerInterface {
 
         return reply;
     } catch(Exception e){
-            return "Eception: "+e.getStackTrace();
+            return "Exception: "+e.getStackTrace();
         }
     }
 
@@ -477,6 +477,10 @@ public class ConServer implements Runnable, ServerInterface {
                     reply = reply.concat("\t");
                     reply = reply.concat(value.getQuantity().toString());
                     reply = reply.concat("\n");
+                }
+                else{
+                    reply = "Item not found";
+                    return reply;
                 }
             }
             boolean home = false;
@@ -808,11 +812,34 @@ public class ConServer implements Runnable, ServerInterface {
 
         return reply;
     }
-
+    /**This method checks if the Id provided by the client is valid or not.
+     * @param userId
+     * @return
+     */
     @Override
     public String validateUser(String userId) {
-        return "true";
+        logger.info("Validate");
+        String userType = userId.substring(3,4);
+        logger.info(userId+"\t"+userType);
+        if(userType.equals("U")) {
+            synchronized (lock) {
+                Iterator<DataModel> iter = users.iterator();
+                while (iter.hasNext()) {
+                    if (iter.next().getUserId().startsWith(userId)) {
+                        return "true"+ServerConstants.SUCCESS;
+                    }
+                }
+                return "false"+ServerConstants.FAILURE;
+            }
+        }
+        else
+        if(managers.contains(userId))
+            return "true";
+        else
+            return "false";
     }
+
+
 
     public String getItemAvailability(String itemId) {
         logger.info("getItemAvailability");

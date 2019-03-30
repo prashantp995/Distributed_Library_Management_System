@@ -602,12 +602,12 @@ public class McgServer implements Runnable, ServerInterface {
     }
     /**This method checks if the Id provided by the client is valid or not.
      * @param userId
-     * @param userType
      * @return
      */
-    public String validateUser(String userId, String userType)
+    public String validateUser(String userId)
     {
         logger.info("Validate");
+        String userType = userId.substring(3,4);
         logger.info(userId+"\t"+userType);
         if(userType.equals("U")) {
             synchronized (lock) {
@@ -753,11 +753,6 @@ public class McgServer implements Runnable, ServerInterface {
         }
         logger.info(reply);
         return reply;
-    }
-
-    @Override
-    public String validateUser(String userId) {
-        return "true";
     }
 
     /**This method is not directly associated with any user input but it is called whenever the item is made available(availability becomes non zero).
