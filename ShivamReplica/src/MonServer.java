@@ -218,6 +218,9 @@ public class MonServer implements Runnable, ServerInterface{
     public String addItem(String managerId, String itemId, String itemName, int quantity)  {
         try{
         boolean old = false;
+        boolean isItemValid = validateItem(itemId);
+        if(!isItemValid)
+            return "Invalid itemId";
         logger.info("addItem");
         logger.info(managerId +"\t" + itemId+"\t" + itemName+"\t" + quantity);
         for(String id : monLibrary.keySet()) {
@@ -827,6 +830,17 @@ public class MonServer implements Runnable, ServerInterface{
             }
             return "-1";
         }
+    }
+    public boolean validateItem(String itemId){
+        itemId = itemId.trim();
+        if(itemId.startsWith("MON")){
+            if(itemId.substring(3).matches("., '[0-9]{4}'")){
+                return true;
+            }
+            /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
+            return false;
+        }
+        return false;
     }
 
 }

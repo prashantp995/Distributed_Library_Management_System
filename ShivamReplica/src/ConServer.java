@@ -206,6 +206,9 @@ public class ConServer implements Runnable, ServerInterface {
         try {
             boolean old = false;
             logger.info("addItem");
+            boolean isItemValid = validateItem(itemId);
+            if(!isItemValid)
+                return "Invalid itemId";
             logger.info(managerId + "\t" + itemId + "\t" + itemName + "\t" + quantity);
             for (String id : conLibrary.keySet()) {
                 if (id.equals(itemId)) {
@@ -269,7 +272,7 @@ public class ConServer implements Runnable, ServerInterface {
                 return "Success";
             }
         } catch (Exception e) {
-            logger.info("tem not present in the library");
+            logger.info("Item not present in the library");
 
             return "Item not present in the library";
         }
@@ -778,7 +781,7 @@ public class ConServer implements Runnable, ServerInterface {
                 if(avail.startsWith("-1")){
                     return "Some exception in getting the availability";
                 }else if(avail.startsWith("0")){
-                    return "The newitem is not available";
+                    return "The new item is not available";
                 }
                 try {
                     reply = returnItem(userId,oldItem);
@@ -875,5 +878,16 @@ public class ConServer implements Runnable, ServerInterface {
             }
             return "-1";
         }
+    }
+    public boolean validateItem(String itemId){
+        itemId = itemId.trim();
+        if(itemId.startsWith("CON")){
+            if(itemId.substring(3).matches("., '[0-9]{4}'")){
+                return true;
+            }
+            /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
+            return false;
+        }
+        return false;
     }
 }

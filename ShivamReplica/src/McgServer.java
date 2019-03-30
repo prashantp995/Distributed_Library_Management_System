@@ -225,6 +225,9 @@ public class McgServer implements Runnable, ServerInterface {
         try {
             boolean old = false;
             logger.info("addItem");
+            boolean isItemValid = validateItem(itemId);
+            if(!isItemValid)
+                return "Invalid itemId";
             logger.info(managerId + "\t" + itemId + "\t" + itemName + "\t" + quantity);
             for (String id : mcgLibrary.keySet()) {
                 if (id.equals(itemId)) {
@@ -835,5 +838,16 @@ public class McgServer implements Runnable, ServerInterface {
                 }
                 return "-1";
             }
+    }
+    public boolean validateItem(String itemId){
+        itemId = itemId.trim();
+        if(itemId.startsWith("MCG")){
+            if(itemId.substring(3).matches("., '[0-9]{4}'")){
+                return true;
+            }
+            /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
+            return false;
+        }
+        return false;
     }
 }
