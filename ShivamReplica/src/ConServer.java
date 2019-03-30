@@ -36,36 +36,29 @@ public class ConServer implements Runnable, ServerInterface {
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
-        book1.setItemName("CLRS");
-        book2.setItemName("DS");
-        book3.setItemName("PDA");
-        book1.setQuantity(4);
-        book2.setQuantity(2);
-        book3.setQuantity(0);
+        book1.setItemName("DSD");
+        book2.setItemName("ALGO");
+        book1.setQuantity(5);
+        book2.setQuantity(0);
         book1.setItemId("CON0001");
         book2.setItemId("CON0002");
-        book3.setItemId("CON0003");
         conLibrary.put("CON0001", book1);
         conLibrary.put("CON0002", book2);
-        conLibrary.put("CON0003", book3);
         System.out.println(book1);
         System.out.println(book2);
-        System.out.println(book3);
         lock = new Object();
         fileTxt = new FileHandler("ConcordiaServerLog.txt");
         logger.addHandler(fileTxt);
         logger.setLevel(Level.INFO);
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 3; i++) {
             DataModel user = new DataModel();
             user.setUserId("CONU000" + i);
             users.add(user);
         }
-        for (int i = 1; i <= 3; i++) {
-            managers.add("CONM000" + i);
-        }
+            managers.add("CONM0001");
 
 
-        ArrayList<DataModel> wait = new ArrayList<>();
+       /* ArrayList<DataModel> wait = new ArrayList<>();
         ArrayList<DataModel> wait02 = new ArrayList<>();
         ArrayList<DataModel> wait03 = new ArrayList<>();
         DataModel waitBook[] = new DataModel[3];
@@ -78,7 +71,7 @@ public class ConServer implements Runnable, ServerInterface {
         }
         conWaitlist.put("CON0003", wait03);
         conWaitlist.put("CON0002", wait02);
-        conWaitlist.put("CON0001", wait);
+        conWaitlist.put("CON0001", wait);*/
 
         new Thread(this);
 
@@ -213,6 +206,9 @@ public class ConServer implements Runnable, ServerInterface {
         try {
             boolean old = false;
             logger.info("addItem");
+            boolean isItemValid = validateItem(itemId);
+            if(!isItemValid)
+                return "Invalid itemId";
             logger.info(managerId + "\t" + itemId + "\t" + itemName + "\t" + quantity);
             for (String id : conLibrary.keySet()) {
                 if (id.equals(itemId)) {
@@ -276,7 +272,7 @@ public class ConServer implements Runnable, ServerInterface {
                 return "Success";
             }
         } catch (Exception e) {
-            logger.info("tem not present in the library");
+            logger.info("Item not present in the library");
 
             return "Item not present in the library";
         }
@@ -294,8 +290,8 @@ public class ConServer implements Runnable, ServerInterface {
 
         logger.info("listItem");
         logger.info(managerId);
-        Iterator<Map.Entry<String, DataModel>> iter = conLibrary.entrySet().iterator();
-        while (iter.hasNext()) {
+       /* Iterator<Map.Entry<String, DataModel>> iter = conLibrary.entrySet().iterator();
+       while (iter.hasNext()) {
             Map.Entry<String, DataModel> entry = iter.next();
             reply = reply.concat(entry.getKey());
             reply = reply.concat("  ");
@@ -304,8 +300,10 @@ public class ConServer implements Runnable, ServerInterface {
             reply = reply.concat("  ");
             reply = reply.concat(values.getQuantity().toString());
             reply = reply.concat("\n");
-        }
-
+        }*/
+       ArrayList<DataModel> returnList = new ArrayList<>(conLibrary.values());
+       reply = returnList.toString();
+        System.out.println(reply);
         logger.info(reply);
         return reply;
     }
@@ -450,7 +448,7 @@ public class ConServer implements Runnable, ServerInterface {
 
         return reply;
     } catch(Exception e){
-            return "Eception: "+e.getStackTrace();
+            return "Exception: "+e.getStackTrace();
         }
     }
 
@@ -482,6 +480,10 @@ public class ConServer implements Runnable, ServerInterface {
                     reply = reply.concat("\t");
                     reply = reply.concat(value.getQuantity().toString());
                     reply = reply.concat("\n");
+                }
+                else{
+                    reply = "Item not found";
+                    return reply;
                 }
             }
             boolean home = false;
@@ -779,7 +781,7 @@ public class ConServer implements Runnable, ServerInterface {
                 if(avail.startsWith("-1")){
                     return "Some exception in getting the availability";
                 }else if(avail.startsWith("0")){
-                    return "The newitem is not available";
+                    return "The new item is not available";
                 }
                 try {
                     reply = returnItem(userId,oldItem);
@@ -813,11 +815,34 @@ public class ConServer implements Runnable, ServerInterface {
 
         return reply;
     }
-
+    /**This method checks if the Id provided by the client is valid or not.
+     * @param userId
+     * @return
+     */
     @Override
     public String validateUser(String userId) {
-        return "123";
+        logger.info("Validate");
+        String userType = userId.substring(3,4);
+        logger.info(userId+"\t"+userType);
+        if(userType.equals("U")) {
+            synchronized (lock) {
+                Iterator<DataModel> iter = users.iterator();
+                while (iter.hasNext()) {
+                    if (iter.next().getUserId().startsWith(userId)) {
+                        return "true"+ServerConstants.SUCCESS;
+                    }
+                }
+                return "false"+ServerConstants.FAILURE;
+            }
+        }
+        else
+        if(managers.contains(userId))
+            return "true";
+        else
+            return "false";
     }
+
+
 
     public String getItemAvailability(String itemId) {
         logger.info("getItemAvailability");
@@ -853,5 +878,16 @@ public class ConServer implements Runnable, ServerInterface {
             }
             return "-1";
         }
+    }
+    public boolean validateItem(String itemId){
+        itemId = itemId.trim();
+        if(itemId.startsWith("CON")){
+            if(itemId.substring(3).matches("., '[0-9]{4}'")){
+                return true;
+            }
+            /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
+            return false;
+        }
+        return false;
     }
 }

@@ -12,6 +12,15 @@ public class DataModel implements Serializable {
     private String userName;
     private int daysToBorrow;
     private String itemName;
+
+    @Override
+    public String toString() {
+        return "itemName='" + itemName + '\'' +
+                ", itemId='" + itemId + '\'' +
+                ", quantity=" + quantity
+                ;
+    }
+
     private String itemId;
     private String ManagerId;
     private Integer flag;

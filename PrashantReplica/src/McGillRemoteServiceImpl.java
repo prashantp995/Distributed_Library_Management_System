@@ -30,8 +30,8 @@ public class McGillRemoteServiceImpl implements ServerInterface {
     super();
     initManagerID();
     initUserID();
-    data.put("MCG1012", new LibraryModel("DSD", 52));
-    data.put("MCG1013", new LibraryModel("ALGO", 0));
+    data.put("MCG0001", new LibraryModel("DSD", 5));
+    data.put("MCG0002", new LibraryModel("ALGO", 0));
     this.logger = logger;
     this.logger.info("Valid Manager Ids" + managerIds.toString());
     this.logger.info("Valid User Ids" + userIds.toString());
@@ -43,13 +43,12 @@ public class McGillRemoteServiceImpl implements ServerInterface {
   }
 
   private void initManagerID() {
-    managerIds.add("MCGM1111");
-    managerIds.add("MCGM1112");
+    managerIds.add("MCGM0001");
   }
 
   private void initUserID() {
-    userIds.add("MCGU1111");
-    userIds.add("MCGU1112");
+    userIds.add("MCGU0001");
+    userIds.add("MCGU0002");
   }
 
   public void setORB(ORB orb_val) {

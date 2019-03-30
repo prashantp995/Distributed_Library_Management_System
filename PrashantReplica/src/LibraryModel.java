@@ -68,9 +68,9 @@ public class LibraryModel {
 
   @Override
   public String toString() {
-    return "{" +
-        ", itemName='" + itemName + '\'' +
-        ", quantity=" + quantity +
-        '}';
+    return "itemName='" + itemName + '\'' +
+        ", itemId='" + itemId + '\'' +
+        ", quantity=" + quantity
+        ;
   }
 }

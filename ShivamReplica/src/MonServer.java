@@ -47,18 +47,24 @@ public class MonServer implements Runnable, ServerInterface{
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
-        book1.setItemName("CLRS");
-        book2.setItemName("DS");
-        book3.setItemName("PDA");
-        book1.setQuantity(4);
-        book2.setQuantity(2);
+        book1.setItemName("DSD");
+        book2.setItemName("ALGO");
+        /*book3.setItemName("PDA");*/
+        book1.setQuantity(5);
+        book2.setQuantity(0);
+/*
         book3.setQuantity(0);
+*/
         book1.setItemId("MON0001");
         book2.setItemId("MON0002");
+/*
         book3.setItemId("MON0003");
+*/
         monLibrary.put("MON0001", book1);
         monLibrary.put("MON0002", book2);
+/*
         monLibrary.put("MON0003", book3);
+*/
         lock = new Object();
 
         logger.setLevel(Level.INFO);
@@ -66,19 +72,20 @@ public class MonServer implements Runnable, ServerInterface{
         logger.addHandler(fileTxt);
         System.out.println(book1);
         System.out.println(book2);
+/*
         System.out.println(book3);
+*/
 
 
-        for(int i=1;i<10;i++) {
+        for(int i=1;i<3;i++) {
             DataModel user = new DataModel();
             user.setUserId("MONU000"+i);
             users.add(user);
         }
-        for(int i=1;i<3;i++) {
-            managers.add("MONM000"+i);
-        }
+            managers.add("MONM0001");
 
-        ArrayList<DataModel> wait02 = new ArrayList<>();
+
+        /*ArrayList<DataModel> wait02 = new ArrayList<>();
         ArrayList<DataModel> wait03 = new ArrayList<>();
         ArrayList<DataModel> wait = new ArrayList<>();
         DataModel waitBook[] = new DataModel[3];
@@ -91,7 +98,7 @@ public class MonServer implements Runnable, ServerInterface{
         }
         monWaitlist.put("MON0003", wait03);
         monWaitlist.put("MON0002", wait02);
-        monWaitlist.put("MON0001", wait);
+        monWaitlist.put("MON0001", wait);*/
         Thread t = new Thread(this);
 
     }
@@ -211,6 +218,9 @@ public class MonServer implements Runnable, ServerInterface{
     public String addItem(String managerId, String itemId, String itemName, int quantity)  {
         try{
         boolean old = false;
+        boolean isItemValid = validateItem(itemId);
+        if(!isItemValid)
+            return "Invalid itemId";
         logger.info("addItem");
         logger.info(managerId +"\t" + itemId+"\t" + itemName+"\t" + quantity);
         for(String id : monLibrary.keySet()) {
@@ -580,28 +590,7 @@ public class MonServer implements Runnable, ServerInterface{
             return "Exception: " + e.getStackTrace();
         }
     }
-    /**This method checks if the Id provided by the client is valid or not.
-     * @param userId
-     *
-     * @return
-     */
-    public boolean validate(String userId)
-    {
-        String userType = userId.substring(3,4);
-        logger.info("Validate");
-        logger.info(userId+"\t"+userType);
-        if(userType.equals("U")) {
-            Iterator<DataModel> iter = users.iterator();
-            while (iter.hasNext()) {
-                if (iter.next().getUserId().startsWith(userId)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        else
-            return managers.contains(userId);
-    }
+
     /**This method is called when a user wants to borrow a book but the availability is zero and the users wishes to be added to the waitlist of that book.
      * @param userId
      * @param itemId
@@ -779,9 +768,32 @@ public class MonServer implements Runnable, ServerInterface{
         return reply;
     }
 
+    /**This method checks if the Id provided by the client is valid or not.
+     * @param userId
+     *
+     * @return
+     */
     @Override
     public String validateUser(String userId) {
-        return "true";
+        logger.info("Validate");
+        String userType = userId.substring(3,4);
+        logger.info(userId+"\t"+userType);
+        if(userType.equals("U")) {
+            synchronized (lock) {
+                Iterator<DataModel> iter = users.iterator();
+                while (iter.hasNext()) {
+                    if (iter.next().getUserId().startsWith(userId)) {
+                        return "true"+ServerConstants.SUCCESS;
+                    }
+                }
+                return "false"+ServerConstants.FAILURE;
+            }
+        }
+        else
+        if(managers.contains(userId))
+            return "true";
+        else
+            return "false";
     }
 
     public String getItemAvailability(String itemId){
@@ -818,6 +830,17 @@ public class MonServer implements Runnable, ServerInterface{
             }
             return "-1";
         }
+    }
+    public boolean validateItem(String itemId){
+        itemId = itemId.trim();
+        if(itemId.startsWith("MON")){
+            if(itemId.substring(3).matches("., '[0-9]{4}'")){
+                return true;
+            }
+            /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
+            return false;
+        }
+        return false;
     }
 
 }
