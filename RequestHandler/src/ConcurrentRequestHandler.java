@@ -124,4 +124,20 @@ public class ConcurrentRequestHandler extends Thread {
     }
     return null;
   }
+
+  //TODO this method should be called from  ReplicaManager
+  public void performOperationsToRecoverFromCrash(ArrayList<ClientRequestModel> requests) {
+    //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
+    successfullyExecutedReq = new ArrayList<ClientRequestModel>();
+    for (ClientRequestModel request : requests) {
+      try {
+        ServerInterface serverInterface = ServerFactory.getServerObject("Pras",
+            request.getUserId().substring(0, 3));
+        getResponse(request, serverInterface);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+  }
 }
