@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 public class ConcurrentRequestHandler extends Thread {
 
@@ -17,6 +18,7 @@ public class ConcurrentRequestHandler extends Thread {
   InetAddress ip;
   ByteArrayOutputStream byteArrayOutputStream;
   ObjectOutputStream oos;
+  static ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<ClientRequestModel>();
 
   public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain,
       DatagramPacket requestReceived) {
@@ -38,7 +40,7 @@ public class ConcurrentRequestHandler extends Thread {
 /*
       String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
 */
-      String replicaName = "Shivam";
+      String replicaName = "Pras";
       ServerInterface serverInterface = ServerFactory
           .getServerObject(replicaName,
               objForRM.getUserId().substring(0, 3));
@@ -52,7 +54,7 @@ public class ConcurrentRequestHandler extends Thread {
       DatagramPacket response = new DatagramPacket(responseString.getBytes(),
           responseString.length(),
           request.getAddress(), objForRM.getFrontEndPort());
-        System.out.println(responseString);
+      System.out.println(responseString);
       socket.send(response);
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
@@ -100,6 +102,12 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (objForRM.getMethodName()
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
       responseString = serverInterface.findItem(objForRM.getUserId(), objForRM.getItemName());
+    }
+    //TODO Add more conditions below based on response
+    if (responseString != null && (responseString.contains(RequestHandlerConstants.SUCCESS)
+        || responseString
+        .contains(RequestHandlerConstants.TRUE))) {
+      successfullyExecutedReq.add(objForRM);
     }
     return responseString;
   }
