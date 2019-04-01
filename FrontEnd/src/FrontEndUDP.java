@@ -67,8 +67,8 @@ class MessageHandler implements Runnable{
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
                 mySocket.receive(messageFromRH);
                 String reply = new String(messageFromRH.getData());
-                reply.trim();
-                System.out.println(reply.trim());
+                reply = reply.trim();
+                System.out.println(reply + " " + i);
                 replies.add(reply);
             }
             DatagramPacket response = new DatagramPacket(replies.get(0).getBytes(),replies.get(0).length(),receiver.getAddress(),receiver.getPort());
