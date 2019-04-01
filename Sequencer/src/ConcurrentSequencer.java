@@ -68,6 +68,8 @@ public class ConcurrentSequencer extends Thread implements Serializable {
           sequencerMain.replica4Port);
     */  DatagramSocket socket = new DatagramSocket();
       socket.send(rm1packet);
+      socket.send(rm1packet);
+      socket.send(rm1packet);
       /*socket.send(rm2packet);
       socket.send(rm3packet);*/
       /*socket.send(rm4packet);*/

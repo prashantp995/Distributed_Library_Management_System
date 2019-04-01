@@ -1,9 +1,12 @@
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.nio.file.FileSystems;
+import java.util.ArrayList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -13,6 +16,9 @@ public class RequestHandlerMain extends Thread {
   MulticastSocket requestHandlerSocket = null;
   int requestHandlerPort; //change this based on your implementation
   static Logger logger = null;
+  private static ArrayList<Integer> requestIds = new ArrayList<>();
+  ObjectInputStream ois; //To get the clientRequestModel from the packed received.
+  ClientRequestModel requestObject; //to get the object in the request received(To check the duplicate request)
 
   public static void main(String[] args) {
     //RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
@@ -54,16 +60,25 @@ public class RequestHandlerMain extends Thread {
         System.out.println("RequestHandler is listening at " + requestHandlerPort);
         logger.info("Sequencer is listening at " + requestHandlerPort);
         requestHandlerSocket.receive(requestReceived);
-
-        System.out.println("Request received");
-        String requestReceivedFromSeq = new String(requestReceived.getData());
-        System.out.println(requestReceivedFromSeq.trim());
-        //once request received , there should be new unique thread to handle the request.
-        //Concurrent Sequencer will handle the request
-        ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
-            requestReceived);
-        concurrentSequencer.start();
+        ois = new ObjectInputStream(new ByteArrayInputStream(requestReceived.getData()));
+        requestObject = (ClientRequestModel) ois.readObject();
+        if(requestIds.size()==0){
+          requestIds.add(requestObject.getRequestId());
+        }else{
+          if(!requestIds.contains(requestObject.getRequestId())){
+            requestIds.add(requestObject.getRequestId());
+            System.out.println("Request received");
+            String requestReceivedFromSeq = new String(requestReceived.getData());
+            System.out.println(requestReceivedFromSeq.trim());
+            //once request received , there should be new unique thread to handle the request.
+            //Concurrent Sequencer will handle the request
+            ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this, requestReceived);
+            concurrentSequencer.start();
+          }
+        }
       } catch (IOException e) {
+        e.printStackTrace();
+      } catch (ClassNotFoundException e) {
         e.printStackTrace();
       }
     }
