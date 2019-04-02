@@ -22,7 +22,7 @@ public class MonServer implements Runnable, ServerInterface{
             e.printStackTrace();
         }
     }*/
-
+    static MonServer exportedObject = null;
     private HashMap<String, DataModel> monLibrary = new HashMap<String, DataModel>();
     private HashMap<String, ArrayList<DataModel>> monWaitlist = new HashMap<>();
     private ArrayList<String> removedItems = new ArrayList<>();
@@ -44,6 +44,9 @@ public class MonServer implements Runnable, ServerInterface{
      */
     public MonServer() {
         super();
+        if(exportedObject!=null){
+            System.out.println("Do not come here");
+        }
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
@@ -114,9 +117,19 @@ public class MonServer implements Runnable, ServerInterface{
         monWaitlist.put("MON0002", wait02);
         monWaitlist.put("MON0001", wait);*/
         Thread t = new Thread(this);
+     /*   InterServComServer mon = new InterServComServer(2,null,getMonObject());
+        Thread interServMon = new Thread(mon);
+        interServMon.start();*/
 
     }
 
+    public static synchronized MonServer getMonObject(){
+        if(exportedObject==null){
+            exportedObject = new MonServer();
+            return exportedObject;
+        }
+        return exportedObject;
+    }
     public void run() {
         try {
             this.getWaitRequest();
@@ -730,7 +743,7 @@ public class MonServer implements Runnable, ServerInterface{
     }
 
     @Override
-    public String exchangeItem(String userId, String newItem, String oldItem) {
+    public String exchangeItem(String userId, String oldItem, String newItem) {
         logger.info("Exchange Item");
         logger.info(userId+" "+newItem+" "+oldItem);
        String reply;

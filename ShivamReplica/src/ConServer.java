@@ -16,6 +16,7 @@ public class ConServer implements Runnable, ServerInterface {
         return null;
     }
 */
+   static ConServer exportedObject = null;
     private HashMap<String, DataModel> conLibrary = new HashMap<String, DataModel>();
     final private HashMap<String, ArrayList<DataModel>> conWaitlist = new HashMap<>();
     private ArrayList<String> removedItems = new ArrayList<>();
@@ -33,6 +34,9 @@ public class ConServer implements Runnable, ServerInterface {
      */
     public ConServer()  {
         super();
+        if(exportedObject!=null){
+            System.out.println("Do not come here");
+        }
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
@@ -72,8 +76,19 @@ public class ConServer implements Runnable, ServerInterface {
         conWaitlist.put("CON0001", wait);
 
         new Thread(this);
+        /*InterServComServer con = new InterServComServer(3,null,getConcordiaObject());
+        Thread interServCon = new Thread(con);
+        interServCon.start();*/
 
 
+    }
+    public static synchronized ConServer getConcordiaObject(){
+
+        if(exportedObject==null){
+            exportedObject = new ConServer();
+            return exportedObject;
+        }
+        return exportedObject;
     }
 
     public void run() {

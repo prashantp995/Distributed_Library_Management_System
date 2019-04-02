@@ -23,7 +23,7 @@ public class McgServer implements Runnable, ServerInterface {
             e.printStackTrace();
         }
     }*/
-
+    static McgServer exportedObject = null;
     private HashMap<String, DataModel> mcgLibrary = new HashMap<String, DataModel>();
     private HashMap<String, ArrayList<DataModel>> mcgWaitlist = new HashMap<>();
     private ArrayList<String> removedItems = new ArrayList<>();    //ItemIds
@@ -43,6 +43,9 @@ public class McgServer implements Runnable, ServerInterface {
      * The class constructor that initiates and engenders new books, users, and managers at the very beginning.
      */
     public McgServer() {
+        if(exportedObject!=null){
+            System.out.println("Do not come here");
+        }
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
@@ -114,7 +117,9 @@ public class McgServer implements Runnable, ServerInterface {
         mcgWaitlist.put("MCG0002", wait02);
         mcgWaitlist.put("MCG0001", wait);*/
         Thread t = new Thread( this);
-
+        /*InterServComServer mcg = new InterServComServer(3,null,getMcgillObject());
+        Thread interServmcg = new Thread(mcg);
+        interServmcg.start();*/
 
 
 
@@ -131,6 +136,13 @@ public class McgServer implements Runnable, ServerInterface {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public static synchronized McgServer getMcgillObject(){
+        if(exportedObject==null){
+            exportedObject = new McgServer();
+            return exportedObject;
+        }
+        return exportedObject;
     }
     /*public static McgServer getMcGillObject(){
         return mcgServerObject;
@@ -855,11 +867,11 @@ public class McgServer implements Runnable, ServerInterface {
     public boolean validateItem(String itemId){
         itemId = itemId.trim();
         if(itemId.startsWith("MCG")){
-            if(itemId.substring(3).matches("., '[0-9]{4}'")){
+
                 return true;
-            }
+
             /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
-            return false;
+
         }
         return false;
     }

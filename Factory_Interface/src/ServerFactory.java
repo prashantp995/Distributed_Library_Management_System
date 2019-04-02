@@ -5,9 +5,10 @@ public class ServerFactory {
   private static ServerSARReplica serverSARReplicaConcordia;
   private static ServerSARReplica serverSARReplicaMontreal;
   private static ServerSARReplica serverSARReplicaMcGill;
-  private static ConServer conServer;
+  /*private static ConServer conServer;
   private static MonServer monServer;
-  private static McgServer mcgServer;
+  private static McgServer mcgServer;*/
+  static boolean shivamServerFlag = false;
   private static Server_Base concordiaLib;
   private static Server_Base mcgillLib;
   private static Server_Base montrealuLib;
@@ -22,21 +23,26 @@ public class ServerFactory {
       case "Rohit":
         return getRohitServerObject(lib);
       case "Shivam":
+        if(!shivamServerFlag){
+          runInterServer();
+        }
         switch (lib) {
           case "CON":
-            if (conServer == null) {
+            /*if (conServer == null) {
               conServer = new ConServer();
-            }
-            return conServer;
+            }*/
+
+          return ConServer.getConcordiaObject();
           case "MCG":
-            if (mcgServer == null)
-              mcgServer = new McgServer();
-            return mcgServer;
+            /*if (mcgServer == null)
+              mcgServer = new McgServer();*/
+
+            return McgServer.getMcgillObject();
           case "MON":
-            if (monServer == null) {
+           /* if (monServer == null) {
               monServer = new MonServer();
-            }
-            return monServer;
+            }*/
+          return MonServer.getMonObject();
           default:
             return null;
         }
@@ -108,6 +114,21 @@ public class ServerFactory {
       return montrealuLib;
     }
     return null;
+  }
+  private static void runInterServer(){
+    shivamServerFlag = true;
+    InterServComServer con = new InterServComServer(3,null,ConServer.getConcordiaObject());
+    Thread interServCon = new Thread(con);
+    interServCon.start();
+    shivamServerFlag = true;
+    InterServComServer mcg = new InterServComServer(1,null, McgServer.getMcgillObject());
+    Thread interServmcg = new Thread(mcg);
+    interServmcg.start();
+    shivamServerFlag=true;
+    InterServComServer mon = new InterServComServer(2,null,MonServer.getMonObject());
+    Thread interServMon = new Thread(mon);
+    interServMon.start();
+
   }
 
 }

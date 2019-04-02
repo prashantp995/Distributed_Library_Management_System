@@ -7,9 +7,10 @@ public class ServerDriver {
 
 
             /*ConServer cs = ConServer.getConcordiaObject();*/
-            ConServer cs = (ConServer) ServerFactory.getServerObject("Shivam","CON");
-            MonServer ms = (MonServer) ServerFactory.getServerObject("Shivam","MON");
-            McgServer mc = (McgServer) ServerFactory.getServerObject("Shivam","MCG");
+
+            ConServer cs = ConServer.getConcordiaObject();
+            MonServer ms = MonServer.getMonObject();
+            McgServer mc = McgServer.getMcgillObject();
             InterServComServer mcg = new InterServComServer(1,args,mc);
             InterServComServer mon = new InterServComServer(2,args,ms);
             InterServComServer con = new InterServComServer(3,args,cs);
@@ -19,12 +20,12 @@ public class ServerDriver {
             interServMon.start();
             Thread interServmcg = new Thread(mcg);
             interServmcg.start();
-            Thread mcgi = new Thread(mc);
+          /*  Thread mcgi = new Thread(mc);
             mcgi.start();
             Thread mont = new Thread(ms);
             mont.start();
             Thread conc = new Thread(cs);
-            conc.start();
+            conc.start();*/
 
             /*Object concordiaRef = rootpoa.servant_to_reference(cs);
             Object montrealRef = rootpoa.servant_to_reference(ms);
