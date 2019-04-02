@@ -41,8 +41,10 @@ public class RequestHandlerMain extends Thread {
         try {
 
             requestHandlerSocket = new MulticastSocket(requestHandlerPort);
+            if(replicaName.equalsIgnoreCase("Rohit")){
+                requestHandlerSocket.setNetworkInterface(NetworkInterface.getByName("en0"));
+            }
             InetAddress ip = InetAddress.getByName("230.1.1.5");
-            requestHandlerSocket.setNetworkInterface(NetworkInterface.getByName("en0"));
             requestHandlerSocket.joinGroup(ip);
             System.out.println(ip.isMulticastAddress());
         } catch (SocketException e) {
