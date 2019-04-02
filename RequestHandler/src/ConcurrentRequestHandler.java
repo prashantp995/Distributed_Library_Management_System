@@ -40,7 +40,7 @@ public class ConcurrentRequestHandler extends Thread {
 /*
       String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
 */
-      String replicaName = "Sarvesh";
+      String replicaName = RequestHandlerMain.replicaName;
       ServerInterface serverInterface = ServerFactory
           .getServerObject(replicaName,
               objForRM.getUserId().substring(0, 3));
@@ -50,6 +50,7 @@ public class ConcurrentRequestHandler extends Thread {
       sendToFE.setClientId(objForRM.getUserId());
       sendToFE.setRequestId(objForRM.getRequestId());
       sendToFE.setResponse(responseArray[0]);
+      sendToFE.setReplicaName(replicaName);
       DatagramSocket socket = new DatagramSocket();
       DatagramPacket response = new DatagramPacket(responseString.getBytes(),
           responseString.length(),

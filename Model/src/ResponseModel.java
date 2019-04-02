@@ -1,68 +1,80 @@
 import java.io.Serializable;
 
 public class ResponseModel implements Serializable {
-    private String status;
-    private String response;
-    private int requestId;
-    private String clientId;
-    private String itemId;
-    private String note;
 
-    public ResponseModel(){    }
+  private String status;
+  private String response;
+  private int requestId;
+  private String clientId;
+  private String itemId;
+  private String note;
+  private String replicaName;
 
-    public ResponseModel(String clientId,String itemId,String response, String status, int requestId){
-        this.clientId = clientId;
-        this.itemId = itemId;
-        this.status = status;
-        this.requestId = requestId;
-        this.response = response;
-    }
+  public ResponseModel() {
+  }
 
-    public String getNote() {
-        return note;
-    }
+  public ResponseModel(String clientId, String itemId, String response, String status,
+      int requestId) {
+    this.clientId = clientId;
+    this.itemId = itemId;
+    this.status = status;
+    this.requestId = requestId;
+    this.response = response;
+  }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+  public String getNote() {
+    return note;
+  }
 
-    public String getStatus() {
-        return status;
-    }
+  public void setNote(String note) {
+    this.note = note;
+  }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public String getResponse() {
-        return response;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public void setResponse(String response) {
-        this.response = response;
-    }
+  public String getResponse() {
+    return response;
+  }
 
-    public int getRequestId() {
-        return requestId;
-    }
+  public void setResponse(String response) {
+    this.response = response;
+  }
 
-    public void setRequestId(int requestId) {
-        this.requestId = requestId;
-    }
+  public int getRequestId() {
+    return requestId;
+  }
 
-    public String getClientId() {
-        return clientId;
-    }
+  public void setRequestId(int requestId) {
+    this.requestId = requestId;
+  }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
+  public String getClientId() {
+    return clientId;
+  }
 
-    public String getItemId() {
-        return itemId;
-    }
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
+  public String getItemId() {
+    return itemId;
+  }
+
+  public void setItemId(String itemId) {
+    this.itemId = itemId;
+  }
+
+  public String getReplicaName() {
+    return replicaName;
+  }
+
+  public void setReplicaName(String replicaName) {
+    this.replicaName = replicaName;
+  }
 }

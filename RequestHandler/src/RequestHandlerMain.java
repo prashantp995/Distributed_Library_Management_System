@@ -18,11 +18,13 @@ public class RequestHandlerMain extends Thread {
   static Logger logger = null;
   private static ArrayList<Integer> requestIds = new ArrayList<>();
   ObjectInputStream ois; //To get the clientRequestModel from the packed received.
-  ClientRequestModel requestObject; //to get the object in the request received(To check the duplicate request)
+  ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
+  static String replicaName = null;
 
   public static void main(String[] args) {
     //RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
     //  RequestHandlerMain requestHandlerMain1 = new RequestHandlerMain(9001);
+    replicaName = args[0];
     RequestHandlerMain requestHandlerMain2 = new RequestHandlerMain(9001);
     // RequestHandlerMain requestHandlerMain3 = new RequestHandlerMain(9004);
     // requestHandlerMain.start();
@@ -62,17 +64,18 @@ public class RequestHandlerMain extends Thread {
         requestHandlerSocket.receive(requestReceived);
         ois = new ObjectInputStream(new ByteArrayInputStream(requestReceived.getData()));
         requestObject = (ClientRequestModel) ois.readObject();
-        if(requestIds.size()==0){
+        if (requestIds.size() == 0) {
           requestIds.add(requestObject.getRequestId());
-        }else{
-          if(!requestIds.contains(requestObject.getRequestId())){
+        } else {
+          if (!requestIds.contains(requestObject.getRequestId())) {
             requestIds.add(requestObject.getRequestId());
             System.out.println("Request received");
             String requestReceivedFromSeq = new String(requestReceived.getData());
             System.out.println(requestReceivedFromSeq.trim());
             //once request received , there should be new unique thread to handle the request.
             //Concurrent Sequencer will handle the request
-            ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this, requestReceived);
+            ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
+                requestReceived);
             concurrentSequencer.start();
           }
         }
