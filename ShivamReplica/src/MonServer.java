@@ -65,6 +65,16 @@ public class MonServer implements Runnable, ServerInterface{
 /*
         monLibrary.put("MON0003", book3);
 */
+        ArrayList<DataModel> wait02 = new ArrayList<>();
+        ArrayList<DataModel> wait = new ArrayList<>();
+        DataModel waitBook[] = new DataModel[2];
+        for (int i=0;i<2;i++){
+            waitBook[i] = new DataModel();
+            wait.add(waitBook[i]);
+        }
+        monWaitlist.put("MON0002", wait02);
+        monWaitlist.put("MON0001", wait);
+
         lock = new Object();
 
         logger.setLevel(Level.INFO);
@@ -470,17 +480,16 @@ public class MonServer implements Runnable, ServerInterface{
                 System.out.println(count++);
 */
                 if (value.getItemName().equals(itemName)) {
-                    reply = pair.getKey();
-                    reply = reply.concat("\t");
-                    reply = reply.concat(value.getQuantity().toString());
-                    reply = reply.concat("\n");
+                    reply = value.toString();
                 }
             }
         }
         boolean home = false;
         for(DataModel di:users){
-            if(di.getUserId().startsWith(userId))
+            if(di.getUserId().startsWith(userId)) {
                 home = true;
+                break;
+            }
         }
         if(home)  {
             logger.info("calling McGill Server");
@@ -495,8 +504,8 @@ public class MonServer implements Runnable, ServerInterface{
             pack1.setItemName(itemName);
             String replyMCG = temp.operate(pack);
             String replyMON = temp1.operate(pack1);
-            reply += replyMCG;
-            reply += replyMON;
+            reply += ":"+replyMCG;
+            reply += ":"+replyMON;
         }
         logger.info(reply);
         return reply;
@@ -834,11 +843,8 @@ public class MonServer implements Runnable, ServerInterface{
     public boolean validateItem(String itemId){
         itemId = itemId.trim();
         if(itemId.startsWith("MON")){
-            if(itemId.substring(3).matches("., '[0-9]{4}'")){
                 return true;
-            }
             /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
-            return false;
         }
         return false;
     }

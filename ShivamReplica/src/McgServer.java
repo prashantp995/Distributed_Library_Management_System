@@ -83,6 +83,16 @@ public class McgServer implements Runnable, ServerInterface {
         }
             managers.add("MCGM0001");
 
+        ArrayList<DataModel> wait = new ArrayList<>();
+        ArrayList<DataModel> wait02 = new ArrayList<>();
+        DataModel waitBook[] = new DataModel[2];
+        for (int i=0;i<2;i++){
+            waitBook[i] = new DataModel();
+            waitBook[i].setItemId("MCG000"+"i");
+            wait.add(waitBook[i]);
+        }
+        mcgWaitlist.put("MCG0002", wait02);
+        mcgWaitlist.put("MCG0001", wait);
 
 
        /* ArrayList<DataModel> wait = new ArrayList<>();
@@ -479,16 +489,15 @@ public class McgServer implements Runnable, ServerInterface {
                 System.out.println(count++);
 */
                 if(value.getItemName().equals(itemName)) {
-                    reply = pair.getKey();
-                    reply = reply.concat("\t");
-                    reply = reply.concat(value.getQuantity().toString());
-                    reply = reply.concat("\n");
+                    reply = value.toString();
                 }
             }
         }boolean home = false;
         for(DataModel di:users){
-            if(di.getUserId().startsWith(userId))
+            if(di.getUserId().startsWith(userId)) {
                 home = true;
+                break;
+            }
         }
         if(home)  {
             logger.info("calling Concordia Server");
@@ -503,8 +512,8 @@ public class McgServer implements Runnable, ServerInterface {
             pack1.setItemName(itemName);
             String replyCON = temp.operate(pack);
             String replyMON = temp1.operate(pack1);
-            reply += replyCON;
-            reply += replyMON;
+            reply +=":"+ replyCON;
+            reply += ":"+replyMON;
         }
         logger.info(reply);
         return reply;

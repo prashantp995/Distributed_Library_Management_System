@@ -57,34 +57,20 @@ public class ConServer implements Runnable, ServerInterface {
         }
             managers.add("CONM0001");
 
-
-       /* ArrayList<DataModel> wait = new ArrayList<>();
+        ArrayList<DataModel> wait = new ArrayList<>();
         ArrayList<DataModel> wait02 = new ArrayList<>();
-        ArrayList<DataModel> wait03 = new ArrayList<>();
-        DataModel waitBook[] = new DataModel[3];
-        for (int i = 0; i < 3; i++) {
+        DataModel waitBook[] = new DataModel[2];
+        for (int i = 0; i < 2; i++) {
             waitBook[i] = new DataModel();
-            waitBook[i].setUserId("CONU000" + (i + 1));
-            waitBook[i].setDaysToBorrow(25);
-            waitBook[i].setItemId("CON000"+"i");
             wait.add(waitBook[i]);
         }
-        conWaitlist.put("CON0003", wait03);
         conWaitlist.put("CON0002", wait02);
-        conWaitlist.put("CON0001", wait);*/
+        conWaitlist.put("CON0001", wait);
 
         new Thread(this);
 
 
     }
-
-/*
-    public void setORB(ORB orb_val) {
-        orb = orb_val;
-    }*/
-
-
-
 
     public void run() {
         try {
@@ -211,6 +197,7 @@ public class ConServer implements Runnable, ServerInterface {
                 return "Invalid itemId";
             logger.info(managerId + "\t" + itemId + "\t" + itemName + "\t" + quantity);
             for (String id : conLibrary.keySet()) {
+                System.out.println(conLibrary.keySet());
                 if (id.equals(itemId)) {
                     old = true;
                     break;
@@ -230,6 +217,8 @@ public class ConServer implements Runnable, ServerInterface {
             value.setQuantity(quantity);
             value.setItemId(itemId);
             conLibrary.put(itemId, value);
+            ArrayList<DataModel> wait = new ArrayList<>();
+            conWaitlist.put(itemId,wait);
             logger.info("Success");
             this.moveWaitlist(itemId);
             return "Success";
@@ -475,21 +464,16 @@ public class ConServer implements Runnable, ServerInterface {
 /*
             System.out.println(count++);
 */
-                if (value.getItemName().equals(itemName)) {
-                    reply = pair.getKey();
-                    reply = reply.concat("\t");
-                    reply = reply.concat(value.getQuantity().toString());
-                    reply = reply.concat("\n");
-                }
-                else{
-                    reply = "Item not found";
-                    return reply;
+                if (value.getItemName().startsWith(itemName)) {
+                    reply = value.toString();
                 }
             }
             boolean home = false;
             for (DataModel di : users) {
-                if (di.getUserId().startsWith(userId))
+                if (di.getUserId().startsWith(userId)){
                     home = true;
+                    break;
+                }
             }
             if (home) {
                 logger.info("calling McGill Server");
@@ -503,9 +487,11 @@ public class ConServer implements Runnable, ServerInterface {
                 pack1.setUserId(userId);
                 pack1.setItemName(itemName);
                 String replyMCG = temp.operate(pack);
+                replyMCG = replyMCG.trim();
                 String replyMON = temp1.operate(pack1);
-                reply += replyMCG;
-                reply += replyMON;
+                replyMON = replyMON.trim();
+                reply +=":"+ replyMCG;
+                reply +=":"+ replyMON;
             }
             logger.info(reply);
             return reply;
@@ -882,11 +868,7 @@ public class ConServer implements Runnable, ServerInterface {
     public boolean validateItem(String itemId){
         itemId = itemId.trim();
         if(itemId.startsWith("CON")){
-            if(itemId.substring(3).matches("., '[0-9]{4}'")){
-                return true;
-            }
-            /*if(itemId.substring(3).matches("[0-9][0-9][0-9][0-9]"))*/
-            return false;
+            return true;
         }
         return false;
     }
