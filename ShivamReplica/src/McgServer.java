@@ -117,7 +117,7 @@ public class McgServer implements Runnable, ServerInterface {
         mcgWaitlist.put("MCG0002", wait02);
         mcgWaitlist.put("MCG0001", wait);*/
         new Thread( this).start();
-        /*InterServComServer mcg = new InterServComServer(3,null,getMcgillObject());
+        /*InterServComServer mcg = new InterServCo mServer(3,null,getMcgillObject());
         Thread interServmcg = new Thread(mcg);
         interServmcg.start();*/
 
