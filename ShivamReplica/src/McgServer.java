@@ -116,7 +116,7 @@ public class McgServer implements Runnable, ServerInterface {
         mcgWaitlist.put("MCG0003", wait03);
         mcgWaitlist.put("MCG0002", wait02);
         mcgWaitlist.put("MCG0001", wait);*/
-        Thread t = new Thread( this);
+        new Thread( this).start();
         /*InterServComServer mcg = new InterServComServer(3,null,getMcgillObject());
         Thread interServmcg = new Thread(mcg);
         interServmcg.start();*/
@@ -705,6 +705,7 @@ public class McgServer implements Runnable, ServerInterface {
                 InetAddress aHost = InetAddress.getLocalHost();
                 if(itemId.startsWith("CON")){
                     DatagramPacket req = new DatagramPacket(request, request.length,aHost,conPort);
+                    logger.info("Sending to CON");
                     aSocket.send(req);
                     byte [] buffer1 = new byte[1000];
                     DatagramPacket rep = new DatagramPacket(buffer1, buffer1.length);
@@ -717,6 +718,7 @@ public class McgServer implements Runnable, ServerInterface {
                     aSocket.send(req);
                     byte [] buffer1 = new byte[1000];
                     DatagramPacket rep = new DatagramPacket(buffer1, buffer1.length);
+                    logger.info("Sending to MON");
                     aSocket.receive(rep);
                     String replyString = new String(rep.getData());
                     return replyString;
