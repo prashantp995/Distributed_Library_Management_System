@@ -62,7 +62,7 @@ class MessageHandler implements Runnable{
             ClientRequestModel requestModel = (ClientRequestModel) ois.readObject();
             sendRequest(mySocket,requestModel);
             ArrayList<String> replies = new ArrayList<>();
-            for (int i = 0 ; i < 3 ; i++){
+            for (int i = 0 ; i < 1 ; i++){
                 byte[] buffer = new byte[1024];
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
                 mySocket.receive(messageFromRH);

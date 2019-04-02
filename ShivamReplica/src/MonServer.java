@@ -42,7 +42,7 @@ public class MonServer implements Runnable, ServerInterface{
     /**
      * The class constructor that initiates and engenders new books, users, and managers at the very beginning.
      */
-    public MonServer() throws Exception{
+    public MonServer() {
         super();
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
@@ -78,7 +78,11 @@ public class MonServer implements Runnable, ServerInterface{
         lock = new Object();
 
         logger.setLevel(Level.INFO);
-        fileTxt = new FileHandler("monServerLog.txt");
+        try {
+            fileTxt = new FileHandler("monServerLog.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         logger.addHandler(fileTxt);
         System.out.println(book1);
         System.out.println(book2);

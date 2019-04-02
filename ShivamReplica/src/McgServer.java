@@ -42,7 +42,7 @@ public class McgServer implements Runnable, ServerInterface {
     /**
      * The class constructor that initiates and engenders new books, users, and managers at the very beginning.
      */
-    public McgServer() throws Exception{
+    public McgServer() {
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
         DataModel book3 = new DataModel();
@@ -68,7 +68,11 @@ public class McgServer implements Runnable, ServerInterface {
 */
         lock = new Object();
         logger.setLevel(Level.INFO);
-        fileTxt = new FileHandler("McgServerLog.txt");
+        try {
+            fileTxt = new FileHandler("McgServerLog.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         logger.addHandler(fileTxt);
         System.out.println(book1);
         System.out.println(book2);

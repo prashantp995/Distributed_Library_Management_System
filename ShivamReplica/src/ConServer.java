@@ -31,7 +31,7 @@ public class ConServer implements Runnable, ServerInterface {
     /**
      * The class constructor that initiates and engenders new books, users, and managers at the very beginning.
      */
-    public ConServer() throws Exception {
+    public ConServer()  {
         super();
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
@@ -47,7 +47,11 @@ public class ConServer implements Runnable, ServerInterface {
         System.out.println(book1);
         System.out.println(book2);
         lock = new Object();
-        fileTxt = new FileHandler("ConcordiaServerLog.txt");
+        try {
+            fileTxt = new FileHandler("ConcordiaServerLog.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         logger.addHandler(fileTxt);
         logger.setLevel(Level.INFO);
         for (int i = 1; i < 3; i++) {
