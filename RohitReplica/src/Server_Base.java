@@ -1,4 +1,3 @@
-
 import org.omg.CORBA.ORB;
 
 import java.io.BufferedWriter;
@@ -26,18 +25,17 @@ public class Server_Base implements Runnable, ServerInterface {
     private final Object lock = new Object();
     private int universalPort;
     private ArrayList interLibraryBlockUsers;
-    private ArrayList<String> registeredUser;
+
+    public void setUserlist(ArrayList userlist) {
+        this.userlist = userlist;
+    }
+
+    private ArrayList userlist;
+
     public void setORB(ORB orb_val) {
         orb = orb_val;
     }
 
-    public ArrayList<String> getRegisteredUser() {
-        return registeredUser;
-    }
-
-    public void setRegisteredUser(ArrayList<String> registeredUser) {
-        this.registeredUser = registeredUser;
-    }
 
     public HashMap<String, ArrayList<String>> getUserUpdateMessages() {
         return this.userUpdateMessages;
@@ -76,25 +74,11 @@ public class Server_Base implements Runnable, ServerInterface {
         this.servername = name;
         this.syncHeap = new HashMap<String, String>();
         this.userUpdateMessages = new HashMap<String, ArrayList<String>>();
-        //  this.ds = new DatagramSocket();
-        this.ds1 = new DatagramSocket(null);
+        //this.ds = new DatagramSocket();
+        //this.ds1 = new DatagramSocket(null);
         this.t = new Thread(this, getServername());
+        this.loadServerRec(this.servername);
         this.t.start();
-        if(getServername().equals("CONCORDIA"))
-        {
-            ArrayList<String> namesList = new ArrayList<String>(Arrays.asList("CONU4041", "CONU4042", "CONU4043", "CONU4044", "CONU4045", "CONU5051", "CONU5052", "CONU5053", "CONU5054", "CONU6061", "CONU6062", "CONU6065", "CONU6067", "CONU6068","CONU7000", "CONU8000", "CONM1234"));
-            setRegisteredUser(namesList);
-        }
-        if(getServername().equals("MCGILL"))
-        {
-            ArrayList<String> namesList = new ArrayList<String>(Arrays.asList("MCGU4141", "MCGU4142", "MCGU4143", "MCGU4144", "MCGU4145","MCGU5151", "MCGU5152", "MCGU5153", "MCGU5154","MCGU6161", "MCGU6162","MCGU6161", "MCGU6165","MCGU6167", "MCGU6168","MCGU5100", "MCGU6100","MCGU7100", "MCGU8100","MCGM1234"));
-            setRegisteredUser(namesList);
-        }
-        if(getServername().equals("MONTREALU"))
-        {
-            ArrayList<String> namesList = new ArrayList<String>(Arrays.asList("MONU4241", "MONU4242", "MONU4243", "MONU4244", "MONU4245","MONU5251", "MONU5252", "MONU5253", "MONU5254","MONU6261", "MONU6262", "MONU6265","MONU6267", "MONU6268","MONU5200", "MONU6200","MONU7200", "MONU8200","MONM1234"));
-            setRegisteredUser(namesList);
-        }
 
     }
 
@@ -139,122 +123,84 @@ public class Server_Base implements Runnable, ServerInterface {
      * @param xLib
      * @return
      */
-    public Server_Base loadServerRec(Server_Base xLib) {
-        if (xLib.getServername().equals("CONCORDIA")) {
+    public void loadServerRec(String xLib) {
+        if (xLib.equals("CONCORDIA")) {
             try {
-                xLib.ds = new DatagramSocket();
+                this.ds = new DatagramSocket();
             } catch (SocketException e) {
                 e.printStackTrace();
             }
 
             HashMap<String, ArrayList<String>> tempStore = new HashMap<String, ArrayList<String>>();
-            tempStore.put("CON1000", new ArrayList<String>(Arrays.asList("Star Wars", "CONU4041", "CONU4042", "CONU4043", "CONU4044", "CONU4045")));
-            tempStore.put("CON1001", new ArrayList<String>(Arrays.asList("Tombstone", "CONU5051", "CONU5052", "CONU5053", "CONU5054")));
-            tempStore.put("CON7000", new ArrayList<String>(Arrays.asList("The Doomsday", "CONU6061", "CONU6062")));
-            tempStore.put("CON9001", new ArrayList<String>(Arrays.asList("Avada Kedavra", "CONU6061", "CONU6065")));
-            tempStore.put("CON9002", new ArrayList<String>(Arrays.asList("Sectumsempra", "CONU6067", "CONU6068")));
 
 
             HashMap<String, ArrayList<String>> tempHash1 = new HashMap<String, ArrayList<String>>();
-            tempHash1.put("CON5000", new ArrayList<String>(Arrays.asList("Twilight", "10")));
-            tempHash1.put("CON6000", new ArrayList<String>(Arrays.asList("Alchemist", "20")));
-            tempHash1.put("CON7000", new ArrayList<String>(Arrays.asList("The Doomsday", "10")));
-            tempHash1.put("CON8000", new ArrayList<String>(Arrays.asList("Angels and Demons", "5")));
-            tempHash1.put("CON9000", new ArrayList<String>(Arrays.asList("Da Vinci Code", "2")));
-            tempHash1.put("CON9001", new ArrayList<String>(Arrays.asList("Avada Kedavra", "0")));
-            tempHash1.put("CON9002", new ArrayList<String>(Arrays.asList("Seldfnv", "0")));
-            tempHash1.put("CON9009", new ArrayList<String>(Arrays.asList("Sectumsempra", "10")));
-            tempHash1.put("CON1000", new ArrayList<String>(Arrays.asList("Star Wars", "10")));
-            tempHash1.put("CON1001", new ArrayList<String>(Arrays.asList("Tombstone", "8")));
-
+            tempHash1.put("CON0001", new ArrayList<String>(Arrays.asList("DSD", "5")));
+            tempHash1.put("CON0002", new ArrayList<String>(Arrays.asList("ALGO", "0")));
 
             HashMap<String, ArrayList<String>> tempHash2 = new HashMap<String, ArrayList<String>>();
 
-            tempHash2.put("CON9002", new ArrayList<String>(Arrays.asList("CONU7000", "CONU8000")));
-
-            xLib.setLibLendingRec(tempStore);
-            xLib.setLibBooksRec(tempHash1);
-            xLib.setWaitlistRec(tempHash2);
-            xLib.universalPort = 8081;
+            this.setLibLendingRec(tempStore);
+            this.setLibBooksRec(tempHash1);
+            this.setWaitlistRec(tempHash2);
+            this.universalPort = 8081;
             this.interLibraryBlockUsers = new ArrayList<String>();
+            ArrayList<String> holder = new ArrayList<String>(Arrays.asList("CONM0001", "CONU0001","CONU0002"));
+            this.setUserlist(holder);
 
-        } else if (xLib.getServername().equals("MCGILL")) {
+
+        } else if (this.getServername().equals("MCGILL")) {
             try {
-                xLib.ds = new DatagramSocket();
+                this.ds = new DatagramSocket();
             } catch (SocketException e) {
                 e.printStackTrace();
             }
             HashMap<String, ArrayList<String>> tempStore = new HashMap<String, ArrayList<String>>();
-            tempStore.put("MCG1000", new ArrayList<String>(Arrays.asList("Fifty Shades", "MCGU4141", "MCGU4142", "MCGU4143", "MCGU4144", "MCGU4145")));
-            tempStore.put("MCG1001", new ArrayList<String>(Arrays.asList("The Dark Knight", "MCGU5151", "MCGU5152", "MCGU5153", "MCGU5154")));
-            tempStore.put("MCG7000", new ArrayList<String>(Arrays.asList("Sectumsempra", "MCGU6161", "MCGU6162")));
-            tempStore.put("MCG9001", new ArrayList<String>(Arrays.asList("Narnia", "MCGU6161", "MCGU6165")));
-            tempStore.put("MCG9003", new ArrayList<String>(Arrays.asList("Obliviate", "MCGU6167", "MCGU6168")));
-
 
             HashMap<String, ArrayList<String>> tempHash1 = new HashMap<String, ArrayList<String>>();
-            tempHash1.put("MCG1000", new ArrayList<String>(Arrays.asList("Fifty Shades", "1")));
-            tempHash1.put("MCG1001", new ArrayList<String>(Arrays.asList("The Dark Knight", "20")));
-            tempHash1.put("MCG7000", new ArrayList<String>(Arrays.asList("Sectumsempra", "10")));
-            tempHash1.put("MCG8000", new ArrayList<String>(Arrays.asList("Angels and Demons", "5")));
-            tempHash1.put("MCG9003", new ArrayList<String>(Arrays.asList("Obliviate", "0")));
-            tempHash1.put("MCG9001", new ArrayList<String>(Arrays.asList("Narnia", "0")));
-            tempHash1.put("MCG9002", new ArrayList<String>(Arrays.asList("The Light Runner", "10")));
-
+            tempHash1.put("MCG0001", new ArrayList<String>(Arrays.asList("DSD", "5")));
+            tempHash1.put("MCG0002", new ArrayList<String>(Arrays.asList("ALGO", "0")));
 
             HashMap<String, ArrayList<String>> tempHash2 = new HashMap<String, ArrayList<String>>();
 
-            tempHash2.put("MCG9001", new ArrayList<String>(Arrays.asList("MCGU5100", "MCGU6100")));
-            tempHash2.put("MCG9003", new ArrayList<String>(Arrays.asList("MCGU7100", "MCGU8100")));
-
-            xLib.setLibLendingRec(tempStore);
-            xLib.setLibBooksRec(tempHash1);
-            xLib.setWaitlistRec(tempHash2);
-            xLib.universalPort = 8082;
+            this.setLibLendingRec(tempStore);
+            this.setLibBooksRec(tempHash1);
+            this.setWaitlistRec(tempHash2);
+            this.universalPort = 8082;
             this.interLibraryBlockUsers = new ArrayList<String>();
+            ArrayList<String> holder = new ArrayList<String>(Arrays.asList("MCGM0001", "MCGU0001","MCGU0002"));
+            this.setUserlist(holder);
 
 
-        } else if (xLib.getServername().equals("MONTREALU")) {
+
+        } else if (this.getServername().equals("MONTREALU")) {
             try {
-                xLib.ds = new DatagramSocket();
+                this.ds = new DatagramSocket();
             } catch (SocketException e) {
                 e.printStackTrace();
             }
             HashMap<String, ArrayList<String>> tempStore = new HashMap<String, ArrayList<String>>();
-            tempStore.put("MON1000", new ArrayList<String>(Arrays.asList("Pedigree", "MONU4241", "MONU4242", "MONU4243", "MONU4244", "MONU4245")));
-            tempStore.put("MON1001", new ArrayList<String>(Arrays.asList("Castaway", "MONU5251", "MONU5252", "MONU5253", "MONU5254")));
-            tempStore.put("MON7000", new ArrayList<String>(Arrays.asList("Forrest", "MONU6261", "MONU6262")));
-            tempStore.put("MON9001", new ArrayList<String>(Arrays.asList("Expecto Patronum", "CONU6261", "MONU6265")));
-            tempStore.put("MON9002", new ArrayList<String>(Arrays.asList("Sectumsempra", "MONU6267", "MONU6268")));
-
+            tempStore.put("MON0001", new ArrayList<String>(Arrays.asList("DSD", "5")));
+            tempStore.put("MON0002", new ArrayList<String>(Arrays.asList("ALGO", "0")));
 
             HashMap<String, ArrayList<String>> tempHash1 = new HashMap<String, ArrayList<String>>();
-            tempHash1.put("MON1000", new ArrayList<String>(Arrays.asList("Pedigree", "10")));
-            tempHash1.put("MON1001", new ArrayList<String>(Arrays.asList("Castaway", "20")));
-            tempHash1.put("MON7000", new ArrayList<String>(Arrays.asList("Forrest", "10")));
-            tempHash1.put("MON9001", new ArrayList<String>(Arrays.asList("Expecto Patronum", "0")));
-            tempHash1.put("MON9002", new ArrayList<String>(Arrays.asList("Sectumsempra", "12")));
-            tempHash1.put("MON9100", new ArrayList<String>(Arrays.asList("Narnia", "0")));
-            tempHash1.put("MON9102", new ArrayList<String>(Arrays.asList("Sectumsempra", "10")));
-            tempHash1.put("MON9106", new ArrayList<String>(Arrays.asList("light years", "10")));
 
 
             HashMap<String, ArrayList<String>> tempHash2 = new HashMap<String, ArrayList<String>>();
 
-            tempHash2.put("MON9001", new ArrayList<String>(Arrays.asList("MONU5200", "MONU6200")));
-            tempHash2.put("MON9100", new ArrayList<String>(Arrays.asList("MONU7200", "MONU8200")));
 
-            xLib.setLibLendingRec(tempStore);
-            xLib.setLibBooksRec(tempHash1);
-            xLib.setWaitlistRec(tempHash2);
-            xLib.universalPort = 8083;
+            this.setLibLendingRec(tempStore);
+            this.setLibBooksRec(tempHash1);
+            this.setWaitlistRec(tempHash2);
+            this.universalPort = 8083;
             this.interLibraryBlockUsers = new ArrayList<String>();
+            ArrayList<String> holder = new ArrayList<String>(Arrays.asList("MONM0001", "MONU0001","MONU0002"));
+            this.setUserlist(holder);
+
 
         } else {
             System.out.println("Server is invalid");
-            return null;
         }
-        return xLib;
     }
 
     /**This method helps a manager to add the items into the library
@@ -369,132 +315,224 @@ public class Server_Base implements Runnable, ServerInterface {
         return finalString;
     }
 
+    public String removeItem(String managerId, String itemId, int quantity) {
 
-    /**This method helps a manager to remove an item from the library
-     * @param managerID
-     * @param itemID
-     * @param quantity
-     * @return
-     */
-    public String removeItem(String managerID, String itemID, int quantity) {
-        boolean completeRemove = false;
-        if((quantity == 0)||(quantity < -1))
-        {
-            completeRemove = true;
-        }
-        else
-        {
-            completeRemove = false;
-        }
-        String finalString = "";
-        if (managerID.substring(3, 4).equals("M")) {
+            String finalString = "";
+            if (managerId.substring(3, 4).equals("M")) {
 
-            if (!getLibBooksRec().containsKey(itemID)) {
-                if (syncHeap.containsKey(itemID)) {
-                    System.out.println("The record for this item is currently being used by another user please try after sometime\n");
-                    appendStrToFile("The record for this item is currently being used by another user please try after sometime\n");
-                    return ("The record for this item is currently being used by another user please try after sometime\n");
-                } else {
-                    System.out.println("The item does not exist in the library.\n");
-                    appendStrToFile("The item does not exist in the library.\n");
-                    return ("The item has not been listed in the library.\n");
-                }
-            } else if (completeRemove == true) {
-                String msg = "";
-                syncHeap.put(itemID, managerID);
-                getLibBooksRec().remove(itemID);
-                ArrayList<String> tempUsers = getLendingDetail(itemID);
-                getLibLendingRec().remove(itemID);
-                for (int i = 1; i < tempUsers.size(); i++) {
-                    msg = "The item " + itemID + " has been completely removed from the library. All the copies are being recalled, please return back the item.\n";
-                    updateMessageHash(msg, tempUsers.get(i));
-                    appendStrToFile(msg);
-                    msg = "";
-                }
-                ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
-                System.out.println(waitHolder);
-                for (int iter = 0; iter < waitHolder.size(); iter++) {
-                    this.updateMessageHash("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list", waitHolder.get(iter));
-                    appendStrToFile("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list"+ waitHolder.get(iter));
-                    System.out.println("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
-                    appendStrToFile("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
-                    finalString = finalString + ("Notified the user" + waitHolder.get(iter) + "\n");
-                    appendStrToFile(finalString);
-                    waitHolder.remove(waitHolder.get(iter));
-                }
-                syncHeap.remove(itemID);
-                System.out.println("Notified all the borrowers to return back");
-                appendStrToFile("Notified all the borrowers to return back");
-                System.out.println("The item has been completely removed from the library.\n");
-                appendStrToFile("The item has been completely removed from the library.\n");
-                return ("The item has been removed from the library availability list.\nAll the borrowers are notified to return back.\n");
-
-            } else {
-                if (quantity < 0) {
-                    this.syncHeap.put(itemID, managerID);
-                    ArrayList<String> lendHolder = (ArrayList<String>) getLibLendingRec().get(itemID);
-                    ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
-                    getLibLendingRec().remove(itemID);
-                    getWaitlistRec().remove(itemID);
-
+                if (!getLibBooksRec().containsKey(itemId)) {
+                    if (syncHeap.containsKey(itemId)) {
+                        System.out.println("The record for this item is currently being used by another user please try after sometime\n");
+                        appendStrToFile("The record for this item is currently being used by another user please try after sometime\n");
+                        return ("The record for this item is currently being used by another user please try after sometime\n");
+                    } else {
+                        System.out.println("The item does not exist in the library.\n");
+                        appendStrToFile("The item does not exist in the library.\n");
+                        return ("The item has not been listed in the library.\n");
+                    }
+                } else if (false) {
+                    String msg = "";
+                    syncHeap.put(itemId, managerId);
+                    getLibBooksRec().remove(itemId);
+                    ArrayList<String> tempUsers = getLendingDetail(itemId);
+                    getLibLendingRec().remove(itemId);
+                    for (int i = 1; i < tempUsers.size(); i++) {
+                        msg = "The item " + itemId + " has been completely removed from the library. All the copies are being recalled, please return back the item.\n";
+                        updateMessageHash(msg, tempUsers.get(i));
+                        appendStrToFile(msg);
+                        msg = "";
+                    }
+                    ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemId);
+                    System.out.println(waitHolder);
                     for (int iter = 0; iter < waitHolder.size(); iter++) {
-                        this.updateMessageHash("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list", waitHolder.get(iter));
-                        System.out.println("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
-                        finalString = finalString + ("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list\n");
+                        this.updateMessageHash("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list", waitHolder.get(iter));
+                        appendStrToFile("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list"+ waitHolder.get(iter));
+                        System.out.println("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list");
+                        appendStrToFile("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list");
+                        finalString = finalString + ("Notified the user" + waitHolder.get(iter) + "\n");
+                        appendStrToFile(finalString);
                         waitHolder.remove(waitHolder.get(iter));
                     }
-                    for (int iter2 = 1; iter2 < lendHolder.size(); iter2++) {
-                        this.updateMessageHash("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list", lendHolder.get(iter2));
-                        System.out.println("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
-                        finalString = finalString + ("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list\n");
-                        lendHolder.remove(lendHolder.get(iter2));
-                    }
-                    appendStrToFile(finalString);
-                    this.syncHeap.remove(itemID);
+                    syncHeap.remove(itemId);
+                    System.out.println("Notified all the borrowers to return back");
+                    appendStrToFile("Notified all the borrowers to return back");
+                    System.out.println("The item has been completely removed from the library.\n");
+                    appendStrToFile("The item has been completely removed from the library.\n");
+                    return ("The item has been removed from the library availability list.\nAll the borrowers are notified to return back.\n");
 
                 } else {
-                    ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(itemID);
-                    if (quantity <= Integer.parseInt(bRecHolder.get(1))) {
-                        System.out.println(getLibBooksRec().get(itemID));
-                        ArrayList<String> value = (ArrayList<String>) getLibBooksRec().get(itemID);
-                        syncHeap.put(itemID, managerID);
-                        getLibBooksRec().remove(itemID);
-                        System.out.println(value.get(0) + " " + value.get(1));
-                        if (Integer.parseInt(value.get(1)) > quantity) {
-                            getLibBooksRec().put(itemID, new ArrayList<String>(Arrays.asList((value.get(0)), Integer.toString(Integer.parseInt(value.get(1)) - quantity))));
+                    if (quantity < 0) {
+                        this.syncHeap.put(itemId, managerId);
+                        ArrayList<String> lendHolder = (ArrayList<String>) getLibLendingRec().get(itemId);
+                        ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemId);
+                        getLibLendingRec().remove(itemId);
+                        getWaitlistRec().remove(itemId);
 
-                            System.out.println("The appropriate amount of item have been removed from the unborrowed section");
-                            appendStrToFile("The appropriate amount of item have been removed from the unborrowed section");
-                            return "The appropriate amount of item have been removed from the unborrowed section";
-                        } else {
-                            getLibBooksRec().put(itemID, new ArrayList<String>(Arrays.asList((value.get(0)), "0")));
-                            syncHeap.remove(itemID, managerID);
-                            System.out.println("The item has been removed from the unborrowed section, nothing is left");
-                            appendStrToFile("The item has been removed from the unborrowed section, nothing is left");
-                            return "The item has been removed from the unborrowed section, nothing is left";
+                        for (int iter = 0; iter < waitHolder.size(); iter++) {
+                            this.updateMessageHash("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list", waitHolder.get(iter));
+                            System.out.println("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list");
+                            finalString = finalString + ("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list\n");
+                            waitHolder.remove(waitHolder.get(iter));
                         }
+                        for (int iter2 = 1; iter2 < lendHolder.size(); iter2++) {
+                            this.updateMessageHash("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list", lendHolder.get(iter2));
+                            System.out.println("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list");
+                            finalString = finalString + ("The manager of the item has removed the item: " + itemId + ". Hence you have been removed from the waiting list\n");
+                            lendHolder.remove(lendHolder.get(iter2));
+                        }
+                        appendStrToFile(finalString);
+                        this.syncHeap.remove(itemId);
+
                     } else {
-                        appendStrToFile("The entered value is more than the availablity, cannot remove.");
-                        return ("The entered value is more than the availablity, cannot remove.");
+                        ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(itemId);
+                        if (quantity <= Integer.parseInt(bRecHolder.get(1))) {
+                            System.out.println(getLibBooksRec().get(itemId));
+                            ArrayList<String> value = (ArrayList<String>) getLibBooksRec().get(itemId);
+                            syncHeap.put(itemId, managerId);
+                            getLibBooksRec().remove(itemId);
+                            System.out.println(value.get(0) + " " + value.get(1));
+                            if (Integer.parseInt(value.get(1)) > quantity) {
+                                getLibBooksRec().put(itemId, new ArrayList<String>(Arrays.asList((value.get(0)), Integer.toString(Integer.parseInt(value.get(1)) - quantity))));
+
+                                System.out.println("The appropriate amount of item have been removed from the unborrowed section");
+                                appendStrToFile("The appropriate amount of item have been removed from the unborrowed section");
+                                return "The appropriate amount of item have been removed from the unborrowed section";
+                            } else {
+                                getLibBooksRec().put(itemId, new ArrayList<String>(Arrays.asList((value.get(0)), "0")));
+                                syncHeap.remove(itemId, managerId);
+                                System.out.println("The item has been removed from the unborrowed section, nothing is left");
+                                appendStrToFile("The item has been removed from the unborrowed section, nothing is left");
+                                return "The item has been removed from the unborrowed section, nothing is left";
+                            }
+                        } else {
+                            appendStrToFile("The entered value is more than the availablity, cannot remove.");
+                            return ("The entered value is more than the availablity, cannot remove.");
+                        }
                     }
                 }
+            } else {
+                appendStrToFile("The User is not authorized for this action\n");
+                System.out.println("The User is not authorized for this action");
+                return ("The User is not authorized for this action");
             }
-        } else {
-            appendStrToFile("The User is not authorized for this action\n");
-            System.out.println("The User is not authorized for this action");
-            return ("The User is not authorized for this action");
-        }
-        return finalString;
+            return finalString;
+
     }
 
 
-    /**This method lists down the availability items in a server library
-     * @param managerID
-     * @return
-     */
-    public String listItem(String managerID) {
+
+//    /**This method helps a manager to remove an item from the library
+//     * @param managerID
+//     * @param itemID
+//     * @param quantity
+//     * @param completeRemove
+//     * @return
+//     */
+//    public String removeItem(String managerID, String itemID, int quantity, boolean completeRemove) {
+//        String finalString = "";
+//        if (managerID.substring(3, 4).equals("M")) {
+//
+//            if (!getLibBooksRec().containsKey(itemID)) {
+//                if (syncHeap.containsKey(itemID)) {
+//                    System.out.println("The record for this item is currently being used by another user please try after sometime\n");
+//                    appendStrToFile("The record for this item is currently being used by another user please try after sometime\n");
+//                    return ("The record for this item is currently being used by another user please try after sometime\n");
+//                } else {
+//                    System.out.println("The item does not exist in the library.\n");
+//                    appendStrToFile("The item does not exist in the library.\n");
+//                    return ("The item has not been listed in the library.\n");
+//                }
+//            } else if (completeRemove == true) {
+//                String msg = "";
+//                syncHeap.put(itemID, managerID);
+//                getLibBooksRec().remove(itemID);
+//                ArrayList<String> tempUsers = getLendingDetail(itemID);
+//                getLibLendingRec().remove(itemID);
+//                for (int i = 1; i < tempUsers.size(); i++) {
+//                    msg = "The item " + itemID + " has been completely removed from the library. All the copies are being recalled, please return back the item.\n";
+//                    updateMessageHash(msg, tempUsers.get(i));
+//                    appendStrToFile(msg);
+//                    msg = "";
+//                }
+//                ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
+//                System.out.println(waitHolder);
+//                for (int iter = 0; iter < waitHolder.size(); iter++) {
+//                    this.updateMessageHash("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list", waitHolder.get(iter));
+//                    appendStrToFile("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list"+ waitHolder.get(iter));
+//                    System.out.println("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
+//                    appendStrToFile("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
+//                    finalString = finalString + ("Notified the user" + waitHolder.get(iter) + "\n");
+//                    appendStrToFile(finalString);
+//                    waitHolder.remove(waitHolder.get(iter));
+//                }
+//                syncHeap.remove(itemID);
+//                System.out.println("Notified all the borrowers to return back");
+//                appendStrToFile("Notified all the borrowers to return back");
+//                System.out.println("The item has been completely removed from the library.\n");
+//                appendStrToFile("The item has been completely removed from the library.\n");
+//                return ("The item has been removed from the library availability list.\nAll the borrowers are notified to return back.\n");
+//
+//            } else {
+//                if (quantity < 0) {
+//                    this.syncHeap.put(itemID, managerID);
+//                    ArrayList<String> lendHolder = (ArrayList<String>) getLibLendingRec().get(itemID);
+//                    ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
+//                    getLibLendingRec().remove(itemID);
+//                    getWaitlistRec().remove(itemID);
+//
+//                    for (int iter = 0; iter < waitHolder.size(); iter++) {
+//                        this.updateMessageHash("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list", waitHolder.get(iter));
+//                        System.out.println("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
+//                        finalString = finalString + ("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list\n");
+//                        waitHolder.remove(waitHolder.get(iter));
+//                    }
+//                    for (int iter2 = 1; iter2 < lendHolder.size(); iter2++) {
+//                        this.updateMessageHash("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list", lendHolder.get(iter2));
+//                        System.out.println("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list");
+//                        finalString = finalString + ("The manager of the item has removed the item: " + itemID + ". Hence you have been removed from the waiting list\n");
+//                        lendHolder.remove(lendHolder.get(iter2));
+//                    }
+//                    appendStrToFile(finalString);
+//                    this.syncHeap.remove(itemID);
+//
+//                } else {
+//                    ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(itemID);
+//                    if (quantity <= Integer.parseInt(bRecHolder.get(1))) {
+//                        System.out.println(getLibBooksRec().get(itemID));
+//                        ArrayList<String> value = (ArrayList<String>) getLibBooksRec().get(itemID);
+//                        syncHeap.put(itemID, managerID);
+//                        getLibBooksRec().remove(itemID);
+//                        System.out.println(value.get(0) + " " + value.get(1));
+//                        if (Integer.parseInt(value.get(1)) > quantity) {
+//                            getLibBooksRec().put(itemID, new ArrayList<String>(Arrays.asList((value.get(0)), Integer.toString(Integer.parseInt(value.get(1)) - quantity))));
+//
+//                            System.out.println("The appropriate amount of item have been removed from the unborrowed section");
+//                            appendStrToFile("The appropriate amount of item have been removed from the unborrowed section");
+//                            return "The appropriate amount of item have been removed from the unborrowed section";
+//                        } else {
+//                            getLibBooksRec().put(itemID, new ArrayList<String>(Arrays.asList((value.get(0)), "0")));
+//                            syncHeap.remove(itemID, managerID);
+//                            System.out.println("The item has been removed from the unborrowed section, nothing is left");
+//                            appendStrToFile("The item has been removed from the unborrowed section, nothing is left");
+//                            return "The item has been removed from the unborrowed section, nothing is left";
+//                        }
+//                    } else {
+//                        appendStrToFile("The entered value is more than the availablity, cannot remove.");
+//                        return ("The entered value is more than the availablity, cannot remove.");
+//                    }
+//                }
+//            }
+//        } else {
+//            appendStrToFile("The User is not authorized for this action\n");
+//            System.out.println("The User is not authorized for this action");
+//            return ("The User is not authorized for this action");
+//        }
+//        return finalString;
+//    }
+
+    public String listItem(String managerId) {
         String prepString = "";
-        if (managerID.substring(3, 4).equals("M")) {
+        if (managerId.substring(3, 4).equals("M")) {
             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
 
@@ -511,7 +549,126 @@ public class Server_Base implements Runnable, ServerInterface {
             return ("The User is not authorized for this action");
         }
 
+
     }
+
+    public String addUserInWaitingList(String userId, String ItemId, int numberOfDays) {
+        {
+            int sport =0 ;
+            if (true) {
+                if(this.getServername().substring(0,3).equals(ItemId.substring(0,3))) {
+                    if (getWaitlistRec().containsKey(ItemId)) {
+                        ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(ItemId);
+                        if (waitHolder.contains(userId)) {
+                            appendStrToFile("You are already in the waitlist for this item");
+                            System.out.println("You are already in the waitlist for this item");
+                            return ("You are already in the waitlist for this item");
+                        } else {
+                            getWaitlistRec().remove(ItemId);
+                            waitHolder.add(userId);
+                            getWaitlistRec().put(ItemId, waitHolder);
+                            appendStrToFile("You have been sucessfully waitlisted for the item " + ItemId);
+                            System.out.println("You have been sucessfully waitlisted for the item " + ItemId);
+                            System.out.println(this.getServername());
+                            System.out.println("The waitlidt for the item" + ItemId + " is " + getWaitlistRec().get(ItemId));
+                            return ("You have been sucessfully waitlisted for the item " + ItemId);
+                        }
+                    } else {
+                        ArrayList<String> waitHolder = new ArrayList<String>();
+                        ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(ItemId);
+                        waitHolder.add(userId);
+                        getWaitlistRec().put(ItemId, waitHolder);
+                        appendStrToFile("You have been sucessfully waitlisted for the item " + ItemId);
+                        System.out.println("You have been sucessfully waitlisted for the item " + ItemId);
+                        System.out.println("I am in here" + this.getServername());
+                        System.out.println("The waitlidt for the item" + ItemId + " is " + getWaitlistRec().get(ItemId));
+                        return ("You have been sucessfully waitlisted for the item " + ItemId);
+
+                    }
+                }
+
+                else{
+                    if(ItemId.substring(0,3).equals("CON"))
+                    {
+                        sport = 8081;
+                    }
+                    else if(ItemId.substring(0,3).equals("MCG"))
+                    {
+                        sport = 8082;
+                    }
+                    else if(ItemId.substring(0,3).equals("MON"))
+                    {
+                        sport = 8083;
+                    }
+                    System.out.println("I want to go to"+ItemId.substring(0,3)+ "to return my book");
+                    appendStrToFile("I want to go go to"+ItemId.substring(0,3)+ "to return my book\n");
+                    System.out.println("UDP for calling the correct server on the client's behalf");
+                    appendStrToFile("UDP for calling the correct server on the client's behalf\n");
+                    String i = "W" + ";" + userId + "#" + ItemId + "$" + "@" + Integer.toString(this.universalPort) + "|" + Integer.toString(sport);
+                    byte[] b = (i + "").getBytes();
+                    System.out.println(i);
+                    InetAddress ia = null;
+                    try {
+                        ia = InetAddress.getLocalHost();
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    }
+                    this.dps = new DatagramPacket(b, b.length, ia, 9999);
+                    try {
+                        System.out.println("I am trying to send the request");
+                        appendStrToFile("I am trying to send a request\n");
+                        this.ds.send(dps);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("The call to the remote server has been made \n");
+                    appendStrToFile("The call to the remote server has been made \n");
+                    synchronized (lock) {
+                        try {
+                            lock.wait(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    //finalString = finalString + "This item does not exist in " + getServername() + ".\n";
+                    System.out.println("");
+                    System.out.println("I am in " + getServername());
+                    appendStrToFile("I am in \" + getServername()\n");
+                    System.out.println("This is inside the method:" + this.globalString);
+                    String finalString = "";
+                    finalString  = finalString + this.globalString;
+                    appendStrToFile(finalString);
+                    this.globalString = "";
+                    return finalString;
+                }
+            } else {
+                appendStrToFile ("Invalid response");
+                return ("Invalid response");
+            }
+        }
+    }
+
+//    public String listItemAvailability(String managerID) {
+//        String prepString = "";
+//        if (managerID.substring(3, 4).equals("M")) {
+//            Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
+//            for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
+//
+//                //System.out.print(entry.getKey());
+//                ArrayList<String> temp_holder = (ArrayList<String>) entry.getValue();
+//                //System.out.println(": Name: "+temp_holder[0]+", "+"Availability: "+temp_holder[1]+"\n");
+//                prepString = prepString + entry.getKey() + ": Name: " + temp_holder.get(0) + ", " + "Availability: " + temp_holder.get(1) + "\n";
+//            }
+//            System.out.println(prepString);
+//            return prepString;
+//        } else {
+//            System.out.println("The User is not authorized for this action");
+//            appendStrToFile("The User is not authorized for this action. \n");
+//            return ("The User is not authorized for this action");
+//        }
+//
+//    }
 
     /**This method removed the item from a library after checking the mentioned validation rules
      * @param userID
@@ -660,6 +817,7 @@ public class Server_Base implements Runnable, ServerInterface {
                     appendStrToFile("I want to go to Mcgill to borrow my book\n");
                     System.out.println("UDP for calling the correct server on the client's behalf");
                     appendStrToFile("UDP for calling the correct server on the client's behalf\n");
+                    System.out.println("I am in "+ this.servername);
                     String i = "F" + ";" + userID + "#" + itemID + "$" + Integer.toString(numberOfDays) + "@" + Integer.toString(this.universalPort) + "|" + Integer.toString(8082);
                     byte[] b = (i + "").getBytes();
                     System.out.println(i);
@@ -946,15 +1104,23 @@ public class Server_Base implements Runnable, ServerInterface {
                                 getWaitlistRec().remove(itemID);
                                 lendHolder.remove(userID);
                                 lendHolder.add(waitHolder.get(0));
+                                System.out.println(lendHolder);
+                                //call UDP for foreign library users.
+//                                if(waitHolder.get(0) != this.getServername().substring(0,3))
+//                                {
+//                                    System.out.println("I got inside the right placeZZZZZZZZZZZZZZZZZZZZZZZZZZ.");
+//                                }
                                 updateMessageHash("Your waitlist for the item " + itemID + " is clear + the item has been issued to you", waitHolder.get(0));
                                 appendStrToFile("Your waitlist for the item " + itemID + " is clear + the item has been issued to you"+ waitHolder.get(0));
                                 System.out.println("The book has been issued to the first waitlisted person.");
                                 appendStrToFile("The book has been issued to the first waitlisted person.");
                                 waitHolder.remove(waitHolder.get(0));
+                                System.out.println(waitHolder);
                                 finalString = finalString + "The book has been successfully returned\n";
                                 getLibLendingRec().put(itemID, lendHolder);
                                 getLibBooksRec().put(itemID, bRecHolder);
-                                getWaitlistRec().put(itemID, waitHolder);
+                                if(!(waitHolder.size() == 0))
+                                    getWaitlistRec().put(itemID, waitHolder);
                                 getSyncHeap().remove(itemID);
                             } else {
                                 bRecHolder.set(1, Integer.toString(Integer.parseInt(bRecHolder.get(1)) + 1));
@@ -1182,8 +1348,17 @@ public class Server_Base implements Runnable, ServerInterface {
 
         return finalString;
     }
-
-
+    public String validateUser(String userId) {
+        String returnString;
+        if(this.userlist.contains(userId))
+        {
+            returnString = verify(userId);
+        }
+        else {
+            return ("Its not a valid User");
+        }
+        return returnString;
+    }
 
     /**This method verifies the ID and the connection
      * @param ID
@@ -1192,6 +1367,7 @@ public class Server_Base implements Runnable, ServerInterface {
     public String verify(String ID) {
         String finalString = "";
         System.out.println("*************************************************************************");
+        System.out.println(ID);
         System.out.println("Verifying the connection at " + getServername() + " Library.");
         appendStrToFile("Verifying the connection at " + getServername() + " Library.");
         if (getServername().substring(0, 3).equals(ID.substring(0, 3))) {
@@ -1232,7 +1408,7 @@ public class Server_Base implements Runnable, ServerInterface {
             finalString = finalString + "Your options are: \n1. Press 1 for adding an item to the library.\n";
             finalString = finalString + "2. Press 2 for removing an item from the library.\n";
             finalString = finalString + "3. Press 3 for checking the available list of items.\n";
-            finalString = finalString + "0. Press 0 for exit.\n";
+            finalString = finalString + "0. Press 0 for exit.\n true";
 
         }
         if (ID.substring(3, 4).equals("U")) {
@@ -1242,7 +1418,7 @@ public class Server_Base implements Runnable, ServerInterface {
             finalString = finalString + "4. Press 4 for exchanging an item you currently own with another one\n";
             finalString = finalString + "0. Press 0 for exit.\n";
             finalString = finalString + "Note: Only select the borrow and remove options if you know the correct item ID.\n";
-            finalString = finalString + "Else you can lookup using our find item feature.\n";
+            finalString = finalString + "Else you can lookup using our find item feature.\n true";
         }
 
         appendStrToFile(finalString);
@@ -1364,33 +1540,94 @@ public class Server_Base implements Runnable, ServerInterface {
      * @param userID
      * @return
      */
-    public String addUserInWaitingList( String itemID, String userID,int numberOfDays) {
-        if (true) {
-            if (getWaitlistRec().containsKey(itemID)) {
-                ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
-                if (waitHolder.contains(userID)) {
-                    appendStrToFile("You are already in the waitlist for this item");
-                    System.out.println("You are already in the waitlist for this item");
-                    return ("You are already in the waitlist for this item");
+    public String addToWait(String parm, String itemID, String userID) {
+        int sport =0 ;
+        if (parm.equals("Y")) {
+            if(this.getServername().substring(0,3).equals(itemID.substring(0,3))) {
+                if (getWaitlistRec().containsKey(itemID)) {
+                    ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
+                    if (waitHolder.contains(userID)) {
+                        appendStrToFile("You are already in the waitlist for this item");
+                        System.out.println("You are already in the waitlist for this item");
+                        return ("You are already in the waitlist for this item");
+                    } else {
+                        getWaitlistRec().remove(itemID);
+                        waitHolder.add(userID);
+                        getWaitlistRec().put(itemID, waitHolder);
+                        appendStrToFile("You have been sucessfully waitlisted for the item " + itemID);
+                        System.out.println("You have been sucessfully waitlisted for the item " + itemID);
+                        System.out.println(this.getServername());
+                        System.out.println("The waitlidt for the item" + itemID + " is " + getWaitlistRec().get(itemID));
+                        return ("You have been sucessfully waitlisted for the item " + itemID);
+                    }
                 } else {
-                    getWaitlistRec().remove(itemID);
+                    ArrayList<String> waitHolder = new ArrayList<String>();
+                    ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(itemID);
                     waitHolder.add(userID);
                     getWaitlistRec().put(itemID, waitHolder);
                     appendStrToFile("You have been sucessfully waitlisted for the item " + itemID);
                     System.out.println("You have been sucessfully waitlisted for the item " + itemID);
-                    System.out.println("The waitlidt for the item" +itemID+" is "+getWaitlistRec().get(itemID));
+                    System.out.println("I am in here" + this.getServername());
+                    System.out.println("The waitlidt for the item" + itemID + " is " + getWaitlistRec().get(itemID));
                     return ("You have been sucessfully waitlisted for the item " + itemID);
-                }
-            } else {
-                ArrayList<String> waitHolder = new ArrayList<String>();
-                ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(itemID);
-                waitHolder.add(userID);
-                getWaitlistRec().put(itemID, waitHolder);
-                appendStrToFile ("You have been sucessfully waitlisted for the item " + itemID);
-                System.out.println("You have been sucessfully waitlisted for the item " + itemID);
-                System.out.println("The waitlidt for the item" +itemID+" is "+getWaitlistRec().get(itemID));
-                return ("You have been sucessfully waitlisted for the item " + itemID);
 
+                }
+            }
+
+            else{
+                if(itemID.substring(0,3).equals("CON"))
+                {
+                    sport = 8081;
+                }
+                else if(itemID.substring(0,3).equals("MCG"))
+                {
+                    sport = 8082;
+                }
+                else if(itemID.substring(0,3).equals("MON"))
+                {
+                    sport = 8083;
+                }
+                System.out.println("I want to go to"+itemID.substring(0,3)+ "to return my book");
+                appendStrToFile("I want to go go to"+itemID.substring(0,3)+ "to return my book\n");
+                System.out.println("UDP for calling the correct server on the client's behalf");
+                appendStrToFile("UDP for calling the correct server on the client's behalf\n");
+                String i = "W" + ";" + userID + "#" + itemID + "$" + "@" + Integer.toString(this.universalPort) + "|" + Integer.toString(sport);
+                byte[] b = (i + "").getBytes();
+                System.out.println(i);
+                InetAddress ia = null;
+                try {
+                    ia = InetAddress.getLocalHost();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+                this.dps = new DatagramPacket(b, b.length, ia, 9999);
+                try {
+                    System.out.println("I am trying to send the request");
+                    appendStrToFile("I am trying to send a request\n");
+                    this.ds.send(dps);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("The call to the remote server has been made \n");
+                appendStrToFile("The call to the remote server has been made \n");
+                synchronized (lock) {
+                    try {
+                        lock.wait(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                //finalString = finalString + "This item does not exist in " + getServername() + ".\n";
+                System.out.println("");
+                System.out.println("I am in " + getServername());
+                appendStrToFile("I am in \" + getServername()\n");
+                System.out.println("This is inside the method:" + this.globalString);
+                String finalString = "";
+                finalString  = finalString + this.globalString;
+                appendStrToFile(finalString);
+                this.globalString = "";
+                return finalString;
             }
         } else {
             appendStrToFile ("Invalid response");
@@ -1409,8 +1646,9 @@ public class Server_Base implements Runnable, ServerInterface {
                 this.dpr = new DatagramPacket(b1, b1.length);
                 System.out.println("I am open for listen");
                 appendStrToFile("I am open for listen");
-                InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8081);
-                ds1.bind(address);
+                //InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8081);
+                //ds1.bind(address);
+                this.ds1 = new DatagramSocket(8081);
                 this.ds1.receive(dpr);
                 System.out.println("I am in " + getServername());
                 appendStrToFile("I am in " + getServername());
@@ -1634,6 +1872,37 @@ public class Server_Base implements Runnable, ServerInterface {
                         System.out.println("At the end " + this.globalString);
                         appendStrToFile("At the end " + this.globalString);
                     }
+                    else if (result.startsWith("W")) {
+                        result = result.trim();
+                        String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
+                        String vitemID = result.substring(result.indexOf("#") + 1, result.indexOf("$"));
+                        String finalResult = null;
+                        finalResult = this.addToWait("Y",vitemID,vuserID);
+                        System.out.println("zzzzzzzzzzzzzz"+finalResult);
+                        String rece = "V" + ";" + finalResult + result.substring(result.indexOf("@"));
+                        byte[] b = (rece + "").getBytes();
+                        InetAddress ia = null;
+                        try {
+                            ia = InetAddress.getLocalHost();
+                            this.dps = new DatagramPacket(b, b.length, ia, 9999);
+                            //this.dps = new DatagramPacket(b, b.length, address, Integer.parseInt(result.substring(result.indexOf('|') + 1)));
+                            System.out.println("I am sending the packet");
+                            appendStrToFile("I am sending the packet");
+                            this.ds.send(this.dps);
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else if (result.startsWith("V")) {
+                        result = result.trim();
+                        String temp1 = result.substring(2, result.indexOf('@'));
+                        this.globalString = temp1;
+                        System.out.println("At the end " + this.globalString);
+                        appendStrToFile("At the end " + this.globalString);
+
+                    }
 
 
                 }
@@ -1644,8 +1913,9 @@ public class Server_Base implements Runnable, ServerInterface {
                 this.dpr = new DatagramPacket(b1, b1.length);
                 System.out.println("I am open for listen");
                 appendStrToFile("I am open for listen");
-                InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8082);
-                ds1.bind(address);
+                //InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8082);
+                //ds1.bind(address);
+                this.ds1 = new DatagramSocket(8082);
                 this.ds1.receive(dpr);
                 System.out.println("I am in " + getServername());
                 appendStrToFile("I am in " + getServername());
@@ -1872,6 +2142,39 @@ public class Server_Base implements Runnable, ServerInterface {
                         System.out.println("At the end " + this.globalString);
                         appendStrToFile("At the end " + this.globalString);
                     }
+                    else if (result.startsWith("W")) {
+                        result = result.trim();
+                        String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
+                        String vitemID = result.substring(result.indexOf("#") + 1, result.indexOf("$"));
+                        String finalResult = null;
+                        System.out.println(vitemID);
+                        System.out.println(vuserID);
+                        finalResult = this.addToWait("Y",vitemID,vuserID);
+                        System.out.println("Zzzzzzzzzzzzzzzzz" + finalResult);
+                        String rece = "V" + ";" + finalResult + result.substring(result.indexOf("@"));
+                        byte[] b = (rece + "").getBytes();
+                        InetAddress ia = null;
+                        try {
+                            ia = InetAddress.getLocalHost();
+                            this.dps = new DatagramPacket(b, b.length, ia, 9999);
+                            //this.dps = new DatagramPacket(b, b.length, address, Integer.parseInt(result.substring(result.indexOf('|') + 1)));
+                            System.out.println("I am sending the packet");
+                            appendStrToFile("I am sending the packet");
+                            this.ds.send(this.dps);
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else if (result.startsWith("V")) {
+                        result = result.trim();
+                        String temp1 = result.substring(2, result.indexOf('@'));
+                        this.globalString = temp1;
+                        System.out.println("At the end " + this.globalString);
+                        appendStrToFile("At the end " + this.globalString);
+
+                    }
 
                 }
             }
@@ -1882,8 +2185,9 @@ public class Server_Base implements Runnable, ServerInterface {
                     this.dpr = new DatagramPacket(b1, b1.length);
                     System.out.println("I am open for listen");
                     appendStrToFile("I am open for listen");
-                    InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8083);
-                    ds1.bind(address);
+                    //InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8083);
+                    //ds1.bind(address);
+                    this.ds1 = new DatagramSocket(8083);
                     this.ds1.receive(dpr);
                     System.out.println("I am in " + getServername());
                     appendStrToFile("I am in " + getServername());
@@ -2113,12 +2417,43 @@ public class Server_Base implements Runnable, ServerInterface {
                             System.out.println("At the end " + this.globalString);
                             appendStrToFile("At the end " + this.globalString);
                         }
+                        else if (result.startsWith("W")) {
+                            result = result.trim();
+                            String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
+                            String vitemID = result.substring(result.indexOf("#") + 1, result.indexOf("$"));
+                            String finalResult = null;
+                            finalResult = this.addToWait("Y",vitemID,vuserID);
+                            System.out.println("zzzzzzzzzzzzzzzzzzzz"+finalResult);
+                            String rece = "V" + ";" + finalResult + result.substring(result.indexOf("@"));
+                            byte[] b = (rece + "").getBytes();
+                            InetAddress ia = null;
+                            try {
+                                ia = InetAddress.getLocalHost();
+                                this.dps = new DatagramPacket(b, b.length, ia, 9999);
+                                //this.dps = new DatagramPacket(b, b.length, address, Integer.parseInt(result.substring(result.indexOf('|') + 1)));
+                                System.out.println("I am sending the packet");
+                                appendStrToFile("I am sending the packet");
+                                this.ds.send(this.dps);
+                            } catch (UnknownHostException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else if (result.startsWith("V")) {
+                            result = result.trim();
+                            String temp1 = result.substring(2, result.indexOf('@'));
+                            this.globalString = temp1;
+                            System.out.println("At the end " + this.globalString);
+                            appendStrToFile("At the end " + this.globalString);
+
+                        }
 
                     }
                 }
             }
             this.ds1.close();
-            this.ds1 = new DatagramSocket(null);
+            //this.ds1 = new DatagramSocket(null);
         }
 
     }
@@ -2441,6 +2776,8 @@ public class Server_Base implements Runnable, ServerInterface {
 
 
         return false;
+
+
     }
     @Override
     public void run() {
@@ -2463,22 +2800,13 @@ public class Server_Base implements Runnable, ServerInterface {
             FileWriter fw = new FileWriter("./Server_BaseLog.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(str);
-            System.out.println("Write was successful");
+            //System.out.println("Write was successful");
             bw.newLine();
             bw.close();
 
         }
         catch (IOException e) {
             System.out.println("exception occoured" + e);
-        }
-    }
-    public String validateUser(String userId)
-    {
-        if(this.registeredUser.contains(userId)) {
-            return "True";
-        }
-        else {
-            return "False";
         }
     }
 
