@@ -56,6 +56,16 @@ public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
     orb = orb_val;
   }
 
+  public static boolean simulateSoftwareBug = true;
+
+  public String simulateSoftwareBug() {
+    if (simulateSoftwareBug) {
+      return "false";
+    } else {
+      //alternative implementation in case of software bug
+      return "true";
+    }
+  }
 
   public String findItem(String userId, String itemName) {
     logger.info(userId + "requested to find item" + itemName);

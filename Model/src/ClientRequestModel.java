@@ -101,6 +101,10 @@ public class ClientRequestModel implements Serializable {
     this.userId = userId;
   }
 
+  public ClientRequestModel(String methodName) {
+    this.methodName = methodName;
+  }
+
   public int getRequestId() {
     return requestId;
   }

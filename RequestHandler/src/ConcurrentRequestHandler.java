@@ -38,21 +38,23 @@ public class ConcurrentRequestHandler extends Thread {
 /*
       String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
 */
-      String replicaName = "Sarvesh";
+      // String replicaName = "Sarvesh";
       ServerInterface serverInterface = ServerFactory
-          .getServerObject(replicaName,
+          .getServerObject(RequestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
       responseString = getResponse(objForRM, serverInterface);
       String[] responseArray = responseString.split(":");
       ResponseModel sendToFE = new ResponseModel();
       sendToFE.setClientId(objForRM.getUserId());
       sendToFE.setRequestId(objForRM.getRequestId());
-      sendToFE.setResponse(responseArray[0]);
+      sendToFE.setResponse(responseString.trim());
+      sendToFE.setReplicaName(RequestHandlerMain.replicaName);
+      byte[] dataToSend = getByteArrayOfObj(sendToFE);
       DatagramSocket socket = new DatagramSocket();
-      DatagramPacket response = new DatagramPacket(responseString.getBytes(),
-          responseString.length(),
+      DatagramPacket response = new DatagramPacket(dataToSend,
+          dataToSend.length,
           request.getAddress(), objForRM.getFrontEndPort());
-        System.out.println(responseString);
+      System.out.println(responseString);
       socket.send(response);
     } catch (ClassNotFoundException | IOException e) {
       e.printStackTrace();
@@ -60,6 +62,14 @@ public class ConcurrentRequestHandler extends Thread {
       e.printStackTrace();
     }
 
+  }
+
+  private byte[] getByteArrayOfObj(ResponseModel sendToFE) throws IOException {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(bos);
+    oos.writeObject(sendToFE);
+    oos.flush();
+    return bos.toByteArray();
   }
 
   private String getResponse(ClientRequestModel objForRM,
@@ -100,6 +110,9 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (objForRM.getMethodName()
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
       responseString = serverInterface.findItem(objForRM.getUserId(), objForRM.getItemName());
+    } else if (objForRM.getMethodName()
+        .equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
+      responseString = serverInterface.simulateSoftwareBug();
     }
     return responseString;
   }
