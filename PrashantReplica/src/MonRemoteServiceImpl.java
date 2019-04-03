@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import org.omg.CORBA.ORB;
 
-public class MonRemoteServiceImpl implements ServerInterface {
+public class MonRemoteServiceImpl extends Thread implements ServerInterface {
 
   HashMap<String, LibraryModel> data = new HashMap<>();
   HashMap<String, ArrayList<String>> currentBorrowers = new HashMap<>();
@@ -20,6 +21,9 @@ public class MonRemoteServiceImpl implements ServerInterface {
   HashSet<String> completelyRemovedItems = new HashSet<String>();//removed items by Manager
   Logger logger = null;
   String lib = LibConstants.MON_REG;
+  DatagramPacket packet;
+  private byte[] buf;
+  private DatagramSocket socket;
   private ORB orb;
   static MonRemoteServiceImpl exportedObj;
 
@@ -739,81 +743,92 @@ public class MonRemoteServiceImpl implements ServerInterface {
       try {
         logger = ServerUtils
             .setupLogger(Logger.getLogger("MONServerlog"), "MONServer.log", true);
+        exportedObj = new MonRemoteServiceImpl(logger);
+        main(null);
+
       } catch (IOException e) {
         e.printStackTrace();
+      } finally {
+        return exportedObj;
       }
-      exportedObj = new MonRemoteServiceImpl(logger);
+
     }
     return exportedObj;
   }
 
   public static void main(String args[]) throws IOException {
-
-    DatagramSocket socket = new DatagramSocket(LibConstants.UDP_MON_PORT);
-    byte[] buf = new byte[256];
-    try {
-      Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-          boolean running = true;
-          System.out.println("UDP Server is listening on port" + LibConstants.UDP_MON_PORT);
-          DatagramPacket reponsePacket = null;
-          while (running) {
-            DatagramPacket packet
-                = new DatagramPacket(buf, buf.length);
-            try {
-              socket.receive(packet);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-
-            InetAddress address = packet.getAddress();
-            int port = packet.getPort();
-            packet = new DatagramPacket(buf, buf.length, address, port);
-            String received
-                = new String(packet.getData(), 0, packet.getLength());
-            byte[] data = packet.getData();
-            ByteArrayInputStream in = new ByteArrayInputStream(data);
-            ObjectInputStream is = null;
-            try {
-              is = new ObjectInputStream(in);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-            try {
-              assert is != null;
-              UdpRequestModel request = (UdpRequestModel) is.readObject();
-              MonRemoteServiceImpl.getMontrealObject().logger
-                  .info(request.getMethodName() + " is called by " + address + ":" + port);
-              String response = null;
-              reponsePacket = getDatagramPacket(reponsePacket, address, port, request, response,
-                  MonRemoteServiceImpl.getMontrealObject(),
-                  MonRemoteServiceImpl.getMontrealObject().logger);
-              MonRemoteServiceImpl.getMontrealObject().logger
-                  .info("sending response " + reponsePacket.getData());
-
-            } catch (ClassNotFoundException e) {
-              e.printStackTrace();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-            try {
-              socket.send(reponsePacket);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-          }
-
-        }
-      };
-      runnable.run();
-    } catch (Exception re) {
-      MonRemoteServiceImpl.getMontrealObject().logger.info("Exception " + re);
-    } finally {
-      ClientUtilities.closeLoggerHandlers(MonRemoteServiceImpl.getMontrealObject().logger);
-      socket.close();
-    }
+    getMontrealObject().start();
   }
+
+  @Override
+  public void run() {
+    boolean running = true;
+    System.out.println("UDP Server is listening on port" + LibConstants.UDP_MON_PORT);
+    DatagramPacket reponsePacket = null;
+    DatagramSocket socket = null;
+    try {
+      socket = new DatagramSocket(LibConstants.UDP_MON_PORT);
+    } catch (SocketException e) {
+      e.printStackTrace();
+    }
+
+    byte[] buf = new byte[1000];
+    System.out.println("UDP Server is listening on port" + LibConstants.UDP_MON_PORT);
+    while (running) {
+      DatagramPacket packet
+          = new DatagramPacket(buf, buf.length);
+      try {
+
+       /* ConcordiaRemoteServiceImpl concordiaRemoteService = new ConcordiaRemoteServiceImpl(packet,
+            buf, socket);
+        concordiaRemoteService.start();*/
+        this.packet = packet;
+        this.buf = buf;
+        this.socket = socket;
+        socket.receive(packet);
+        InetAddress address = packet.getAddress();
+        int port = packet.getPort();
+        packet = new DatagramPacket(buf, buf.length, address, port);
+        String received
+            = new String(packet.getData(), 0, packet.getLength());
+        byte[] data = packet.getData();
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = null;
+        try {
+          is = new ObjectInputStream(in);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        try {
+          assert is != null;
+          UdpRequestModel request = (UdpRequestModel) is.readObject();
+          MonRemoteServiceImpl.getMontrealObject().logger
+              .info(request.getMethodName() + " is called by " + address + ":" + port);
+          String response = null;
+          reponsePacket = getDatagramPacket(reponsePacket, address, port, request, response,
+              MonRemoteServiceImpl.getMontrealObject(),
+              MonRemoteServiceImpl.getMontrealObject().logger);
+          MonRemoteServiceImpl.getMontrealObject().logger
+              .info("sending response " + reponsePacket.getData());
+
+        } catch (ClassNotFoundException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        try {
+          socket.send(reponsePacket);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+
+  }
+
 
   private static synchronized DatagramPacket getDatagramPacket(DatagramPacket reponsePacket,
       InetAddress address,

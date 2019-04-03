@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import org.omg.CORBA.ORB;
 
-public class McGillRemoteServiceImpl implements ServerInterface {
+public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
 
   HashMap<String, LibraryModel> data = new HashMap<>();
   HashMap<String, ArrayList<String>> currentBorrowers = new HashMap<>();
@@ -769,76 +770,85 @@ public class McGillRemoteServiceImpl implements ServerInterface {
       try {
         logger = ServerUtils
             .setupLogger(Logger.getLogger("McGillServerLog"), "McGillServerLog.log", true);
+        exportedObj = new McGillRemoteServiceImpl(logger);
+        main(null);
+
       } catch (IOException e) {
         e.printStackTrace();
+      } finally {
+        return exportedObj;
       }
-      exportedObj = new McGillRemoteServiceImpl(logger);
+
     }
     return exportedObj;
   }
 
   public static void main(String args[]) throws IOException {
+    getMcGillObject().start();
+  }
 
+
+  @Override
+  public void run() {
+    boolean running = true;
+    System.out.println("UDP Server is listening on port" + LibConstants.UDP_MCG_PORT);
+    DatagramPacket reponsePacket = null;
     String registryURL;
-    DatagramSocket socket = new DatagramSocket(LibConstants.UDP_MCG_PORT);
+    DatagramSocket socket = null;
+    try {
+      socket = new DatagramSocket(LibConstants.UDP_MCG_PORT);
+    } catch (SocketException e) {
+      e.printStackTrace();
+    }
     byte[] buf = new byte[1000];
     try {
-
-      Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-          boolean running = true;
-          System.out.println("UDP Server is listening on port" + LibConstants.UDP_MCG_PORT);
-          DatagramPacket reponsePacket = null;
-          while (running) {
-            DatagramPacket packet
-                = new DatagramPacket(buf, buf.length);
-            try {
-              socket.receive(packet);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-
-            InetAddress address = packet.getAddress();
-            int port = packet.getPort();
-            packet = new DatagramPacket(buf, buf.length, address, port);
-            String received
-                = new String(packet.getData(), 0, packet.getLength());
-            byte[] data = packet.getData();
-            ByteArrayInputStream in = new ByteArrayInputStream(data);
-            ObjectInputStream is = null;
-            try {
-              is = new ObjectInputStream(in);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-            try {
-              assert is != null;
-              UdpRequestModel request = (UdpRequestModel) is.readObject();
-              McGillRemoteServiceImpl.getMcGillObject().logger
-                  .info(request.getMethodName() + " is called by " + address + ":" + port);
-              String response = null;
-              reponsePacket = getDatagramPacket(reponsePacket, address, port, request, response,
-                  McGillRemoteServiceImpl.getMcGillObject(),
-                  McGillRemoteServiceImpl.getMcGillObject().logger);
-              McGillRemoteServiceImpl.getMcGillObject().logger
-                  .info("sending response " + reponsePacket.getData());
-
-            } catch (ClassNotFoundException e) {
-              e.printStackTrace();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-            try {
-              socket.send(reponsePacket);
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-          }
-          socket.close();
+      while (running) {
+        DatagramPacket packet
+            = new DatagramPacket(buf, buf.length);
+        try {
+          socket.receive(packet);
+        } catch (IOException e) {
+          e.printStackTrace();
         }
-      };
-      runnable.run();
+
+        InetAddress address = packet.getAddress();
+        int port = packet.getPort();
+        packet = new DatagramPacket(buf, buf.length, address, port);
+        String received
+            = new String(packet.getData(), 0, packet.getLength());
+        byte[] data = packet.getData();
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = null;
+        try {
+          is = new ObjectInputStream(in);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        try {
+          assert is != null;
+          UdpRequestModel request = (UdpRequestModel) is.readObject();
+          McGillRemoteServiceImpl.getMcGillObject().logger
+              .info(request.getMethodName() + " is called by " + address + ":" + port);
+          String response = null;
+          reponsePacket = getDatagramPacket(reponsePacket, address, port, request, response,
+              McGillRemoteServiceImpl.getMcGillObject(),
+              McGillRemoteServiceImpl.getMcGillObject().logger);
+          McGillRemoteServiceImpl.getMcGillObject().logger
+              .info("sending response " + reponsePacket.getData());
+
+        } catch (ClassNotFoundException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        try {
+          socket.send(reponsePacket);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      socket.close();
+
 
     } catch (Exception re) {
       McGillRemoteServiceImpl.getMcGillObject().logger.info("Exception " + re);
@@ -846,6 +856,7 @@ public class McGillRemoteServiceImpl implements ServerInterface {
     } finally {
 
     }
+
   }
 
   /**
