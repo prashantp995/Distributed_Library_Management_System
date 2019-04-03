@@ -65,7 +65,6 @@ public class ConcurrentRequestHandler extends Thread {
   private String getResponse(ClientRequestModel objForRM,
       ServerInterface serverInterface) {
     String responseString = null;
-
     if (objForRM.getMethodName().equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
       responseString = serverInterface.listItem(objForRM.getUserId());
     } else if (objForRM.getMethodName()

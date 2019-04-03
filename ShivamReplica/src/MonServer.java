@@ -116,7 +116,7 @@ public class MonServer implements Runnable, ServerInterface{
         monWaitlist.put("MON0003", wait03);
         monWaitlist.put("MON0002", wait02);
         monWaitlist.put("MON0001", wait);*/
-        Thread t = new Thread(this);
+        new Thread(this).start();
      /*   InterServComServer mon = new InterServComServer(2,null,getMonObject());
         Thread interServMon = new Thread(mon);
         interServMon.start();*/
@@ -670,6 +670,7 @@ public class MonServer implements Runnable, ServerInterface{
                 InetAddress aHost = InetAddress.getLocalHost();
                 if(itemId.startsWith("MCG")){
                     DatagramPacket req = new DatagramPacket(request, request.length,aHost,mcgPort);
+                    logger.info("Sending to MCG");
                     aSocket.send(req);
                     byte [] buffer1 = new byte[1000];
                     DatagramPacket rep = new DatagramPacket(buffer1, buffer1.length);
@@ -679,9 +680,11 @@ public class MonServer implements Runnable, ServerInterface{
                 }
                 else if(itemId.startsWith("CON")){
                     DatagramPacket req = new DatagramPacket(request, request.length,aHost,conPort);
+                    logger.info("Sending to CON");
                     aSocket.send(req);
                     byte [] buffer1 = new byte[1000];
                     DatagramPacket rep = new DatagramPacket(buffer1, buffer1.length);
+
                     aSocket.receive(rep);
                     String replyString = new String(rep.getData());
                     return replyString;

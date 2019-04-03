@@ -34,12 +34,8 @@ public class ConServer implements Runnable, ServerInterface {
      */
     public ConServer()  {
         super();
-        if(exportedObject!=null){
-            System.out.println("Do not come here");
-        }
         DataModel book1 = new DataModel();
         DataModel book2 = new DataModel();
-        DataModel book3 = new DataModel();
         book1.setItemName("DSD");
         book2.setItemName("ALGO");
         book1.setQuantity(5);
@@ -75,7 +71,7 @@ public class ConServer implements Runnable, ServerInterface {
         conWaitlist.put("CON0002", wait02);
         conWaitlist.put("CON0001", wait);
 
-        new Thread(this);
+        new Thread(this).start();
         /*InterServComServer con = new InterServComServer(3,null,getConcordiaObject());
         Thread interServCon = new Thread(con);
         interServCon.start();*/
@@ -114,6 +110,7 @@ public class ConServer implements Runnable, ServerInterface {
         DatagramPacket request = new DatagramPacket(buffer, buffer.length);
         System.out.println("conwait ready");
         aSocket.receive(request);
+        System.out.println("In concordia");
         ObjectInputStream iStream;
         iStream = new ObjectInputStream(new ByteArrayInputStream(request.getData()));
         DataModel pack = (DataModel) iStream.readObject();
@@ -686,6 +683,7 @@ public class ConServer implements Runnable, ServerInterface {
                 InetAddress aHost = InetAddress.getLocalHost();
                 if (itemId.startsWith("MCG")) {
                     DatagramPacket req = new DatagramPacket(request, request.length, aHost, mcgPort);
+                    logger.info("Sending to MCG");
                     aSocket.send(req);
                     byte[] buffer1 = new byte[1000];
                     DatagramPacket rep = new DatagramPacket(buffer1, buffer1.length);
@@ -694,6 +692,7 @@ public class ConServer implements Runnable, ServerInterface {
                     return replyString;
                 } else if (itemId.startsWith("MON")) {
                     DatagramPacket req = new DatagramPacket(request, request.length, aHost, monPort);
+                    logger.info("Sending to MON");
                     aSocket.send(req);
 /*
                     System.out.println("request sent");
