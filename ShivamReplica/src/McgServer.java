@@ -155,7 +155,9 @@ public class McgServer implements Runnable, ServerInterface {
     public void getWaitRequest() throws Exception {
         try {
         DatagramSocket aSocket = new DatagramSocket(9987);
-        byte[] buffer = new byte[1000];
+        byte[] buffer;
+        while(true){
+            buffer = new byte[1000];
         DatagramPacket request = new DatagramPacket(buffer,buffer.length);
             System.out.println("mcgwait");
         aSocket.receive(request);
@@ -176,7 +178,7 @@ public class McgServer implements Runnable, ServerInterface {
                 DatagramPacket re = new DatagramPacket(response, response.length, request.getAddress(), request.getPort());
                 aSocket.send(re);
             }
-        } catch (Exception e) {
+        } }catch (Exception e) {
             System.out.println("Exception in accessing the userId in getWaitRequest");
 
         }

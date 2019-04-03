@@ -145,31 +145,41 @@ public class MonServer implements Runnable, ServerInterface{
      * @throws ClassNotFoundException
      * This method performs the interserver waitlisting for all the libraries.
      */
-    public void getWaitRequest()  {
-        try{
-        DatagramSocket aSocket = new DatagramSocket(9986);
-        byte[] buffer = new byte[1000];
-        DatagramPacket request = new DatagramPacket(buffer,buffer.length);
-        System.out.println("monwait");
-        aSocket.receive(request);
-        System.out.println("request received");
-        ObjectInputStream iStream ;
-        iStream = new ObjectInputStream(new ByteArrayInputStream(request.getData()));
-        DataModel pack = (DataModel) iStream.readObject();
-        iStream.close();
-        String reply;
-            if (pack.getUserId().equals("")) {
-                int intReply = Integer.parseInt(getItemAvailability(pack.getItemId()));
-                byte[] response = Integer.toString(intReply).getBytes();
-                DatagramPacket re = new DatagramPacket(response, response.length, request.getAddress(), request.getPort());
-                aSocket.send(re);
-            } else {
-                reply = this.addUserInWaitingList(pack.getUserId(), pack.getItemId(), pack.getDaysToBorrow());
-                byte[] response = reply.getBytes();
-                DatagramPacket re = new DatagramPacket(response, response.length, request.getAddress(), request.getPort());
-                aSocket.send(re);
+    public void getWaitRequest() {
+        try {
+            DatagramSocket aSocket = new DatagramSocket(9986);
+            byte[] buffer;
+            while (true) {
+                buffer = new byte[1000];
+                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                System.out.println("monwait");
+                aSocket.receive(request);
+                System.out.println("request received");
+                ObjectInputStream iStream;
+                iStream = new ObjectInputStream(new ByteArrayInputStream(request.getData()));
+                DataModel pack = (DataModel) iStream.readObject();
+                iStream.close();
+                String reply;
+                if (pack.getUserId().equals("")) {
+                    int intReply = Integer.parseInt(getItemAvailability(pack.getItemId()));
+                    byte[] response = Integer.toString(intReply).getBytes();
+                    DatagramPacket re = new DatagramPacket(response, response.length, request.getAddress(), request.getPort());
+                    aSocket.send(re);
+                } else {
+                    reply = this.addUserInWaitingList(pack.getUserId(), pack.getItemId(), pack.getDaysToBorrow());
+                    byte[] response = reply.getBytes();
+                    DatagramPacket re = new DatagramPacket(response, response.length, request.getAddress(), request.getPort());
+                    aSocket.send(re);
+                }
             }
-        } catch (Exception e) {
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }catch(Exception e){
             System.out.println("Exception in accessing the userId in getWaitRequest");
         }
     }

@@ -106,7 +106,9 @@ public class ConServer implements Runnable, ServerInterface {
      */
     public void getWaitRequest() throws IOException, ClassNotFoundException {
         DatagramSocket aSocket = new DatagramSocket(9988);
-        byte[] buffer = new byte[1000];
+        byte[] buffer ;
+        while(true){
+            buffer = new byte[1000];
         DatagramPacket request = new DatagramPacket(buffer, buffer.length);
         System.out.println("conwait ready");
         aSocket.receive(request);
@@ -131,6 +133,7 @@ public class ConServer implements Runnable, ServerInterface {
         } catch (Exception e) {
             System.out.println("Exception in accessing the userId in getWaitRequest");
         }
+    }
     }
 
     /**
@@ -764,7 +767,7 @@ public class ConServer implements Runnable, ServerInterface {
     }
 
     @Override
-    public String exchangeItem(String userId, String newItem, String oldItem) {
+    public String exchangeItem(String userId, String oldItem, String newItem) {
         logger.info("exchangeItem");
         logger.info(userId+" "+newItem+" "+oldItem);
         String reply = "Success";
