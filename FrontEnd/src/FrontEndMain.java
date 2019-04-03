@@ -20,7 +20,7 @@ public class FrontEndMain {
     try {
       Thread frontEndUDP = new Thread(new FrontEndUDP());
       frontEndUDP.start();
-      ORB orb = ORB.init(args, null);
+      ORB orb = ORB.init(getServerInfo(), null);
       POA rootpoa =
           (POA) orb.resolve_initial_references("RootPOA");
       rootpoa.the_POAManager().activate();
@@ -52,5 +52,16 @@ public class FrontEndMain {
     } catch (org.omg.CosNaming.NamingContextPackage.InvalidName invalidName) {
       invalidName.printStackTrace();
     }
+  }
+
+  private static String[] getServerInfo() {
+    String serverInfo[] = new String[4];
+
+    serverInfo[0] = "-ORBInitialHost";
+    serverInfo[1] = "localhost";
+    serverInfo[2] = "-ORBInitialPort";
+    serverInfo[3] = "8090";
+
+    return serverInfo;
   }
 }
