@@ -122,8 +122,10 @@ class MessageHandler implements Runnable{
         for(ResponseModel rm: replies)
         {
             String s = rm.getResponse();
+            rm.setResponse(s.toUpperCase());
+            s = rm.getResponse();
             Integer c = stringsCount.get(s);
-            if(c == null) c = new Integer(0);
+            if(c == null) c = 0;
             c++;
             stringsCount.put(s,c);
         }
