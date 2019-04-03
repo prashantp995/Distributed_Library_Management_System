@@ -1,7 +1,6 @@
 import org.omg.CORBA.ORB;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.*;
@@ -2869,7 +2868,7 @@ public class Server_Base implements Runnable, ServerInterface {
     }
 
     public static boolean simulateSoftwareBug = true;
-    public String simulateSoftwareBug() {
+    public String simulateSoftwareBug(String username) {
         if (simulateSoftwareBug) {
             return "false";
         } else {

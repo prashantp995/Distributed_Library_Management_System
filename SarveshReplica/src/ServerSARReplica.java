@@ -787,7 +787,7 @@ public class ServerSARReplica implements ServerInterface{
     }
 
     public static boolean simulateSoftwareBug = true;
-    public String simulateSoftwareBug() {
+    public String simulateSoftwareBug(String username) {
         if (simulateSoftwareBug) {
             return "false";
         } else {
