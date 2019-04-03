@@ -16,7 +16,7 @@ public class RequestHandlerMain extends Thread {
     private static ArrayList<Integer> requestIds = new ArrayList<>();
     ObjectInputStream ois; //To get the clientRequestModel from the packed received.
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
-    static String replicaName = null;
+    public static String replicaName = null;
 
     public static void main(String[] args) {
         //RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
