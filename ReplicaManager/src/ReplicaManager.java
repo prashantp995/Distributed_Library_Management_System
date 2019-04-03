@@ -1,7 +1,5 @@
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.*;
 
 
 public class ReplicaManager extends Thread {
@@ -16,15 +14,22 @@ public class ReplicaManager extends Thread {
     }
 
     public static void main(String[] args){
-        ReplicaManager replicaManager = new ReplicaManager(Integer.parseInt(args[0]));
+        ReplicaManager replicaManager = new ReplicaManager(10001);
         replicaManager.start();
     }
     @Override
     public void run() {
-        DatagramSocket mySocket = null;
+        MulticastSocket mySocket = null;
         try {
-            mySocket = new DatagramSocket(this.port);
+            mySocket = new MulticastSocket(this.port);
+            if(RequestHandlerMain.replicaName.equalsIgnoreCase("Rohit")){
+                mySocket.setNetworkInterface(NetworkInterface.getByName("en0"));
+            }
+            InetAddress ip = InetAddress.getByName("230.1.1.6");
+            mySocket.joinGroup(ip);
         } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         while(true){
@@ -56,7 +61,8 @@ class FailureHandler implements Runnable {
 
     @Override
     public void run() {
-
+        String rep = new String(receiver.getData());
+        System.out.println("Need to handle software bug"+ rep);
     }
 
 }

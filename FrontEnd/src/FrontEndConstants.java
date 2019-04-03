@@ -13,5 +13,6 @@ public class FrontEndConstants {
   static final String METHOD_VALIDATE_USER_NAME = "validateUser";
   static final String METHOD_SIMULATE_SOFTWARE_BUG = "sfBug";
   static final int NUMBER_OF_REPLICA = 3;
+  static final String FAIL="Fail";
 
 }

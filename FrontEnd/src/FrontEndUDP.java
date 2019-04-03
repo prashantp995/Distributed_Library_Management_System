@@ -102,17 +102,40 @@ class MessageHandler implements Runnable{
     }
 
     private void notifySoftwareBug() {
-        if(failCountRohit==1){
+        String reply;
 
+        if(failCountRohit==1){
+            reply = FrontEndConstants.FAIL+" Rohit";
+            notifyRMAboutSoftwareBug(reply);
         }
         if(failCountShivam==1){
-
+            reply = FrontEndConstants.FAIL+" Shivam";
+            notifyRMAboutSoftwareBug(reply);
         }
         if(failCountPras==1){
-
+            reply = FrontEndConstants.FAIL+" Pras";
+            notifyRMAboutSoftwareBug(reply);
         }
         if(failCountSarvesh==1){
+            reply = FrontEndConstants.FAIL+" Sarvesh";
+            notifyRMAboutSoftwareBug(reply);
+        }
+    }
 
+    private void notifyRMAboutSoftwareBug(String reply) {
+        DatagramSocket sendToRM=null;
+        try {
+            sendToRM = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        try {
+            DatagramPacket dataPacket = new DatagramPacket(reply.getBytes(),reply.length(), InetAddress.getByName("230.1.1.6"),10001);
+            sendToRM.send(dataPacket);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
