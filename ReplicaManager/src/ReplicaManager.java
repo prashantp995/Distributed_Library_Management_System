@@ -4,14 +4,21 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 
-public class ReplicaManager implements Runnable {
+public class ReplicaManager extends Thread {
 
     private int port;
-
+    public static int failCountPras =0;
+    public static int failCountShivam =0;
+    public static int failCountSarvesh =0;
+    public static int failCountRohit =0;
     public ReplicaManager(int port){
         this.port = port;
     }
 
+    public static void main(String[] args){
+        ReplicaManager replicaManager = new ReplicaManager(Integer.parseInt(args[0]));
+        replicaManager.start();
+    }
     @Override
     public void run() {
         DatagramSocket mySocket = null;
