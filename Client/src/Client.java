@@ -362,7 +362,7 @@ public class Client {
     String response = libraryService.borrowItem(username, itemId, numberOfDays);
     logger.info("Response Received from the server is " + response);
     System.out.println("Response Received from the server is " + response);
-    if (response.equalsIgnoreCase("Waitlist")) {
+    if (response.equalsIgnoreCase("waitList")) {
       Scanner scanner = new Scanner(System.in);
       System.out.println(
           "Item is not available now , WaitList Possible, Do you wish to enroll your self in waitList "

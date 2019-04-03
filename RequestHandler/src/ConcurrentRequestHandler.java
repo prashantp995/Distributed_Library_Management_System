@@ -38,7 +38,7 @@ public class ConcurrentRequestHandler extends Thread {
 /*
       String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
 */
-      String replicaName = RequestHandlerMain.replicaName;
+      String replicaName = "Sarvesh";
       ServerInterface serverInterface = ServerFactory
           .getServerObject(replicaName,
               objForRM.getUserId().substring(0, 3));

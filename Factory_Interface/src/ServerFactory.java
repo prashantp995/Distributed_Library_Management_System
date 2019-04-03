@@ -2,9 +2,9 @@ import java.io.IOException;
 
 public class ServerFactory {
 
-  private static ServerSARReplica serverSARReplicaConcordia;
-  private static ServerSARReplica serverSARReplicaMontreal;
-  private static ServerSARReplica serverSARReplicaMcGill;
+  private static ServerSARReplica serverSARReplicaConcordia = new ServerSARReplica("CON");
+  private static ServerSARReplica serverSARReplicaMontreal = new ServerSARReplica("MON");
+  private static ServerSARReplica serverSARReplicaMcGill = new ServerSARReplica("MCG");
   /*private static ConServer conServer;
   private static MonServer monServer;
   private static McgServer mcgServer;*/
@@ -12,6 +12,7 @@ public class ServerFactory {
   private static Server_Base concordiaLib;
   private static Server_Base mcgillLib;
   private static Server_Base montrealuLib;
+  private static boolean sarveshIS = true;
 
   static {
     try {
@@ -75,6 +76,10 @@ public class ServerFactory {
   }
 
   public static ServerSARReplica getSarveshServerObject(String lib) {
+      if(sarveshIS){
+          ServerFactory.initIS();
+          sarveshIS = false;
+      }
     switch (lib) {
       case "CON":
         if (serverSARReplicaConcordia == null) {
@@ -127,6 +132,7 @@ public class ServerFactory {
     }
     return null;
   }
+
   private static void runInterServer(){
     shivamServerFlag = true;
     InterServComServer con = new InterServComServer(3,null,ConServer.getConcordiaObject());
@@ -140,7 +146,18 @@ public class ServerFactory {
     InterServComServer mon = new InterServComServer(2,null,MonServer.getMonObject());
     Thread interServMon = new Thread(mon);
     interServMon.start();
+  }
 
+  private static void initIS(){
+      Thread concordiaDelegate = new Thread(new Delegate(1301,serverSARReplicaConcordia));
+      concordiaDelegate.start();
+      System.out.println("Sarvesh Concordia InterSarvesh Started");
+      Thread mcgillDelegate = new Thread(new Delegate(1302,serverSARReplicaMcGill));
+      mcgillDelegate.start();
+      System.out.println("Sarvesh McGill InterSarvesh Started");
+      Thread montrealDelegate = new Thread(new Delegate(1303,serverSARReplicaMontreal));
+      montrealDelegate.start();
+      System.out.println("Sarvesh Montreal InterSarvesh Started");
   }
 
 }
