@@ -76,6 +76,10 @@ class FailureHandler implements Runnable {
     private void hadleSoftwareBug(String replica) {
         if(replica.equalsIgnoreCase("pras")){
             ReplicaManager.failCountPras++;
+            if(ReplicaManager.failCountPras>=3){
+                RequestHandlerMain.setSimulateSoftwareBug(false);
+                ReplicaManager.failCountPras = 0;
+            }
         }
         if(replica.equalsIgnoreCase("shivam")){
             ReplicaManager.failCountShivam++;

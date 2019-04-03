@@ -289,7 +289,7 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
 
   @Override
   public String validateUser(String userId) {
-    return "true" + ":Successful:NOTE";
+    return "true";
   }
 
   /**
@@ -386,9 +386,9 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
     }
     return LibConstants.FAIL;
   }
-  public static boolean simulateSoftwareBug = true;
+
   public String simulateSoftwareBug(String username) {
-    if (simulateSoftwareBug) {
+    if (RequestHandlerMain.isSimulateSoftwareBug()) {
       return "false";
     } else {
       //alternative implementation in case of software bug
