@@ -112,7 +112,7 @@ public class ConcurrentRequestHandler extends Thread {
       responseString = serverInterface.findItem(objForRM.getUserId(), objForRM.getItemName());
     } else if (objForRM.getMethodName()
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-      responseString = serverInterface.simulateSoftwareBug();
+      responseString = serverInterface.simulateSoftwareBug(objForRM.getUserId());
     }
     return responseString;
   }

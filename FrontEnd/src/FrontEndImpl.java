@@ -108,9 +108,9 @@ public class FrontEndImpl extends LibraryServicePOA {
   }
 
   @Override
-  public String simulateSoftwareBug() {
+  public String simulateSoftwareBug(String userrId) {
     ClientRequestModel request = new ClientRequestModel(
-        FrontEndConstants.METHOD_SIMULATE_SOFTWARE_BUG);
+        FrontEndConstants.METHOD_SIMULATE_SOFTWARE_BUG, userrId);
     return returnResult(request);
   }
 

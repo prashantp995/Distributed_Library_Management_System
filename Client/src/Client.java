@@ -111,6 +111,7 @@ public class Client {
         System.out.println(" 2  for removeItem");
         System.out.println(" 3  for ListItemAvailability");
         System.out.println(" 4  MultiThread");
+        System.out.println(" 5  to simulate Software bug handling");
         System.out.println(" 0  Exit");
         Scanner scanner = new Scanner(System.in);
         try {
@@ -127,7 +128,7 @@ public class Client {
               System.exit(0);
               break;
             }
-            if (choice == 1 || choice == 2 || choice == 3) {
+            if (choice == 1 || choice == 2 || choice == 3 || choice == 5) {
               performManagerOperation(choice, username);
             } else {
               System.out.println("please enter valid choice");
@@ -199,10 +200,27 @@ public class Client {
         logger.info(username + " choose to List Item");
         performListItem(username);
         break;
+      case 5:
+        System.out.println("simulate Software Bug");
+        logger.info(username + " choose to simulate software bug");
+        simulateSoftwareBug(username);
       default:
         logger.info(username + " Entered invalid choice");
         System.out.println("please enter valid choice");
     }
+  }
+
+  private static String simulateSoftwareBug(String username) {
+    System.out.println(
+        "Simulate Software Bug will be called 3 times to get enough data to decide software bug happened ");
+    String response = "";
+    for (int i = 0; i < 3; i++) {
+      response = libraryService.simulateSoftwareBug(username);
+      logger.info("Response Received for counter" + i + " from the server is " + response);
+      System.out.println("Response Received from the server is " + response);
+    }
+
+    return response;
   }
 
   private static void performAddItem(String username) {

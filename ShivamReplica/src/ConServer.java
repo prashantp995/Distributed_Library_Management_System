@@ -895,7 +895,7 @@ public class ConServer implements Runnable, ServerInterface {
     }
 
     public static boolean simulateSoftwareBug = true;
-    public String simulateSoftwareBug() {
+    public String simulateSoftwareBug(String username) {
         if (simulateSoftwareBug) {
             return "false";
         } else {

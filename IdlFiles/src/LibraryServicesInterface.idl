@@ -14,5 +14,5 @@ string returnItem(in string userId, in string itemID);
   string addUserInWaitingList(in string userId,in string ItemId ,in long numberOfDays) ;
   string exchangeItem(in string userId,in string oldItemId ,in string newItemID) ;
   string validateUserName(in string userId);
-  string simulateSoftwareBug();
+  string simulateSoftwareBug(in string userId);
 };

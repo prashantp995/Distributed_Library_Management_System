@@ -18,6 +18,6 @@ public interface ServerInterface {
 
   String validateUser(String userId);
 
-  String simulateSoftwareBug();
+  String simulateSoftwareBug(String username);
 
 }
