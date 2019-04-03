@@ -26,6 +26,24 @@ public class Server_Base implements Runnable, ServerInterface {
     private int universalPort;
     private ArrayList interLibraryBlockUsers;
 
+    public DatagramSocket getDs1() {
+        return ds1;
+    }
+
+    public void setDs1() {
+        try {
+            if(!(this.ds1.isBound())){
+                this.ds1 = new DatagramSocket(this.universalPort);
+            }
+
+            System.out.println(this.ds1.getPort());
+
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setUserlist(ArrayList userlist) {
         this.userlist = userlist;
     }
@@ -35,6 +53,7 @@ public class Server_Base implements Runnable, ServerInterface {
     public void setORB(ORB orb_val) {
         orb = orb_val;
     }
+
 
 
     public HashMap<String, ArrayList<String>> getUserUpdateMessages() {
@@ -75,9 +94,10 @@ public class Server_Base implements Runnable, ServerInterface {
         this.syncHeap = new HashMap<String, String>();
         this.userUpdateMessages = new HashMap<String, ArrayList<String>>();
         //this.ds = new DatagramSocket();
-        //this.ds1 = new DatagramSocket(null);
         this.t = new Thread(this, getServername());
         this.loadServerRec(this.servername);
+        this.ds1 = new DatagramSocket(this.universalPort);
+        System.out.println("The server "+this.getServername()+ "is up"+this.ds1.getPort());
         this.t.start();
 
     }
@@ -149,6 +169,7 @@ public class Server_Base implements Runnable, ServerInterface {
             this.setUserlist(holder);
 
 
+
         } else if (this.getServername().equals("MCGILL")) {
             try {
                 this.ds = new DatagramSocket();
@@ -170,7 +191,11 @@ public class Server_Base implements Runnable, ServerInterface {
             this.interLibraryBlockUsers = new ArrayList<String>();
             ArrayList<String> holder = new ArrayList<String>(Arrays.asList("MCGM0001", "MCGU0001","MCGU0002"));
             this.setUserlist(holder);
-
+//            try {
+//                setDs1(new DatagramSocket(this.universalPort));
+//            } catch (SocketException e) {
+//                e.printStackTrace();
+//            }
 
 
         } else if (this.getServername().equals("MONTREALU")) {
@@ -196,6 +221,11 @@ public class Server_Base implements Runnable, ServerInterface {
             this.interLibraryBlockUsers = new ArrayList<String>();
             ArrayList<String> holder = new ArrayList<String>(Arrays.asList("MONM0001", "MONU0001","MONU0002"));
             this.setUserlist(holder);
+//            try {
+//                setDs1(new DatagramSocket(this.universalPort));
+//            } catch (SocketException e) {
+//                e.printStackTrace();
+//            }
 
 
         } else {
@@ -929,8 +959,12 @@ public class Server_Base implements Runnable, ServerInterface {
             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                 ArrayList<String> valueHolder = entry.getValue();
-                if (valueHolder.get(0).matches(".*" + itemName + "*.") && (valueHolder.get(1) != "0")) {
+                System.out.println(valueHolder.get(0));
+                System.out.println(valueHolder.get(1));
+                if (valueHolder.get(0).startsWith(itemName) ) {
+                    //&& (valueHolder.get(1) != "0")
                     finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                    System.out.println(finalString);
                 }
             }
             appendStrToFile(finalString);
@@ -1067,7 +1101,7 @@ public class Server_Base implements Runnable, ServerInterface {
 
         }
         System.out.println(finalString);
-        return (personal +finalString);
+        return (finalString);
 
     }
 
@@ -1639,6 +1673,13 @@ public class Server_Base implements Runnable, ServerInterface {
      * @throws IOException
      */
     public void interServerInteractor() throws IOException {
+//        try {
+//            System.out.println("I am testing" +this.getServername());
+//            System.out.println(this.universalPort + this.getServername());
+                setDs1();
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
         while(true) {
             if (this.getServername().equals("CONCORDIA")) {
                 byte[] b1 = null;
@@ -1648,8 +1689,9 @@ public class Server_Base implements Runnable, ServerInterface {
                 appendStrToFile("I am open for listen");
                 //InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8081);
                 //ds1.bind(address);
-                this.ds1 = new DatagramSocket(8081);
-                this.ds1.receive(dpr);
+                //this.ds1 = new DatagramSocket(8081);
+
+                getDs1().receive(dpr);
                 System.out.println("I am in " + getServername());
                 appendStrToFile("I am in " + getServername());
                 String result = null;
@@ -1716,7 +1758,8 @@ public class Server_Base implements Runnable, ServerInterface {
                             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
                             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                                 ArrayList<String> valueHolder = entry.getValue();
-                                if (valueHolder.get(0).matches(vitemName) && (valueHolder.get(1) != "0")) {
+                                if (valueHolder.get(0).matches(vitemName) ) {
+                                    //&& (valueHolder.get(1) != "0")
                                     finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
                                 }
                             }
@@ -1915,8 +1958,14 @@ public class Server_Base implements Runnable, ServerInterface {
                 appendStrToFile("I am open for listen");
                 //InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8082);
                 //ds1.bind(address);
-                this.ds1 = new DatagramSocket(8082);
-                this.ds1.receive(dpr);
+                //this.ds1 = new DatagramSocket(8082);
+//                try {
+//                    System.out.println("I am testing" +this.getServername());
+//                    setDs1(new DatagramSocket(this.universalPort));
+//                } catch (SocketException e) {
+//                    e.printStackTrace();
+//                }
+                getDs1().receive(dpr);
                 System.out.println("I am in " + getServername());
                 appendStrToFile("I am in " + getServername());
                 String result = null;
@@ -1985,7 +2034,8 @@ public class Server_Base implements Runnable, ServerInterface {
                             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
                             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                                 ArrayList<String> valueHolder = entry.getValue();
-                                if (valueHolder.get(0).matches(vitemName) && (valueHolder.get(1) != "0")) {
+                                if (valueHolder.get(0).matches(vitemName) ) {
+                                    //&& (valueHolder.get(1) != "0")
                                     finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
                                 }
                             }
@@ -2187,8 +2237,14 @@ public class Server_Base implements Runnable, ServerInterface {
                     appendStrToFile("I am open for listen");
                     //InetSocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), 8083);
                     //ds1.bind(address);
-                    this.ds1 = new DatagramSocket(8083);
-                    this.ds1.receive(dpr);
+                    //this.ds1 = new DatagramSocket(8083);
+//                    try {
+//                        System.out.println("I am testing" +this.getServername());
+//                        setDs1(new DatagramSocket(this.universalPort));
+//                    } catch (SocketException e) {
+//                        e.printStackTrace();
+//                    }
+                    getDs1().receive(dpr);
                     System.out.println("I am in " + getServername());
                     appendStrToFile("I am in " + getServername());
                     String result = null;
@@ -2259,7 +2315,8 @@ public class Server_Base implements Runnable, ServerInterface {
                                 Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
                                 for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                                     ArrayList<String> valueHolder = entry.getValue();
-                                    if (valueHolder.get(0).matches(vitemName) && (valueHolder.get(1) != "0")) {
+                                    if (valueHolder.get(0).matches(vitemName) ) {
+                                        //&& (valueHolder.get(1) != "0")
                                         finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
                                     }
                                 }
@@ -2452,8 +2509,8 @@ public class Server_Base implements Runnable, ServerInterface {
                     }
                 }
             }
-            this.ds1.close();
-            //this.ds1 = new DatagramSocket(null);
+//            this.ds1.close();
+//            this.ds1 = new DatagramSocket(null);
         }
 
     }
@@ -2782,6 +2839,7 @@ public class Server_Base implements Runnable, ServerInterface {
     @Override
     public void run() {
         try {
+
 
             this.interServerInteractor();
 

@@ -13,6 +13,18 @@ public class ServerFactory {
   private static Server_Base mcgillLib;
   private static Server_Base montrealuLib;
 
+  static {
+    try {
+      concordiaLib = new Server_Base("CONCORDIA");
+      mcgillLib = new Server_Base("MCGILL");;
+      montrealuLib = new Server_Base("MONTREALU");;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+
+
   public static ServerInterface getServerObject(String serverName, String lib) throws Exception {
 
     switch (serverName) {
