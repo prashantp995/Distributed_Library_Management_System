@@ -81,8 +81,12 @@ class FailureHandler implements Runnable {
                 ReplicaManager.failCountPras = 0;
             }
         }
-        if(replica.equalsIgnoreCase("shivam")){
+        if(replica.equalsIgnoreCase("shivam") ){
             ReplicaManager.failCountShivam++;
+            if(ReplicaManager.failCountShivam>=2 && this.replicaName.equalsIgnoreCase("shivam")){
+                RequestHandlerMain.setSimulateSoftwareBug(false);
+                ReplicaManager.failCountShivam=0;
+            }
 
         }
         if(replica.equalsIgnoreCase("rohit")){
