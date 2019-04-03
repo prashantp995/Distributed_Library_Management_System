@@ -2,9 +2,9 @@ import java.io.IOException;
 
 public class ServerFactory {
 
-  private static ServerSARReplica serverSARReplicaConcordia = new ServerSARReplica("CON");
-  private static ServerSARReplica serverSARReplicaMontreal = new ServerSARReplica("MON");
-  private static ServerSARReplica serverSARReplicaMcGill = new ServerSARReplica("MCG");
+  private static ServerSARReplica serverSARReplicaConcordia = null;
+  private static ServerSARReplica serverSARReplicaMontreal = null;
+  private static ServerSARReplica serverSARReplicaMcGill = null;
   /*private static ConServer conServer;
   private static MonServer monServer;
   private static McgServer mcgServer;*/

@@ -54,7 +54,7 @@ public class Client {
     String response = libraryService.validateUserName(username);
     logger.info("Response Received from the server is " + response);
     System.out.println("Response Received from the server is " + response);
-    if (response.contains("true")) {
+    if (response.contains("true")||response.contains("TRUE")) {
       return true;
     }
     return false;
