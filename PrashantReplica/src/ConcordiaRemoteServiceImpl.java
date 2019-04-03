@@ -28,6 +28,7 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
   private byte[] buf;
   private DatagramSocket socket;
 
+
   public ConcordiaRemoteServiceImpl(DatagramPacket packet, byte[] buf,
       DatagramSocket socket) {
     this.packet = packet;
@@ -384,6 +385,15 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
 
     }
     return LibConstants.FAIL;
+  }
+  public static boolean simulateSoftwareBug = true;
+  public String simulateSoftwareBug() {
+    if (simulateSoftwareBug) {
+      return "false";
+    } else {
+      //alternative implementation in case of software bug
+      return "true";
+    }
   }
 
   private boolean isValidReturn(String userId, LibraryModel model) {

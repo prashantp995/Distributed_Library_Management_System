@@ -10,6 +10,7 @@ public class RequestHandlerConstants {
   static final String METHOD_RETURN_ITEM = "returnItem";
   static final String METHOD_VALIDATE_USER_NAME = "validateUser";
   static final String METHOD_FIND_ITEM = "findITem";
+  static final String METHOD_SIMULATE_SOFTWARE_BUG = "sfBug";
   static final String SUCCESS = "Success";
   static final String FAIL = "Fail";
   static final String TRUE = "True";

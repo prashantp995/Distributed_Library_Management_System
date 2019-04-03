@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import org.omg.CORBA.ORB;
 
 public class FrontEndImpl extends LibraryServicePOA {
@@ -74,10 +73,10 @@ public class FrontEndImpl extends LibraryServicePOA {
       sendRequest(socket, request);
       byte[] requestBuffer = new byte[1000];
       DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
-        socket.receive(requestReceived);
-        String reply = new String(requestReceived.getData());
-        reply = reply.trim();
-        System.out.println(reply);
+      socket.receive(requestReceived);
+      String reply = new String(requestReceived.getData());
+      reply = reply.trim();
+      System.out.println(reply);
       return reply;
     } catch (IOException e) {
       e.printStackTrace();
@@ -105,6 +104,13 @@ public class FrontEndImpl extends LibraryServicePOA {
   public String validateUserName(String userId) {
     ClientRequestModel request = new ClientRequestModel(
         FrontEndConstants.METHOD_VALIDATE_USER_NAME, userId);
+    return returnResult(request);
+  }
+
+  @Override
+  public String simulateSoftwareBug() {
+    ClientRequestModel request = new ClientRequestModel(
+        FrontEndConstants.METHOD_SIMULATE_SOFTWARE_BUG);
     return returnResult(request);
   }
 

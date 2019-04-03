@@ -57,6 +57,16 @@ public class MonRemoteServiceImpl extends Thread implements ServerInterface {
     userIds.add("MONU0002");
   }
 
+  public static boolean simulateSoftwareBug = true;
+
+  public String simulateSoftwareBug() {
+    if (simulateSoftwareBug) {
+      return "false";
+    } else {
+      //alternative implementation in case of software bug
+      return "true";
+    }
+  }
 
   public String findItem(String userId, String itemName) {
     logger.info(userId + "requested to find item" + itemName);
