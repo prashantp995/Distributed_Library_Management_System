@@ -155,7 +155,10 @@ public class ServerSARReplica implements ServerInterface{
                         borrowedItemDays.remove(itemID);
                     }
                     increamentItemCount(itemID);
+                    System.out.println("--------------------------------Library " + library);
+                    System.out.println("---------------------------------before auto assignment." + waitingQueue);
                     automaticAssignmentOfBooks(itemID);
+                    System.out.println("---------------------------------after Autoassignment." + waitingQueue);
                     message = " Successful" + ServerConstants.SUCCESS;
                     writeToLogFile(message);
                     return message;
@@ -330,14 +333,58 @@ public class ServerSARReplica implements ServerInterface{
 
     /**It adds the given userID to the waiting list for given itemID with numberOfDays.*/
     public String addUserInWaitingList(String userID, String itemID, int numberOfDays) {
-        if(waitingQueue.containsKey(itemID)){
-            waitingQueue.get(itemID).put(userID,numberOfDays);
+        if(item.containsKey(itemID)) {
+            if (waitingQueue.containsKey(itemID)) {
+                waitingQueue.get(itemID).put(userID, numberOfDays);
+            } else {
+                HashMap<String, Integer> userList = new HashMap<>();
+                userList.put(userID, numberOfDays);
+                waitingQueue.put(itemID, userList);
+            }
         }else{
-            HashMap<String,Integer> userList = new HashMap<>();
-            userList.put(userID,numberOfDays);
-            waitingQueue.put(itemID,userList);
+            System.out.println("---------------------------------in else part.");
+            addToForeignWaitlist(userID,itemID,numberOfDays);
         }
         return "Successful"+ServerConstants.SUCCESS;
+    }
+
+    public void addToForeignWaitlist(String userID, String itemID, int numberOfDays){
+        String reply = "";
+        try{
+            DatagramSocket mySocket = new DatagramSocket();
+            InetAddress host = InetAddress.getLocalHost();
+            int port1 = -1;
+            if (itemID.substring(0,3).equals("CON")){
+                port1 = 1301;
+            }
+            if (itemID.substring(0,3).equals("MCG")){
+                port1 = 1302;
+            }
+            if (itemID.substring(0,3).equals("MON")){
+                port1 = 1303;
+            }
+            System.out.println("---------------------------------in AddtoFW." + port1);
+            String request = library+":addToWaitlist:"+userID+":"+itemID+":"+numberOfDays;
+            DatagramPacket sendRequest = new DatagramPacket(request.getBytes(),request.length(),host,port1);
+            mySocket.send(sendRequest);
+            byte[] receive = new byte[1024];
+            DatagramPacket receivedReply = new DatagramPacket(receive,receive.length);
+            mySocket.receive(receivedReply);
+            reply = new String(receivedReply.getData()).trim();
+        }catch (SocketException e){
+            writeToLogFile("Socket Exception");
+            System.out.println("Socket Exception.");
+            e.printStackTrace();
+        }catch (UnknownHostException e){
+            writeToLogFile("Unknown host Exception");
+            System.out.println("Unknown host Exception.");
+            e.printStackTrace();
+        }catch (IOException e){
+            writeToLogFile("IO Exception");
+            System.out.println("IO Exception.");
+            e.printStackTrace();
+        }
+        writeToLogFile(reply);
     }
 
     /**validate the client*/
@@ -373,7 +420,7 @@ public class ServerSARReplica implements ServerInterface{
     /**used by the user to exchange an item with another, first we return the item,
      * if successful, we attempt to borrow new item, if both operations are successful,
      * the whole operation is successful otherwise not.*/
-    public String exchangeItem(String userID, String newItemID, String oldItemID) {
+    public String exchangeItem(String userID, String oldItemID, String newItemID) {
         User currentUser = user.get(userID);
         String reply ;
         boolean libraryItemBorrow;
@@ -398,10 +445,10 @@ public class ServerSARReplica implements ServerInterface{
             if(isItemAvailable(newItemID) && (!libraryItemBorrow || oldItemID.substring(0,3).equals(newItemID.substring(0,3)))) {
                 /*Third return the old item to particular library*/
                 returnReply = returnItem(userID, oldItemID);
-                if (returnReply.substring(returnReply.length() - 10).equals("Successful")) {
+                if (returnReply.contains("SUCCESS")) {
                     /*Forth borrow new item.*/
                     borrowReply = borrowItem(userID, newItemID, numberOfDays);
-                    if (borrowReply.substring(borrowReply.length() - 10).equals("Successful")) {
+                    if (borrowReply.contains("SUCCESS")) {
                         reply = "Successful" + ServerConstants.SUCCESS;
                     } else {
                         reply = "Error in borrowing the new book." + ServerConstants.FAILURE;
@@ -516,6 +563,7 @@ public class ServerSARReplica implements ServerInterface{
                 port1 = 1301;
                 port2 = 1302;
             }
+
             String request = library+":findAtOther:"+itemName;
             DatagramPacket sendRequest = new DatagramPacket(request.getBytes(),request.length(),host,port1);
             mySocket.send(sendRequest);
@@ -523,7 +571,6 @@ public class ServerSARReplica implements ServerInterface{
             DatagramPacket receivedReply = new DatagramPacket(receive,receive.length);
             mySocket.receive(receivedReply);
             reply += new String(receivedReply.getData()).trim();
-            reply += "\n";
             sendRequest = new DatagramPacket(request.getBytes(),request.length(),host,port2);
             mySocket.send(sendRequest);
             receive = new byte[1024];
@@ -679,16 +726,63 @@ public class ServerSARReplica implements ServerInterface{
      * automatically assign the item to the first user and send
      * a message to the user.*/
     protected void automaticAssignmentOfBooks(String itemID) {
+        System.out.println("---------------------------------In autoAssignement." + itemID);
         if(waitingQueue.containsKey(itemID)){
             HashMap<String,Integer> userList = waitingQueue.get(itemID);
             Iterator<Map.Entry<String,Integer>> iterator = userList.entrySet().iterator();
+            System.out.println("---------------------------------in Autoassignment.");
             if(iterator.hasNext()){
+
                 Map.Entry<String, Integer> pair = iterator.next();
                 String message = borrowItem(pair.getKey(),itemID,pair.getValue());
-                if(message.substring(message.length()-10).equals("Successful"))
+                System.out.println(message);
+                if(message.substring(message.length()-10).contains(ServerConstants.SUCCESS)) {
                     waitingQueue.get(itemID).remove(pair.getKey());
-                writeToLogFile(message);
+                    writeToLogFile(message);
+                    if (!user.containsKey(pair.getKey())) {
+                        addForgineUserInBorrow(pair.getKey(),itemID,pair.getValue());
+                    }
+                }
             }
         }
+    }
+
+    protected void addForgineUserInBorrow(String userID, String itemID, int numberOfDays){
+        String reply = "";
+        try{
+            DatagramSocket mySocket = new DatagramSocket();
+            InetAddress host = InetAddress.getLocalHost();
+            int port1 = -1;
+            if (userID.substring(0,3).equals("CON")){
+                port1 = 1301;
+            }
+            if (userID.substring(0,3).equals("MCG")){
+                port1 = 1302;
+            }
+            if (userID.substring(0,3).equals("MON")){
+                port1 = 1303;
+            }
+            System.out.println("---------------------------------in addFUB." + port1);
+            String request = library+":addUserToBorrow:"+userID+":"+itemID+":"+numberOfDays;
+            DatagramPacket sendRequest = new DatagramPacket(request.getBytes(),request.length(),host,port1);
+            mySocket.send(sendRequest);
+            byte[] receive = new byte[1024];
+            DatagramPacket receivedReply = new DatagramPacket(receive,receive.length);
+            mySocket.receive(receivedReply);
+            reply = new String(receivedReply.getData()).trim();
+        }catch (SocketException e){
+            writeToLogFile("Socket Exception");
+            System.out.println("Socket Exception.");
+            e.printStackTrace();
+        }catch (UnknownHostException e){
+            writeToLogFile("Unknown host Exception");
+            System.out.println("Unknown host Exception.");
+            e.printStackTrace();
+        }catch (IOException e){
+            writeToLogFile("IO Exception");
+            System.out.println("IO Exception.");
+            e.printStackTrace();
+        }
+        writeToLogFile(reply);
     }
 }
