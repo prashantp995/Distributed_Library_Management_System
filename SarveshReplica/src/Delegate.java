@@ -59,7 +59,7 @@ class RequestHandler implements Runnable {
         this.mySocket = mySocket;
         this.receiver = receiver;
         lock = new Object();
-        logFile = new File("/home/sarvesh/CORBALibrarySystem/src/Logs/log_" + myServer.library + ".log");
+        logFile = new File("/home/sarvesh/IdeaProjects/Distributed_Library_Management_System_new/SarveshReplica/src/Logs/" + myServer.library + "_IS_LOG.log");
         try{
             if(!logFile.exists())
                 logFile.createNewFile();
@@ -204,6 +204,52 @@ class RequestHandler implements Runnable {
                         reply = "false";
                 }else
                     reply = "false";
+                break;
+            case "addToWaitlist":
+                if(request.length != 5){
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
+                    break;
+                }
+                userID = request[2];
+                itemID = request[3];
+                numberOfDays = Integer.parseInt(request[4]);
+                System.out.println("Delegate Add to another ID.");
+                if (myServer.waitingQueue.containsKey(itemID)) {
+                    myServer.waitingQueue.get(itemID).put(userID, numberOfDays);
+                } else {
+                    HashMap<String, Integer> userList = new HashMap<>();
+                    userList.put(userID, numberOfDays);
+                    myServer.waitingQueue.put(itemID, userList);
+                }
+                System.out.println(myServer.waitingQueue + myServer.library);
+                break;
+            case "addUserToBorrow":
+                if(request.length != 5){
+                    reply = "Unsuccessful"+ServerConstants.FAILURE;
+                    break;
+                }
+                userID = request[2];
+                itemID = request[3];
+                numberOfDays = Integer.parseInt(request[4]);
+                currentUser = myServer.user.get(userID);
+                if(myServer.borrow.containsKey(userID)){
+                    Item currentItem = new Item(itemID,itemID.substring(0,3),1);
+                    myServer.borrow.get(currentUser).put(currentItem,numberOfDays);
+                }else{
+                    Item currentItem = new Item(itemID,itemID.substring(0,3),1);
+                    HashMap<Item,Integer> record = new HashMap<>();
+                    record.put(currentItem,numberOfDays);
+                    myServer.borrow.put(currentUser,record);
+                }
+                Item curruntItem;
+                if(myServer.item.containsKey(itemID)){
+                    curruntItem = myServer.item.get(itemID);
+                    curruntItem.setItemCount(curruntItem.getItemCount()+1);
+                    myServer.item.remove(itemID);
+                }else{
+                    curruntItem = new Item(itemID,itemID.substring(0,3),1);
+                }
+                myServer.item.put(itemID,curruntItem);
                 break;
             default:
                 reply = "Unsuccessful";
