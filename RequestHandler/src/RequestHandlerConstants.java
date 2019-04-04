@@ -16,6 +16,17 @@ public class RequestHandlerConstants {
   static final String TRUE = "True";
   static final String BUGGY = "sending buggy result";
   static final String CORRECT = "sending correct result";
-
+  static final String RES_TRUE_SUCCESS = "true:success";
+  static final String RES_FALSE_FAILURE = "false:failure";
+  static final String RES_APPEND_SUCCESS = ":success";
+  static final String RES_ITEM_NOT_EROOR = "item not found:failure";
+  static final String RES_ITEM_NOT_BORROWED = "item not borrowed:failure";
+  static final String RES_ITEM_ALREADY_BORROWED = "item already borrowed:failure";
+  static final String RES_ALREADY_IN_WAIT_LIST = "already in wait list:failure";
+  static final String RES_WAITLIST_POSSIBLE = "waitlist:success";
+  static final String RES_FOREIGN_LIB_ERROR = "can not borrow two books from foreign library:failure";
+  static final String RES_ITEMID_NOT_VALID = "item id not valid:failure";
+  static final String RES_ITEM_NAME_ERROR = "item id and item name does not match:failure";
+  static final String RES_INCORRECT_QUANTITY_ERROR = "incorrect quantity:failure";
 
 }
