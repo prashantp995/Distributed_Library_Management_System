@@ -265,7 +265,7 @@ public class ConcurrentRequestHandler extends Thread {
 
   private String appendStatusPras(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
-
+     return responseString+ RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
       if (responseString.toLowerCase().contains("true")) {
         return RequestHandlerConstants.RES_TRUE_SUCCESS;
@@ -331,7 +331,7 @@ public class ConcurrentRequestHandler extends Thread {
       }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
-
+      return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
 
     }
