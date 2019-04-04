@@ -105,19 +105,19 @@ class MessageHandler implements Runnable{
         String reply;
 
         if(failCountRohit==1){
-            reply = FrontEndConstants.FAIL+" Rohit";
+            reply = FrontEndConstants.SOFTWARE_FAIL+" Rohit";
             notifyRMAboutSoftwareBug(reply);
         }
         if(failCountShivam==1){
-            reply = FrontEndConstants.FAIL+" Shivam";
+            reply = FrontEndConstants.SOFTWARE_FAIL+" Shivam";
             notifyRMAboutSoftwareBug(reply);
         }
         if(failCountPras==1){
-            reply = FrontEndConstants.FAIL+" Pras";
+            reply = FrontEndConstants.SOFTWARE_FAIL+" Pras";
             notifyRMAboutSoftwareBug(reply);
         }
         if(failCountSarvesh==1){
-            reply = FrontEndConstants.FAIL+" Sarvesh";
+            reply = FrontEndConstants.SOFTWARE_FAIL+" Sarvesh";
             notifyRMAboutSoftwareBug(reply);
         }
     }
