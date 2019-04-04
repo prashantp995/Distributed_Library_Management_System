@@ -154,6 +154,8 @@ public class ServerFactory {
     InterServComServer mon = new InterServComServer(2, null, MonServer.getMonObject());
     Thread interServMon = new Thread(mon);
     interServMon.start();
+    ReplicaManager replicaManager = new ReplicaManager(10001,"Shivam");
+    replicaManager.start();
   }
 
   private static void initIS(){
