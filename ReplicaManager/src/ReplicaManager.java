@@ -10,6 +10,7 @@ public class ReplicaManager extends Thread {
     public static int failCountShivam =0;
     public static int failCountSarvesh =0;
     public static int failCountRohit =0;
+
     public ReplicaManager(int port, String replicaName){
         this.port = port;
         this.replicaName = replicaName;
@@ -19,6 +20,7 @@ public class ReplicaManager extends Thread {
         ReplicaManager replicaManager = new ReplicaManager(10001,args[0]);
         replicaManager.start();
     }
+
     @Override
     public void run() {
         MulticastSocket mySocket = null;
@@ -49,7 +51,6 @@ public class ReplicaManager extends Thread {
     }
 }
 class FailureHandler implements Runnable {
-
 
     private DatagramSocket mySocket = null;
     private DatagramPacket receiver = null;
@@ -91,9 +92,17 @@ class FailureHandler implements Runnable {
         }
         if(replica.equalsIgnoreCase("rohit")){
             ReplicaManager.failCountRohit++;
+            if(ReplicaManager.failCountRohit>=2 && this.replicaName.equalsIgnoreCase("rohit")){
+                RequestHandlerMain.setSimulateSoftwareBug(false);
+                ReplicaManager.failCountRohit=0;
+            }
         }
         if(replica.equalsIgnoreCase("sarvesh")){
             ReplicaManager.failCountSarvesh++;
+            if(ReplicaManager.failCountSarvesh>=2 && this.replicaName.equalsIgnoreCase("sarvesh")){
+                RequestHandlerMain.setSimulateSoftwareBug(false);
+                ReplicaManager.failCountSarvesh=0;
+            }
         }
     }
 

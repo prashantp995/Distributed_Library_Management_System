@@ -25,8 +25,6 @@ public class ServerFactory {
     }
   }
 
-
-
   public static ServerInterface getServerObject(String serverName, String lib) throws Exception {
 
     switch (serverName) {
@@ -84,6 +82,9 @@ public class ServerFactory {
 
   public static ServerSARReplica getSarveshServerObject(String lib) {
       if(sarveshIS){
+          serverSARReplicaConcordia = new ServerSARReplica(lib);
+          serverSARReplicaMcGill = new ServerSARReplica(lib);
+          serverSARReplicaMontreal = new ServerSARReplica(lib);
           ServerFactory.initIS();
           sarveshIS = false;
       }

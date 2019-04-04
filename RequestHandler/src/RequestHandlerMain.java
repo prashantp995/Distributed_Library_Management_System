@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.net.*;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -13,7 +14,7 @@ public class RequestHandlerMain extends Thread {
     MulticastSocket requestHandlerSocket = null;
     int requestHandlerPort; //change this based on your implementation
     static Logger logger = null;
-    private static ArrayList<Integer> requestIds = new ArrayList<>();
+    private static Stack<Integer> requestIds = new Stack<>();
     ObjectInputStream ois; //To get the clientRequestModel from the packed received.
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
@@ -75,10 +76,12 @@ public class RequestHandlerMain extends Thread {
                 ois = new ObjectInputStream(new ByteArrayInputStream(requestReceived.getData()));
                 requestObject = (ClientRequestModel) ois.readObject();
                 if (requestIds.size() == 0) {
-                    requestIds.add(requestObject.getRequestId());
+                    requestIds.push(requestObject.getRequestId());
                 } else {
-                    if (!requestIds.contains(requestObject.getRequestId())) {
-                        requestIds.add(requestObject.getRequestId());
+                    if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
+                        int nextExpectedRequest = requestIds.peek();
+                        if(nextExpectedRequest++ == requestObject.getRequestId()){ // if req is equal to expected req
+                        requestIds.push(requestObject.getRequestId());
                         System.out.println("Request received");
                         String requestReceivedFromSeq = new String(requestReceived.getData());
                         System.out.println(requestReceivedFromSeq.trim());
@@ -87,6 +90,10 @@ public class RequestHandlerMain extends Thread {
                         ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
                                 requestReceived);
                         concurrentSequencer.start();
+                        }else{
+                            // TODO if we missed previous request.
+                        }
+
                     }
                 }
             } catch (IOException e) {

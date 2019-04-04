@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 //Sequencer is not CORBA server , this is why we need to implement concurrent sequencer to handle multiple clients
 public class ConcurrentSequencer extends Thread implements Serializable {
@@ -18,14 +19,15 @@ public class ConcurrentSequencer extends Thread implements Serializable {
   ObjectInputStream ois;
   byte updatedByteArray[];
   InetAddress ip;
+  HashMap<Integer,ClientRequestModel> requestModelHashMap;      //Store the client req w.r.t. seq. number.
   ByteArrayOutputStream byteArrayOutputStream;
   ObjectOutputStream oos;
 
   public ConcurrentSequencer(SequencerMain sequencerMain, DatagramPacket request) {
     this.sequencerMain = sequencerMain;
     this.request = request;
+    requestModelHashMap = new HashMap<>();
   }
-
 
   @Override
   public void run() {
@@ -36,14 +38,27 @@ public class ConcurrentSequencer extends Thread implements Serializable {
       byteArrayInputStream = new ByteArrayInputStream(request.getData());
       ois = new ObjectInputStream(byteArrayInputStream);
       //need to add sequence number in the client request
-      ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
-      synchronized (sequencerMain.sequenceNumber) {
-        objForRM.setRequestId(++sequencerMain.sequenceNumber);
-        objForRM.setFrontEndPort(request.getPort());
-        //sequencer Added
-      }
+        Object obj = ois.readObject();
+        ClientRequestModel objForRM;
+        if(obj instanceof ClientRequestModel){
+            objForRM = (ClientRequestModel) obj;
+            synchronized (sequencerMain.sequenceNumber) {
+                Integer nextSeqNumber = sequencerMain.sequenceNumber++;
+                objForRM.setRequestId(nextSeqNumber);
+                objForRM.setFrontEndPort(request.getPort());
+                requestModelHashMap.put(nextSeqNumber,objForRM);
+                //sequence number added.
+            }
+        }else if( obj instanceof LostPacketModel){
+            // resend request object if asked.
+            LostPacketModel lostRequest;
+            lostRequest = (LostPacketModel) obj;
+            objForRM = requestModelHashMap.get(lostRequest.getRequestID());
+        }else{
+            objForRM = null;
+        }
+        oos.writeObject(objForRM);
       //convert to byte updatedByteArray to send replica managers
-      oos.writeObject(objForRM);
       updatedByteArray = byteArrayOutputStream.toByteArray();
       forwardRequestToRequestHandler(updatedByteArray);
     } catch (UnknownHostException e) {
