@@ -14,4 +14,8 @@ public class RequestHandlerConstants {
   static final String SUCCESS = "Success";
   static final String FAIL = "Fail";
   static final String TRUE = "True";
+  static final String BUGGY = "sending buggy result";
+  static final String CORRECT = "sending correct result";
+
+
 }
