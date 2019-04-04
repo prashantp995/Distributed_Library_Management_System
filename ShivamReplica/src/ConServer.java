@@ -894,9 +894,9 @@ public class ConServer implements Runnable, ServerInterface {
         return false;
     }
 
-    public static boolean simulateSoftwareBug = true;
+
     public String simulateSoftwareBug(String username) {
-        if (simulateSoftwareBug) {
+        if (RequestHandlerMain.isSimulateSoftwareBug()) {
             return "false";
         } else {
             //alternative implementation in case of software bug

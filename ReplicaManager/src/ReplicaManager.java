@@ -16,11 +16,10 @@ public class ReplicaManager extends Thread {
         this.replicaName = replicaName;
     }
 
-    /*public static void main(String[] args){
+   /* public static void main(String[] args){
         ReplicaManager replicaManager = new ReplicaManager(10001,args[0]);
         replicaManager.start();
     }*/
-
     @Override
     public void run() {
         MulticastSocket mySocket = null;
@@ -41,8 +40,8 @@ public class ReplicaManager extends Thread {
                 byte collector[] = new byte[1024];
                 DatagramPacket receiver = new DatagramPacket(collector,collector.length);
                 mySocket.receive(receiver);
-                Thread newThread = new Thread(new FailureHandler(mySocket,receiver,this.replicaName));
-                newThread.start();
+                FailureHandler newThread = new FailureHandler(mySocket,receiver,this.replicaName);
+                newThread.run();
             }catch(IOException e){
                 System.out.println("Input/Output exception");
                 e.printStackTrace();
@@ -50,7 +49,7 @@ public class ReplicaManager extends Thread {
         }
     }
 }
-class FailureHandler implements Runnable {
+class FailureHandler extends Thread {
 
     private DatagramSocket mySocket = null;
     private DatagramPacket receiver = null;
