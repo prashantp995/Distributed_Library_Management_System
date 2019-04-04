@@ -18,8 +18,7 @@ public class RequestHandlerMain extends Thread {
     ObjectInputStream ois; //To get the clientRequestModel from the packed received.
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
-    public static boolean simulateSoftwareBug = true;
-
+    public static boolean simulateSoftwareBug = false;
     public static boolean isSimulateSoftwareBug() {
         return simulateSoftwareBug;
     }
