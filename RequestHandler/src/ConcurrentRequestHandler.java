@@ -211,10 +211,27 @@ public class ConcurrentRequestHandler extends Thread {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
-
+      if (responseString.toLowerCase().contains("true")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
+      } else if (responseString.toLowerCase().contains("false")) {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
+      }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_ITEM)) {
+      if (responseString.toLowerCase().contains("item add success") || responseString.toLowerCase()
+          .contains("quantity updated")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
+      } else if (responseString.toLowerCase().contains("item fails")) {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
+      }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
+      if (responseString.toLowerCase().contains("Already in Waiting")) {
+        return RequestHandlerConstants.RES_ALREADY_IN_WAIT_LIST;
+      } else if (responseString.toLowerCase().contains("success")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
+      } else if (responseString.toLowerCase().contains("fail")) {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
+      }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
 
