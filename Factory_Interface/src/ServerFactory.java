@@ -68,6 +68,8 @@ public class ServerFactory {
       ConcordiaRemoteServiceImpl.getConcordiaObject();
       MonRemoteServiceImpl.getMontrealObject();
       McGillRemoteServiceImpl.getMcGillObject();
+      ReplicaManager replicaManager = new ReplicaManager(10001,"pras");
+      replicaManager.start();
       pras_serverFlag = true;
     }
     if (lib.equalsIgnoreCase("CON")) {
@@ -86,6 +88,8 @@ public class ServerFactory {
           serverSARReplicaMcGill = new ServerSARReplica(lib);
           serverSARReplicaMontreal = new ServerSARReplica(lib);
           ServerFactory.initIS();
+          ReplicaManager replicaManager = new ReplicaManager(10001,"pras");
+          replicaManager.start();
           sarveshIS = false;
       }
     switch (lib) {
