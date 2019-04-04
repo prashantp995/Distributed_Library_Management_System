@@ -95,8 +95,9 @@ public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
     logger.info("Find Item is called on " + itemName);
     for (Entry<String, LibraryModel> letterEntry : data.entrySet()) {
       if (letterEntry.getValue().getItemName().equals(itemName)) {
-        response.append(letterEntry.getKey() + " ");
-        response.append(letterEntry.getValue().getQuantity());
+        LibraryModel libraryModel = new LibraryModel(letterEntry.getKey(), itemName,
+            letterEntry.getValue().getQuantity());
+        response.append(libraryModel.toString());
       }
     }
     if (callExternalServers) {
@@ -108,12 +109,16 @@ public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
       if (montrealServerResponse != null && montrealServerResponse.length() > 0) {
         logger.info("Response Received from Montreal Server Is" + montrealServerResponse
             + " for requested item " + itemName);
-        response.append("\n" + montrealServerResponse + "\n");
+        if (!montrealServerResponse.equalsIgnoreCase("No Data Found")) {
+          response.append(montrealServerResponse);
+        }
       }
       if (concordiaServerResponse != null && concordiaServerResponse.length() > 0) {
         logger.info("Response Received from Concordia Server Is" + concordiaServerResponse
             + " for requested item " + itemName);
-        response.append(concordiaServerResponse + "\n");
+        if (!concordiaServerResponse.equalsIgnoreCase("No Data Found")) {
+          response.append(concordiaServerResponse);
+        }
       }
 
     }
@@ -666,6 +671,10 @@ public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
       }
       if (data.containsKey(itemID)) {
         LibraryModel model = data.get(itemID);
+        if (model.getCurrentBorrowerList() != null && !model.getCurrentBorrowerList()
+            .contains(userId)) {
+          return "item not borrowed";
+        }
         if (isValidReturn(userId, model)) {
           synchronized (data) {
             model.getCurrentBorrowerList().remove(userId);
@@ -681,6 +690,8 @@ public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
             return LibConstants.SUCCESS;
           }
         }
+      } else {
+        return "item not found";
       }
       return LibConstants.FAIL;
     }

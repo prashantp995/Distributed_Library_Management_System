@@ -619,8 +619,9 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
     StringBuilder response = new StringBuilder();
     for (Entry<String, LibraryModel> letterEntry : data.entrySet()) {
       if (letterEntry.getValue().getItemName().equals(itemName)) {
-        response.append(letterEntry.getKey() + " ");
-        response.append(letterEntry.getValue().getQuantity());
+        LibraryModel libraryModel = new LibraryModel(letterEntry.getKey(), itemName,
+            letterEntry.getValue().getQuantity());
+        response.append(libraryModel.toString());
       }
     }
     if (callExternalServers) {
@@ -630,14 +631,19 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
       if (montrealServerResponse != null && montrealServerResponse.length() > 0) {
         logger.info("Response Received from Montreal Server Is" + montrealServerResponse
             + " for requested item " + itemName);
-        response.append("\n" + montrealServerResponse + "\n");
+        if (!montrealServerResponse.equalsIgnoreCase("No Data Found")) {
+          response.append(montrealServerResponse);
+        }
+
       }
       String mcgServerResponse = ServerUtils
           .callUDPServer(udpRequestModel, LibConstants.UDP_MCG_PORT, logger);
       if (mcgServerResponse != null && mcgServerResponse.length() > 0) {
         logger.info("Response Received from McGill Server Is" + mcgServerResponse
             + " for requested item " + itemName);
-        response.append("\n" + mcgServerResponse + "\n");
+        if (!mcgServerResponse.equalsIgnoreCase("No Data Found")) {
+          response.append(mcgServerResponse);
+        }
       }
 
     }
@@ -700,6 +706,10 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
       }
       if (data.containsKey(itemID)) {
         LibraryModel model = data.get(itemID);
+        if (model.getCurrentBorrowerList() != null && !model.getCurrentBorrowerList()
+            .contains(userId)) {
+          return "item not borrowed";
+        }
         if (model.getCurrentBorrowerList() != null && model.getCurrentBorrowerList()
             .contains(userId)) {
           synchronized (data) {
@@ -717,6 +727,8 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
             return LibConstants.SUCCESS;
           }
         }
+      } else {
+        return "item not found";
       }
       return LibConstants.FAIL;
     }

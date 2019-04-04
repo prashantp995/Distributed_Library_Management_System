@@ -278,6 +278,8 @@ public class ConcurrentRequestHandler extends Thread {
         return RequestHandlerConstants.RES_TRUE_SUCCESS;
       } else if (responseString.toLowerCase().contains("item fails")) {
         return RequestHandlerConstants.RES_FALSE_FAILURE;
+      } else if (responseString.toLowerCase().contains("fail")) {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
       }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
@@ -290,12 +292,43 @@ public class ConcurrentRequestHandler extends Thread {
       }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
+      if (responseString.toLowerCase().contains("external library")) {
+        return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
+      } else if (responseString.equalsIgnoreCase("waitlist")) {
+        return RequestHandlerConstants.RES_WAITLIST_POSSIBLE;
+      } else if (responseString.toLowerCase().contains("already borrowed")) {
+        return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
+      } else if (responseString.toLowerCase().contains("unknown to library")) {
+        return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+      } else if (responseString.toLowerCase().contains("fail")) {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
+      }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
+      if (responseString.toLowerCase().contains("success")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
+      } else {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
+      }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_REMOVE_ITEM)) {
-
+      if (responseString.toLowerCase().contains("in database")) {
+        return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+      } else if (responseString.toLowerCase().contains("success")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
+      } else if (responseString.toLowerCase().contains("correct quantity")) {
+        return RequestHandlerConstants.RES_INCORRECT_QUANTITY_ERROR;
+      }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
+      if (responseString.toLowerCase().contains("success")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
+      } else if (responseString.toLowerCase().contains("fail")) {
+        return RequestHandlerConstants.RES_FALSE_FAILURE;
+      } else if (responseString.toLowerCase().contains("item not found")) {
+        return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+      } else if (responseString.toLowerCase().contains("item not borrowed")) {
+        return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
+      }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
 
