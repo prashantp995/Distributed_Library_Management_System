@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Distributed_Library_Management_System" />
     <orderEntry type="module" module-name="PrashantReplica" />
+    <orderEntry type="module" module-name="ReplicaManager" />
   </component>
 </module>
