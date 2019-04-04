@@ -389,10 +389,12 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
 
   public String simulateSoftwareBug(String username) {
     if (RequestHandlerMain.isSimulateSoftwareBug()) {
-      return "false";
+      System.out.println("Sending Correct result");
+      return RequestHandlerConstants.CORRECT;
     } else {
       //alternative implementation in case of software bug
-      return "true";
+      System.out.println("Sending Buggy result");
+      return RequestHandlerConstants.BUGGY;
     }
   }
 
