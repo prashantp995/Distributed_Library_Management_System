@@ -19,6 +19,7 @@ public class RequestHandlerConstants {
   static final String RES_TRUE_SUCCESS = "true:success";
   static final String RES_FALSE_FAILURE = "false:failure";
   static final String RES_APPEND_SUCCESS = ":success";
+  static final String RES_APPEND_FAILURE = ":failure";
   static final String RES_ITEM_NOT_EROOR = "item not found:failure";
   static final String RES_ITEM_NOT_BORROWED = "item not borrowed:failure";
   static final String RES_ITEM_ALREADY_BORROWED = "item already borrowed:failure";

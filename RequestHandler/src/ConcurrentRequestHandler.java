@@ -229,11 +229,7 @@ public class ConcurrentRequestHandler extends Thread {
         }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-        if(responseString.startsWith("TRUE")){
-            return RequestHandlerConstants.RES_TRUE_SUCCESS;
-        }else{
-            return RequestHandlerConstants.RES_FALSE_FAILURE;
-        }
+           return appendForSFBug(responseString);
     }
     return responseString;
   }
@@ -333,10 +329,18 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
       return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-
+      return appendForSFBug(responseString);
     }
 
     return responseString;
+  }
+
+  private String appendForSFBug(String responseString) {
+    if (responseString.trim().equalsIgnoreCase(RequestHandlerConstants.BUGGY)) {
+      return responseString + RequestHandlerConstants.RES_APPEND_FAILURE;
+    } else {
+      return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
+    }
   }
 
   public static String getReplicaNameFromPort(int port) {
