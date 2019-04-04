@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.*;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -76,10 +75,16 @@ public class RequestHandlerMain extends Thread {
                 requestObject = (ClientRequestModel) ois.readObject();
                 if (requestIds.size() == 0) {
                     requestIds.push(requestObject.getRequestId());
+                    System.out.println("First Request received.");
+                    String requestReceivedFromSeq = new String(requestReceived.getData());
+                    System.out.println(requestReceivedFromSeq.trim());
+                    ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
+                            requestReceived);
+                    concurrentSequencer.start();
                 } else {
                     if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
                         int nextExpectedRequest = requestIds.peek();
-                        /*if(nextExpectedRequest++ == requestObject.getRequestId()){*/ // if req is equal to expected req
+                        if(nextExpectedRequest++ == requestObject.getRequestId()){ // if req is equal to expected req
                         requestIds.push(requestObject.getRequestId());
                         System.out.println("Request received");
                         String requestReceivedFromSeq = new String(requestReceived.getData());
@@ -89,9 +94,13 @@ public class RequestHandlerMain extends Thread {
                         ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
                                 requestReceived);
                         concurrentSequencer.start();
-                        /*}else{
-                            // TODO if we missed previous request.
-                        }*/
+                        }else{
+                            LostPacketModel lostPacketModel = new LostPacketModel(requestObject.getRequestId());
+                            byte[] lostPacketArray = lostPacketModel.getByteArrayOfObj();
+                            DatagramPacket rm1packet = new DatagramPacket(lostPacketArray, lostPacketArray.length, requestReceived.getAddress(), 9090);
+                            DatagramSocket socket = new DatagramSocket();
+                            socket.send(rm1packet);
+                        }
 
                     }
                 }

@@ -35,10 +35,6 @@ public class ConcurrentRequestHandler extends Thread {
       ois = new ObjectInputStream(byteArrayInputStream);
       //need to add sequence number in the client request
       ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
-/*
-      String replicaName = getReplicaNameFromPort(requestHandlerMain.requestHandlerPort);
-*/
-      // String replicaName = "Sarvesh";
       ServerInterface serverInterface = ServerFactory
           .getServerObject(RequestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
@@ -136,25 +132,67 @@ public class ConcurrentRequestHandler extends Thread {
 
   private String appendStatusSarversh(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
-
+        return responseString;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
-
+        if (responseString.toLowerCase().contains("true")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        } else if (responseString.toLowerCase().contains("false")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_ITEM)) {
-
+        if (responseString.toLowerCase().contains("success")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        } else{
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
-
+        if (responseString.toLowerCase().contains("failure")) {
+            return RequestHandlerConstants.RES_ALREADY_IN_WAIT_LIST;
+        } else if (responseString.toLowerCase().contains("success")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        } else {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
-
+        if (responseString.toLowerCase().contains("external library")) {
+            return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
+        } else if (responseString.equalsIgnoreCase("waitlist")) {
+            return RequestHandlerConstants.RES_WAITLIST_POSSIBLE;
+        } else if (responseString.toLowerCase().contains("already borrowed")) {
+            return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
+        } else if (responseString.toLowerCase().contains("Item not found")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        } else if (responseString.toLowerCase().contains("failure")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
-
+        if (responseString.toLowerCase().contains("success")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        } else {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_REMOVE_ITEM)) {
-
+        if (responseString.toLowerCase().contains("in inventory")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        } else if (responseString.toLowerCase().contains("success")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        } else if (responseString.toLowerCase().contains("incorrectqunatity")) {
+            return RequestHandlerConstants.RES_INCORRECT_QUANTITY_ERROR;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
-
+        if (responseString.toLowerCase().contains("success")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }  else if (responseString.toLowerCase().contains("Item not available")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        } else if (responseString.toLowerCase().contains("not borrowed item")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
+        } else {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
-
+        return responseString;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-
+        return appendForSFBug(responseString);
     }
     return responseString;
   }

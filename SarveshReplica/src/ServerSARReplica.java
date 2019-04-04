@@ -136,6 +136,9 @@ public class ServerSARReplica implements ServerInterface{
         currentUser = user.get(userID);
         if(!itemID.substring(0,3).equals(library)){
             message = returnToOtherLibrary(userID,itemID);
+            if(message.contains("failure")){
+                message = "Item not available.";
+            }
             return message;
         }
         if(borrow.containsKey(currentUser)){
@@ -143,7 +146,7 @@ public class ServerSARReplica implements ServerInterface{
             Iterator<Map.Entry<Item,Integer>> value;
             synchronized (lock){ value = set.entrySet().iterator(); }
             if(!value.hasNext()){
-                message ="You have no borrowed item."+ServerConstants.FAILURE;
+                message ="You have not borrowed item."+ServerConstants.FAILURE;
                 writeToLogFile(message);
                 return message;
             }
@@ -176,6 +179,8 @@ public class ServerSARReplica implements ServerInterface{
         String reply = "";
         if(!item.containsKey(itemID)){
             reply = borrowFromOtherLibrary(userID,itemID,numberOfDays);
+            if(reply.contains("failure"))
+                reply = "Item not found";
             writeToLogFile(reply);
             return reply;
         }
@@ -215,16 +220,27 @@ public class ServerSARReplica implements ServerInterface{
         String message;
         Item currentItem;
         if(authenticateItemID(itemID)){
-            if(item.containsKey(itemID)){
+            if(item.containsKey(itemID)) {
                 currentItem = item.get(itemID);
-                currentItem.setItemCount(currentItem.getItemCount()+quantity);
-                synchronized (lock){item.remove(itemID);}
-            }else{
-                currentItem = new Item(itemID,itemName,quantity);
+                if (currentItem.getItemName().equals(itemName)) {
+                    currentItem.setItemCount(currentItem.getItemCount() + quantity);
+                    synchronized (lock) {
+                        item.remove(itemID);
+                        item.put(itemID, currentItem);
+                    }
+                    message = "Successful" + ServerConstants.SUCCESS;
+                    automaticAssignmentOfBooks(itemID);
+                }else{
+                    message = "itemidanditemnamedoesnotmatch";
+                }
+            }else {
+                currentItem = new Item(itemID, itemName, quantity);
+                synchronized (lock) {
+                    item.put(itemID, currentItem);
+                }
+                message = "Successful" + ServerConstants.SUCCESS;
+                automaticAssignmentOfBooks(itemID);
             }
-            synchronized (lock){item.put(itemID,currentItem);}
-            message =  "Successful"+ ServerConstants.SUCCESS;
-            automaticAssignmentOfBooks(itemID);
             writeToLogFile(message);
             return message;
         }
@@ -256,13 +272,7 @@ public class ServerSARReplica implements ServerInterface{
             writeToLogFile(message);
             return message;
         }else if(currentItem.getItemCount() < quantity){
-            quantity = quantity - currentItem.getItemCount();
-            synchronized (lock){item.remove(itemID);
-                currentItem.setItemCount(0);
-                item.put(itemID,currentItem);}
-            message = "Partially successful." +
-                    " Note - Number of items in the inventory is less than desired quantity." +
-                    " Balance quantity - " + quantity + ServerConstants.SUCCESS;
+            message = "incorrectqunatity" + ServerConstants.FAILURE;
             writeToLogFile(message);
             return message;
         }else if(currentItem.getItemCount() > quantity){
@@ -282,73 +292,34 @@ public class ServerSARReplica implements ServerInterface{
         }
     }
 
-  /*  /**allows the manager to create a user for that library. It returns new userID.*//*
-    public String createUser(String managerID) {
-        if(managerID.charAt(3) != 'M'){
-            String message =
-                    "New User Request : Server : " + library +
-                            " Manager : " + managerID +
-                            "Status : Unsuccessful. " +
-                            "\nNote : You are not allowed to use this feature.";
-            writeToLogFile(message);
-            return  message;
-        }
-        String userID = library + "U" + next_User_ID ;
-        User currentUser = new User(userID);
-        synchronized (lock) {user.put(userID,currentUser);
-            next_User_ID += 1;}
-        String message =
-                "New User Request : Server : " + library +
-                        " Manager : " + managerID +
-                        " New User ID : "+ userID +
-                        " Status : Successful.";
-        writeToLogFile(message);
-        return  message;
-    }*/
-
-   /* /**allows the manager to create a manager for that library. It returns new managerID.*//*
-    public String createManager(String managerID) {
-        if(managerID.charAt(3) != 'M'){
-            String message =
-                    "New User Request : Server : " + library +
-                            " Manager : " + managerID +
-                            "Status : Unsuccessful. " +
-                            "\nNote : You are not allowed to use this feature.";
-            writeToLogFile(message);
-            return  message;
-        }
-        String newManagerID = library + "M" + next_Manager_ID ;
-        Manager currentManager = new Manager(newManagerID);
-        synchronized (lock) {manager.put(newManagerID,currentManager);
-            next_Manager_ID += 1;}
-        String message =
-                "New User Request : Server : " + library +
-                        " Manager : " + managerID +
-                        " New Manager ID : "+ newManagerID +
-                        " Status : Successful.";
-        writeToLogFile(message);
-        return  message;
-    }
-*/
-
     /**It adds the given userID to the waiting list for given itemID with numberOfDays.*/
     public String addUserInWaitingList(String userID, String itemID, int numberOfDays) {
         if(item.containsKey(itemID)) {
             if (waitingQueue.containsKey(itemID)) {
-                waitingQueue.get(itemID).put(userID, numberOfDays);
+                if(!waitingQueue.get(itemID).containsKey(userID)){
+                    waitingQueue.get(itemID).put(userID, numberOfDays);
+                    writeToLogFile("Successful"+ServerConstants.SUCCESS + " " + itemID + " " + userID);
+                    return "Successful"+ServerConstants.SUCCESS;
+                }
+                else{
+                    writeToLogFile("Unsuccessful"+ServerConstants.FAILURE + " " + itemID + " " + userID);
+                    return "Unsuccessful"+ServerConstants.FAILURE;
+                }
             } else {
                 HashMap<String, Integer> userList = new HashMap<>();
                 userList.put(userID, numberOfDays);
                 waitingQueue.put(itemID, userList);
+                writeToLogFile("Successful"+ServerConstants.SUCCESS + " " + itemID + " " + userID);
+                return "Successful"+ServerConstants.SUCCESS;
             }
         }else{
-            System.out.println("---------------------------------in else part.");
-            addToForeignWaitlist(userID,itemID,numberOfDays);
+            String message = addToForeignWaitlist(userID,itemID,numberOfDays);
+            writeToLogFile(message);
+            return message;
         }
-        return "Successful"+ServerConstants.SUCCESS;
     }
 
-    public void addToForeignWaitlist(String userID, String itemID, int numberOfDays){
+    public String addToForeignWaitlist(String userID, String itemID, int numberOfDays){
         String reply = "";
         try{
             DatagramSocket mySocket = new DatagramSocket();
@@ -363,7 +334,6 @@ public class ServerSARReplica implements ServerInterface{
             if (itemID.substring(0,3).equals("MON")){
                 port1 = 1303;
             }
-            System.out.println("---------------------------------in AddtoFW." + port1);
             String request = library+":addToWaitlist:"+userID+":"+itemID+":"+numberOfDays;
             DatagramPacket sendRequest = new DatagramPacket(request.getBytes(),request.length(),host,port1);
             mySocket.send(sendRequest);
@@ -371,20 +341,24 @@ public class ServerSARReplica implements ServerInterface{
             DatagramPacket receivedReply = new DatagramPacket(receive,receive.length);
             mySocket.receive(receivedReply);
             reply = new String(receivedReply.getData()).trim();
+            writeToLogFile(reply);
+            return reply;
         }catch (SocketException e){
             writeToLogFile("Socket Exception");
             System.out.println("Socket Exception.");
             e.printStackTrace();
+            return " ";
         }catch (UnknownHostException e){
             writeToLogFile("Unknown host Exception");
             System.out.println("Unknown host Exception.");
             e.printStackTrace();
+            return " ";
         }catch (IOException e){
             writeToLogFile("IO Exception");
             System.out.println("IO Exception.");
             e.printStackTrace();
+            return " ";
         }
-        writeToLogFile(reply);
     }
 
     /**validate the client*/
@@ -786,13 +760,12 @@ public class ServerSARReplica implements ServerInterface{
         writeToLogFile(reply);
     }
 
-    public static boolean simulateSoftwareBug = true;
     public String simulateSoftwareBug(String username) {
-        if (simulateSoftwareBug) {
-            return "false";
+        if (RequestHandlerMain.isSimulateSoftwareBug()) {
+            return RequestHandlerConstants.CORRECT;
         } else {
             //alternative implementation in case of software bug
-            return "true";
+            return RequestHandlerConstants.BUGGY;
         }
     }
 }

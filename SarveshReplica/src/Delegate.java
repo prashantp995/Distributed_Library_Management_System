@@ -215,13 +215,18 @@ class RequestHandler implements Runnable {
                 numberOfDays = Integer.parseInt(request[4]);
                 System.out.println("Delegate Add to another ID.");
                 if (myServer.waitingQueue.containsKey(itemID)) {
-                    myServer.waitingQueue.get(itemID).put(userID, numberOfDays);
+                    if(!myServer.waitingQueue.get(itemID).containsKey(userID)){
+                        myServer.waitingQueue.get(itemID).put(userID, numberOfDays);
+                        reply = "Successful"+ServerConstants.SUCCESS;
+                    }else{
+                        reply = "Unsuccessful"+ServerConstants.FAILURE;
+                    }
                 } else {
                     HashMap<String, Integer> userList = new HashMap<>();
                     userList.put(userID, numberOfDays);
                     myServer.waitingQueue.put(itemID, userList);
+                    reply = "Successful"+ServerConstants.SUCCESS;
                 }
-                System.out.println(myServer.waitingQueue + myServer.library);
                 break;
             case "addUserToBorrow":
                 if(request.length != 5){
