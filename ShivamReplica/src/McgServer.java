@@ -507,7 +507,7 @@ public class McgServer implements Runnable, ServerInterface {
                 System.out.println(count++);
 */
                 if(value.getItemName().equals(itemName)) {
-                    reply = value.toString();
+                    reply += value.toString();
                 }
             }
         }boolean home = false;
@@ -530,8 +530,8 @@ public class McgServer implements Runnable, ServerInterface {
             pack1.setItemName(itemName);
             String replyCON = temp.operate(pack);
             String replyMON = temp1.operate(pack1);
-            reply +=":"+ replyCON;
-            reply += ":"+replyMON;
+            reply += replyCON;
+            reply += replyMON;
         }
         logger.info(reply);
         return reply;

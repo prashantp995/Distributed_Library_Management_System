@@ -507,7 +507,7 @@ public class MonServer implements Runnable, ServerInterface{
                 System.out.println(count++);
 */
                 if (value.getItemName().equals(itemName)) {
-                    reply = value.toString();
+                    reply += value.toString();
                 }
             }
         }
@@ -531,8 +531,8 @@ public class MonServer implements Runnable, ServerInterface{
             pack1.setItemName(itemName);
             String replyMCG = temp.operate(pack);
             String replyMON = temp1.operate(pack1);
-            reply += ":"+replyMCG;
-            reply += ":"+replyMON;
+            reply += replyMCG;
+            reply += replyMON;
         }
         logger.info(reply);
         return reply;

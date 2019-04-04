@@ -185,17 +185,55 @@ public class ConcurrentRequestHandler extends Thread {
         }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
+        if(responseString.startsWith("Invalid itemId")){
+            return RequestHandlerConstants.RES_ITEMID_NOT_VALID;
+        }else if (responseString.startsWith("Can not borrow the same book again")){
+            return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
+        }else if (responseString.startsWith("you can not get two books from a foreign library")){
+            return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
+        }else{
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
+        if(responseString.startsWith("Success")){
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }else{
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_REMOVE_ITEM)) {
+        if(responseString.startsWith("Item not present in the Library")){
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        }else if(responseString.startsWith("Incorrect quantity")){
+            return RequestHandlerConstants.RES_INCORRECT_QUANTITY_ERROR;
+        }else if(responseString.startsWith("Success")){
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
+        if(responseString.startsWith("failure")){
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        }else if(responseString.startsWith("You cannot submit this book")){
+            return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
+        }else{
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
+        if(responseString.startsWith("Item not found")){
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        }else{
+            return responseString+RequestHandlerConstants.RES_APPEND_SUCCESS;
+        }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-
+        if(responseString.startsWith("TRUE")){
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }else{
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     }
     return responseString;
   }

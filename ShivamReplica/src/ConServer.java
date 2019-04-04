@@ -484,7 +484,7 @@ public class ConServer implements Runnable, ServerInterface {
             System.out.println(count++);
 */
                 if (value.getItemName().startsWith(itemName)) {
-                    reply = value.toString();
+                    reply += value.toString();
                 }
             }
             boolean home = false;
@@ -509,8 +509,8 @@ public class ConServer implements Runnable, ServerInterface {
                 replyMCG = replyMCG.trim();
                 String replyMON = temp1.operate(pack1);
                 replyMON = replyMON.trim();
-                reply +=":"+ replyMCG;
-                reply +=":"+ replyMON;
+                reply += replyMCG;
+                reply += replyMON;
             }
             logger.info(reply);
             return reply;
@@ -802,9 +802,11 @@ public class ConServer implements Runnable, ServerInterface {
                     if(reply.startsWith("Succ")) {
                         reply = borrowItem(userId, newItem, 5);
                         if(!reply.startsWith("Succ")){
+                            logger.info(reply);
+                            String reply1 = reply;
                             reply = borrowItem(userId,oldItem,5);
                             logger.info(reply);
-                            return reply;
+                            return reply1;
                         }
                     }else{
                         logger.info(reply);
