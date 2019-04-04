@@ -55,6 +55,7 @@ class FailureHandler extends Thread {
     private DatagramPacket receiver = null;
     private final Object lock;
     private String replicaName;
+    private int counterThreshold = 3 ;
     public FailureHandler(DatagramSocket mySocket,DatagramPacket receiver,String replicaName){
         this.mySocket = mySocket;
         this.receiver = receiver;
@@ -69,21 +70,21 @@ class FailureHandler extends Thread {
         rep = rep.trim();
         String replica = rep.split(" ")[1];
         String failureType = rep.split(" ")[0];
-        if(failureType.equalsIgnoreCase("Fail"))
+        if(failureType.equalsIgnoreCase("software"))
             hadleSoftwareBug(replica);
     }
 
     private void hadleSoftwareBug(String replica) {
         if(replica.equalsIgnoreCase("pras")){
             ReplicaManager.failCountPras++;
-            if(ReplicaManager.failCountPras>=3 && this.replicaName.equalsIgnoreCase("pras")){
-                RequestHandlerMain.setSimulateSoftwareBug(false);
+            if(ReplicaManager.failCountPras>=counterThreshold && this.replicaName.equalsIgnoreCase("pras")){
+                RequestHandlerMain.setSimulateSoftwareBug( !RequestHandlerMain.isSimulateSoftwareBug());
                 ReplicaManager.failCountPras = 0;
             }
         }
         if(replica.equalsIgnoreCase("shivam") ){
             ReplicaManager.failCountShivam++;
-            if(ReplicaManager.failCountShivam>=1 && this.replicaName.equalsIgnoreCase("shivam")){
+            if(ReplicaManager.failCountShivam>=counterThreshold && this.replicaName.equalsIgnoreCase("shivam")){
                 RequestHandlerMain.setSimulateSoftwareBug(false);
                 ReplicaManager.failCountShivam=0;
             }
@@ -91,14 +92,14 @@ class FailureHandler extends Thread {
         }
         if(replica.equalsIgnoreCase("rohit")){
             ReplicaManager.failCountRohit++;
-            if(ReplicaManager.failCountRohit>=2 && this.replicaName.equalsIgnoreCase("rohit")){
+            if(ReplicaManager.failCountRohit>=counterThreshold && this.replicaName.equalsIgnoreCase("rohit")){
                 RequestHandlerMain.setSimulateSoftwareBug(false);
                 ReplicaManager.failCountRohit=0;
             }
         }
         if(replica.equalsIgnoreCase("sarvesh")){
             ReplicaManager.failCountSarvesh++;
-            if(ReplicaManager.failCountSarvesh>=2 && this.replicaName.equalsIgnoreCase("sarvesh")){
+            if(ReplicaManager.failCountSarvesh>=counterThreshold && this.replicaName.equalsIgnoreCase("sarvesh")){
                 RequestHandlerMain.setSimulateSoftwareBug(false);
                 ReplicaManager.failCountSarvesh=0;
             }
