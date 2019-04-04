@@ -18,7 +18,7 @@ public class RequestHandlerMain extends Thread {
     ObjectInputStream ois; //To get the clientRequestModel from the packed received.
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
-    public static boolean simulateSoftwareBug = false;
+    public static boolean simulateSoftwareBug = true;
     public static boolean isSimulateSoftwareBug() {
         return simulateSoftwareBug;
     }
@@ -79,7 +79,7 @@ public class RequestHandlerMain extends Thread {
                 } else {
                     if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
                         int nextExpectedRequest = requestIds.peek();
-                        if(nextExpectedRequest++ == requestObject.getRequestId()){ // if req is equal to expected req
+                        /*if(nextExpectedRequest++ == requestObject.getRequestId()){*/ // if req is equal to expected req
                         requestIds.push(requestObject.getRequestId());
                         System.out.println("Request received");
                         String requestReceivedFromSeq = new String(requestReceived.getData());
@@ -89,9 +89,9 @@ public class RequestHandlerMain extends Thread {
                         ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
                                 requestReceived);
                         concurrentSequencer.start();
-                        }else{
+                        /*}else{
                             // TODO if we missed previous request.
-                        }
+                        }*/
 
                     }
                 }

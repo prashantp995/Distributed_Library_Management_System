@@ -47,7 +47,8 @@ public class ConcurrentRequestHandler extends Thread {
       ResponseModel sendToFE = new ResponseModel();
       sendToFE.setClientId(objForRM.getUserId());
       sendToFE.setRequestId(objForRM.getRequestId());
-      sendToFE.setResponse(responseString.trim());
+      sendToFE.setResponse(responseArray[0]);
+      sendToFE.setStatus(responseArray[1]);
       sendToFE.setReplicaName(RequestHandlerMain.replicaName);
       byte[] dataToSend = getByteArrayOfObj(sendToFE);
       DatagramSocket socket = new DatagramSocket();
@@ -114,6 +115,7 @@ public class ConcurrentRequestHandler extends Thread {
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
       responseString = serverInterface.simulateSoftwareBug(objForRM.getUserId());
     }
+    responseString = responseString.trim();
     responseString = appendStatus(objForRM.getMethodName(), responseString,
         RequestHandlerMain.replicaName);
     return responseString;
@@ -159,12 +161,28 @@ public class ConcurrentRequestHandler extends Thread {
 
   private String appendStatusShivam(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
-
+        return responseString+RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
-
+        if(responseString.startsWith("TRUE")||responseString.startsWith("true")){
+          return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }else
+          return RequestHandlerConstants.RES_FALSE_FAILURE;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_ITEM)) {
+        if(responseString.startsWith("invalid itemId")){
+          return RequestHandlerConstants.RES_ITEMID_NOT_VALID;
+        }else if(responseString.startsWith("invalid itemName")){
+          return RequestHandlerConstants.RES_ITEM_NAME_ERROR;
+        }else
+          return RequestHandlerConstants.RES_TRUE_SUCCESS;
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
+        if(responseString.startsWith("User already in waitlist")){
+          return RequestHandlerConstants.RES_ALREADY_IN_WAIT_LIST;
+        }else if(responseString.startsWith("waitlist")){
+          return RequestHandlerConstants.RES_WAIT_LIST_POSSIBLE;
+        }else{
+          return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
 

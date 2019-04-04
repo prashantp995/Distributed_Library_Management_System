@@ -647,6 +647,13 @@ public class MonServer implements Runnable, ServerInterface{
                 try {
                     if (value.isEmpty()) {
                         value = new ArrayList<>();
+                    }else{
+                        for(DataModel mod : value){
+                            if(mod.getUserId().equalsIgnoreCase(userId)){
+                                logger.info("User already in waitlist");
+                                return "User already in waitlist";
+                            }
+                        }
                     }
                 } catch (NullPointerException e) {
                     value = new ArrayList<>();
