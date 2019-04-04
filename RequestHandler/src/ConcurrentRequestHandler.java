@@ -39,6 +39,7 @@ public class ConcurrentRequestHandler extends Thread {
           .getServerObject(RequestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
       responseString = getResponse(objForRM, serverInterface);
+      System.out.println("Response String is " + responseString);
       String[] responseArray = responseString.split(":");
       ResponseModel sendToFE = new ResponseModel();
       sendToFE.setClientId(objForRM.getUserId());
@@ -299,7 +300,7 @@ public class ConcurrentRequestHandler extends Thread {
 
   private String appendStatusPras(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
-     return responseString+ RequestHandlerConstants.RES_APPEND_SUCCESS;
+      return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
       if (responseString.toLowerCase().contains("true")) {
         return RequestHandlerConstants.RES_TRUE_SUCCESS;
@@ -336,6 +337,8 @@ public class ConcurrentRequestHandler extends Thread {
         return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
       } else if (responseString.toLowerCase().contains("fail")) {
         return RequestHandlerConstants.RES_FALSE_FAILURE;
+      } else if (responseString.toLowerCase().contains("success")) {
+        return RequestHandlerConstants.RES_TRUE_SUCCESS;
       }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
