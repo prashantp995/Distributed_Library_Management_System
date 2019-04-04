@@ -16,10 +16,10 @@ public class ReplicaManager extends Thread {
         this.replicaName = replicaName;
     }
 
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         ReplicaManager replicaManager = new ReplicaManager(10001,args[0]);
         replicaManager.start();
-    }
+    }*/
 
     @Override
     public void run() {

@@ -19,7 +19,9 @@ public class ServerFactory {
     try {
       concordiaLib = new Server_Base("CONCORDIA");
       mcgillLib = new Server_Base("MCGILL");;
-      montrealuLib = new Server_Base("MONTREALU");;
+      montrealuLib = new Server_Base("MONTREALU");
+      ReplicaManager replicaManager = new ReplicaManager(10001,"`Rohit");
+      replicaManager.start();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -136,6 +138,7 @@ public class ServerFactory {
       } catch (IOException e) {
         e.printStackTrace();
       }
+
       return montrealuLib;
     }
     return null;
