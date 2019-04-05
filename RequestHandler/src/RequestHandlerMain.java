@@ -19,6 +19,7 @@ public class RequestHandlerMain extends Thread {
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
     public static boolean simulateSoftwareBug = true;
+    public static boolean simulateCrash = true;
     public ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<>();
 
 
@@ -30,27 +31,12 @@ public class RequestHandlerMain extends Thread {
         RequestHandlerMain.simulateSoftwareBug = simulateSoftwareBug;
     }
 
-    public static void setSimulateCrash(boolean simulateCrash,String replicaName){
-        if(replicaName.equalsIgnoreCase("sarvesh"))
-            ServerFactory.simulateCrashSar = simulateCrash;
-        if(replicaName.equalsIgnoreCase("pras"))
-            ServerFactory.simulateCrashPra = simulateCrash;
-        if(replicaName.equalsIgnoreCase("shivam"))
-            ServerFactory.simulateCrashShi = simulateCrash;
-        if(replicaName.equalsIgnoreCase("rohit"))
-            ServerFactory.simulateCrashRoh = simulateCrash;
+    public static void setSimulateCrash(boolean simulateCrash){
+        RequestHandlerMain.simulateCrash = simulateCrash;
     }
 
-    public static boolean isSimulateCrash(String replicaName) {
-        if(replicaName.equalsIgnoreCase("sarvesh"))
-            return ServerFactory.simulateCrashSar;
-        if(replicaName.equalsIgnoreCase("pras"))
-            return ServerFactory.simulateCrashPra;
-        if(replicaName.equalsIgnoreCase("shivam"))
-            return ServerFactory.simulateCrashShi;
-        if(replicaName.equalsIgnoreCase("rohit"))
-            return ServerFactory.simulateCrashRoh;
-        return false;
+    public static boolean isSimulateCrash() {
+        return simulateCrash;
     }
 
 
