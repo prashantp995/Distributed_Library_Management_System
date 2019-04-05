@@ -2901,6 +2901,18 @@ public class Server_Base implements Runnable, ServerInterface {
         }
     }
 
-
+    public String simulateCrash(String username,String replicaName) {
+        if(replicaName.equalsIgnoreCase("sarvesh")){
+            if (RequestHandlerMain.isSimulateCrash()) {
+                return RequestHandlerConstants.CRASH;
+            } else {
+                //alternative implementation in case of software bug
+                return RequestHandlerConstants.RECOVER;
+            }
+        }
+        else {
+            return "false";
+        }
+    }
 
 }
