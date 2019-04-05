@@ -768,7 +768,7 @@ public class ServerSARReplica implements ServerInterface{
 
     public String simulateCrash(String username,String replicaName) {
         if(replicaName.equalsIgnoreCase("sarvesh")){
-        if (RequestHandlerMain.isSimulateCrash()) {
+        if (RequestHandlerMain.isSimulateCrash("Sarvesh")) {
             return RequestHandlerConstants.CRASH;
         } else {
             //alternative implementation in case of software bug
