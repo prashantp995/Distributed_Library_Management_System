@@ -916,6 +916,16 @@ public class ConServer implements Runnable, ServerInterface {
 
     @Override
     public String simulateCrash(String username, String replicaName) {
-        return null;
+        if(replicaName.equalsIgnoreCase("Shivam")){
+            if (RequestHandlerMain.isSimulateCrash("Shivam")) {
+                return RequestHandlerConstants.CRASH;
+            } else {
+                //alternative implementation in case of software bug
+                return RequestHandlerConstants.RECOVER;
+            }
+        }
+        else {
+            return "false";
+        }
     }
 }
