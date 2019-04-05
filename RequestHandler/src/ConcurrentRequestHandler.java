@@ -18,7 +18,7 @@ public class ConcurrentRequestHandler extends Thread {
   InetAddress ip;
   ByteArrayOutputStream byteArrayOutputStream;
   ObjectOutputStream oos;
-  static ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<ClientRequestModel>();
+  static ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<>();
 
   public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain,
       DatagramPacket requestReceived) {
@@ -126,6 +126,7 @@ public class ConcurrentRequestHandler extends Thread {
     return responseString;
   }
 
+
   private String appendStatus(String methodName, String responseString, String replicaName) {
     if (replicaName.equalsIgnoreCase("pras")) {
       return appendStatusPras(methodName, responseString);
@@ -175,6 +176,8 @@ public class ConcurrentRequestHandler extends Thread {
             return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
         } else if (responseString.toLowerCase().contains("failure")) {
             return RequestHandlerConstants.RES_FALSE_FAILURE;
+        } else if (responseString.toLowerCase().contains("success")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
         if (responseString.toLowerCase().contains("success")) {
@@ -514,33 +517,19 @@ public class ConcurrentRequestHandler extends Thread {
         }
     }
 
-  public static String getReplicaNameFromPort(int port) {
-    if (port == 9001) {
-      return "Sarvesh";
-    } else if (port == 9002) {
-      return "Pras";
-    } else if (port == 9003) {
-      return "Shivam";
-    } else if (port == 9004) {
-      return "Rohit";
+    public void performOperationsToRecoverFromCrash(ArrayList<ClientRequestModel> requests) {
+        //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
+        successfullyExecutedReq = new ArrayList<ClientRequestModel>();
+        for (ClientRequestModel request : requests) {
+            try {
+                ServerInterface serverInterface = ServerFactory
+                        .getServerObject(RequestHandlerMain.replicaName,
+                                request.getUserId().substring(0, 3));
+                getResponse(request, serverInterface);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
-    return null;
-  }
-
-  //TODO this method should be called from  ReplicaManager
-  public void performOperationsToRecoverFromCrash(ArrayList<ClientRequestModel> requests) {
-    //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
-    successfullyExecutedReq = new ArrayList<ClientRequestModel>();
-    for (ClientRequestModel request : requests) {
-      try {
-        ServerInterface serverInterface = ServerFactory
-            .getServerObject(RequestHandlerMain.replicaName,
-                request.getUserId().substring(0, 3));
-        getResponse(request, serverInterface);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-
-  }
 }
+

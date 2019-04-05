@@ -41,7 +41,6 @@ public class ServerSARReplica implements ServerInterface{
     protected final HashMap<String, Item> item;
     protected final HashMap<User,HashMap<Item,Integer>> borrow;
     protected final HashMap<String, HashMap<String,Integer>> waitingQueue;
-    protected final HashMap<String,Integer> borrowedItemDays;
     protected String library;
     private Integer next_User_ID;
     private Integer next_Manager_ID;
@@ -59,7 +58,6 @@ public class ServerSARReplica implements ServerInterface{
         item = new HashMap<>();
         borrow = new HashMap<>();
         waitingQueue = new HashMap<>();
-        borrowedItemDays = new HashMap<>();
         next_User_ID = 1003;
         next_Manager_ID = 1002;
         lock = new Object();
@@ -105,13 +103,14 @@ public class ServerSARReplica implements ServerInterface{
         synchronized (lock) {
             iterator = item.entrySet().iterator();
         }
-        ArrayList<Item> itemList = new ArrayList<>();
+        Item itemList;
         while(iterator.hasNext()){
             Map.Entry<String, Item> pair = iterator.next();
-            if(pair.getValue().getItemName().equals(itemName))
-                itemList.add(pair.getValue());
+            if(pair.getValue().getItemName().equals(itemName)){
+                itemList = pair.getValue();
+                reply += itemList.toString();
+            }
         }
-        reply += itemList.toString();
         reply += findAtOtherLibrary(itemName);
         reply += ServerConstants.SUCCESS;
         writeToLogFile(reply);
@@ -155,7 +154,6 @@ public class ServerSARReplica implements ServerInterface{
                 if(pair.getKey().getItemID().equals(itemID)){
                     synchronized (lock){
                         borrow.get(currentUser).remove(pair.getKey());
-                        borrowedItemDays.remove(itemID);
                     }
                     increamentItemCount(itemID);
                     System.out.println("--------------------------------Library " + library);
@@ -209,7 +207,6 @@ public class ServerSARReplica implements ServerInterface{
             }
             decrementItemCount(itemID);
             reply = "Successful" + ServerConstants.SUCCESS;
-            borrowedItemDays.put(itemID,numberOfDays);
             writeToLogFile(reply);
             return reply;
         }
@@ -412,7 +409,7 @@ public class ServerSARReplica implements ServerInterface{
                     libraryItemBorrow = true;
             }
         String borrowReply,returnReply;
-        int numberOfDays = borrowedItemDays.get(oldItemID);
+        int numberOfDays = 5;
         /*First check whether old item is borrowed.*/
         if(borrow.containsKey(currentUser)){
             /*Second check new item is available or not.*/
@@ -481,7 +478,6 @@ public class ServerSARReplica implements ServerInterface{
                 synchronized (lock) {isOutsourced = currentUser.getOutsourced();}
                 isOutsourced[serverDetails.getIndex()] = true;
                 synchronized (lock) {currentUser.setOutsourced(isOutsourced);}
-                borrowedItemDays.put(itemID,numberOfDays);
                 Item curruntItem;
                 if(item.containsKey(itemID)){
                     curruntItem = item.get(itemID);
@@ -498,8 +494,10 @@ public class ServerSARReplica implements ServerInterface{
                     borrowed.put(curruntItem,numberOfDays);
                     borrow.put(currentUser,borrowed);
                 }
-            }else{
+            }else if(result.contains("waitlist")){
                 reply = "waitList";
+            }else{
+                reply = "Unsuccessful" + ServerConstants.FAILURE;
             }
         }catch (SocketException e){
             writeToLogFile("Socket Exception");
@@ -530,8 +528,8 @@ public class ServerSARReplica implements ServerInterface{
                 port2 = 1303;
             }
             if (library.equals("MCG")){
-                port1 = 1301;
-                port2 = 1303;
+                port1 = 1303;
+                port2 = 1301;
             }
             if (library.equals("MON")){
                 port1 = 1301;
@@ -603,7 +601,6 @@ public class ServerSARReplica implements ServerInterface{
                 synchronized (lock) {isOutsourced = currentUser.getOutsourced();}
                 isOutsourced[serverDetails.getIndex()] = false;
                 synchronized (lock) {currentUser.setOutsourced(isOutsourced);}
-                borrowedItemDays.remove(itemID);
             }else{
                 reply = "Unsuccessful" + ServerConstants.FAILURE;
             }
