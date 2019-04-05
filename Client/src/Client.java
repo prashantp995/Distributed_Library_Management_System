@@ -204,10 +204,12 @@ public class Client {
         System.out.println("simulate Software Bug");
         logger.info(username + " choose to simulate software bug");
         simulateSoftwareBug(username);
+        break;
       case 5:
         System.out.println("simulate Crash");
-        logger.info(username + " choose to simulate software bug");
-        simulateSoftwareBug(username);
+        logger.info(username + " choose to simulate crash");
+        simulateCrash(username);
+        break;
       default:
         logger.info(username + " Entered invalid choice");
         System.out.println("please enter valid choice");

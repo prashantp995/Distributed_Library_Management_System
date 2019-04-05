@@ -106,7 +106,7 @@ class MessageHandler implements Runnable{
                     DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
                     frontEndSocket.send(response);
                     notifySoftwareBug();
-                    mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*2)));
+                    mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*2)+1));
                     mySocket.receive(messageFromRH);
                 }
             }

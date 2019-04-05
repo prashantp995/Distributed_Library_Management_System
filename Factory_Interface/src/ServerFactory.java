@@ -5,7 +5,7 @@ public class ServerFactory {
   private static ServerSARReplica serverSARReplicaConcordia = null;
   private static ServerSARReplica serverSARReplicaMontreal = null;
   private static ServerSARReplica serverSARReplicaMcGill = null;
-  public static boolean simulateCrashSar = true;
+  public static boolean simulateCrashSar = false;
   public static boolean simulateCrashPra = false;
   public static boolean simulateCrashShi = false;
   public static boolean simulateCrashRoh = false;
