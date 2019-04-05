@@ -628,14 +628,7 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
       UdpRequestModel udpRequestModel = new UdpRequestModel("findItem", itemName);
       String montrealServerResponse = ServerUtils
           .callUDPServer(udpRequestModel, LibConstants.UDP_MON_PORT, logger);
-      if (montrealServerResponse != null && montrealServerResponse.length() > 0) {
-        logger.info("Response Received from Montreal Server Is" + montrealServerResponse
-            + " for requested item " + itemName);
-        if (!montrealServerResponse.equalsIgnoreCase("No Data Found")) {
-          response.append(montrealServerResponse);
-        }
 
-      }
       String mcgServerResponse = ServerUtils
           .callUDPServer(udpRequestModel, LibConstants.UDP_MCG_PORT, logger);
       if (mcgServerResponse != null && mcgServerResponse.length() > 0) {
@@ -644,6 +637,14 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
         if (!mcgServerResponse.equalsIgnoreCase("No Data Found")) {
           response.append(mcgServerResponse);
         }
+      }
+      if (montrealServerResponse != null && montrealServerResponse.length() > 0) {
+        logger.info("Response Received from Montreal Server Is" + montrealServerResponse
+            + " for requested item " + itemName);
+        if (!montrealServerResponse.equalsIgnoreCase("No Data Found")) {
+          response.append(montrealServerResponse);
+        }
+
       }
 
     }
