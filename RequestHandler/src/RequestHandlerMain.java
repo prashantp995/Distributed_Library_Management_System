@@ -146,8 +146,8 @@ public class RequestHandlerMain extends Thread {
     }
 
     public void resolveCrashFailure(){
-        ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this);
-        concurrentSequencer.performOperationsToRecoverFromCrash();
+        ConcurrentRequestHandler concurrentRequestHandler = new ConcurrentRequestHandler(this);
+        concurrentRequestHandler.performOperationsToRecoverFromCrash();
     }
     public static Logger setupLogger(Logger logger, String fileName, boolean showlogsInConsole)
             throws IOException {

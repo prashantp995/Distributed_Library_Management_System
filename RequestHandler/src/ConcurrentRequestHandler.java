@@ -558,7 +558,7 @@ public class ConcurrentRequestHandler extends Thread {
                 for (ClientRequestModel request : requests) {
                     try {
                         ServerInterface serverInterface = ServerFactory
-                                .getServerObject(requestHandlerMain.replicaName,
+                                .getServerObject(RequestHandlerMain.replicaName,
                                         request.getUserId().substring(0, 3));
                         getResponse(request, serverInterface);
                     } catch (Exception e) {

@@ -898,8 +898,8 @@ public class MonServer implements Runnable, ServerInterface{
 
     @Override
     public String simulateCrash(String username, String replicaName) {
-        if(replicaName.equalsIgnoreCase("sarvesh")){
-            if (RequestHandlerMain.isSimulateCrash("Sarvesh")) {
+        if(replicaName.equalsIgnoreCase("Shivam")){
+            if (RequestHandlerMain.isSimulateCrash("Shivam")) {
                 return RequestHandlerConstants.CRASH;
             } else {
                 //alternative implementation in case of software bug
