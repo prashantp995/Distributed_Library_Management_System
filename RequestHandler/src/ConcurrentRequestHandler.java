@@ -361,6 +361,7 @@ public class ConcurrentRequestHandler extends Thread {
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
 
             if(responseString.contains("borrow is currently not available we cannot process the exchange")) {
+
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
             else if(responseString.contains("book you want to return in the exchange was never officially take under your ID")) {
@@ -372,72 +373,74 @@ public class ConcurrentRequestHandler extends Thread {
             else if(responseString.contains("You alrrady have a book from")) {
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
+
             else if(responseString.toLowerCase().contains("exchange successful")) {
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
         }
+    }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_REMOVE_ITEM)) {
 
-            if(responseString.contains("item has not been listed in the library")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-            else if(responseString.contains("All the copies are being recalled")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.contains("manager of the item has removed the item:")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.contains("been removed from the unborrowed section")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.contains("entered value is more than the availablity")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-            else if(responseString.contains("User is not authorized for this action")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
+        if(responseString.contains("item has not been listed in the library")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
         }
+        else if(responseString.contains("All the copies are being recalled")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("manager of the item has removed the item:")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("been removed from the unborrowed section")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("entered value is more than the availablity")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+        else if(responseString.contains("User is not authorized for this action")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+    }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
-            if(responseString.contains("you don't have a copy of this item")) {
-                return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
-            }
-            else if(responseString.contains("successfully returned")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.contains("added to the library")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.contains("ID does not exist in the library")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-
-            else if(responseString.contains("no suitable server for this item")) {
-                return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
-            }
-            else if(responseString.contains("he User is not authorized for this actio")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
+        if(responseString.contains("you don't have a copy of this item")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
         }
+        else if(responseString.contains("successfully returned")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("added to the library")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("ID does not exist in the library")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+
+        else if(responseString.contains("no suitable server for this item")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        }
+        else if(responseString.contains("he User is not authorized for this actio")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+    }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
 
-            if(!(responseString.contains("ITEMNAME=")&&(responseString.contains("ITEMID="))&&(responseString.contains("QUANTITY= ")))){
-                return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
-            }
-            else{
-                return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
-            }
+        if(!(responseString.contains("ITEMNAME=")&&(responseString.contains("ITEMID="))&&(responseString.contains("QUANTITY= ")))){
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
         }
-
-        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-            return appendForSFBug(responseString);
+        else{
+            return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
         }
-        return responseString;
     }
 
-  private String appendStatusPras(String methodName, String responseString) {
+        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
+        return appendForSFBug(responseString);
+    }
+        return responseString;
+}
+
+
+    private String appendStatusPras(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
       return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {

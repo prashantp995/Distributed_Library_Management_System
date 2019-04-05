@@ -35,7 +35,7 @@ public class ServerFactory {
       case "Pras":
         return getObjForPrashantReplica(lib);
       case "Rohit":
-        return getRohitServerObjectR(lib);
+        return getRohitServerObject(lib);
       case "Shivam":
         if (!shivamServerFlag) {
           runInterServer();
@@ -121,54 +121,55 @@ public class ServerFactory {
     }
   }
 
-  public static Server_Base getRohitServerObjectR(String lib) {
-    if (lib.equalsIgnoreCase("CON")) {
-      if (concordiaLib == null)
-      {
-        try {
-          concordiaLib = new Server_Base("CONCORDIA");
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        return concordiaLib;
-      }
-      else {
-        return concordiaLib;
-      }
+  public static Server_Base getRohitServerObject(String lib) {
+        if (lib.equalsIgnoreCase("CON")) {
+            if (concordiaLib == null)
+            {
+                try {
+                    concordiaLib = new Server_Base("CONCORDIA");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return concordiaLib;
+            }
+            else {
+                return concordiaLib;
+            }
 
-    } else if (lib.equalsIgnoreCase("MCG")) {
-      if (mcgillLib == null)
-      {
-        try {
-          mcgillLib = new Server_Base("MCGILL");
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        return mcgillLib;
-      }
-      else {
-        return mcgillLib;
-      }
+        } else if (lib.equalsIgnoreCase("MCG")) {
+            if (mcgillLib == null)
+            {
+                try {
+                    mcgillLib = new Server_Base("MCGILL");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return mcgillLib;
+            }
+            else {
+                return mcgillLib;
+            }
 
-    } else if (lib.equalsIgnoreCase("MON")) {
-      if (montrealuLib == null)
-      {
-        try {
-          montrealuLib = new Server_Base("MONTREALU");
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        return montrealuLib;
-      }
-      else {
-        return montrealuLib;
-      }
+        } else if (lib.equalsIgnoreCase("MON")) {
+            if (montrealuLib == null)
+            {
+                try {
+                    montrealuLib = new Server_Base("MONTREALU");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return montrealuLib;
+            }
+            else {
+                return montrealuLib;
+            }
 
+        }
+        return null;
     }
-    return null;
-  }
 
-  private static void runInterServer(){
+
+    private static void runInterServer(){
     shivamServerFlag = true;
     InterServComServer con = new InterServComServer(3, null, ConServer.getConcordiaObject());
     Thread interServCon = new Thread(con);
