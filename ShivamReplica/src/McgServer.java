@@ -745,7 +745,7 @@ public class McgServer implements Runnable, ServerInterface {
     }
 
     @Override
-    public String exchangeItem(String userId, String newItem, String oldItem) {
+    public String exchangeItem(String userId, String oldItem, String newItem) {
         logger.info("exchangeItem");
 
         logger.info(userId+" "+newItem+" "+oldItem);
