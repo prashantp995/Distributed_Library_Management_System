@@ -913,4 +913,9 @@ public class ConServer implements Runnable, ServerInterface {
             return RequestHandlerConstants.BUGGY;
         }
     }
+
+    @Override
+    public String simulateCrash(String username, String replicaName) {
+        return null;
+    }
 }

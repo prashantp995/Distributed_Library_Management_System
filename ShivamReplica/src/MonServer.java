@@ -896,4 +896,9 @@ public class MonServer implements Runnable, ServerInterface{
         }
     }
 
+    @Override
+    public String simulateCrash(String username, String replicaName) {
+        return null;
+    }
+
 }

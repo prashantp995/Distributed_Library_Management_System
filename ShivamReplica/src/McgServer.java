@@ -896,4 +896,9 @@ public class McgServer implements Runnable, ServerInterface {
             return "true";
         }
     }
+
+    @Override
+    public String simulateCrash(String username, String replicaName) {
+        return null;
+    }
 }

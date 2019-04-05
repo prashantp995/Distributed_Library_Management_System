@@ -18,13 +18,15 @@ public class ConcurrentRequestHandler extends Thread {
   InetAddress ip;
   ByteArrayOutputStream byteArrayOutputStream;
   ObjectOutputStream oos;
-  static ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<>();
+
 
   public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain,
       DatagramPacket requestReceived) {
     this.requestHandlerMain = requestHandlerMain;
     this.request = requestReceived;
   }
+
+  public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain){}
 
   @Override
   public void run() {
@@ -38,8 +40,17 @@ public class ConcurrentRequestHandler extends Thread {
       //need to add sequence number in the client request
       ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
       ServerInterface serverInterface = ServerFactory
-          .getServerObject(RequestHandlerMain.replicaName,
+          .getServerObject(requestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
+      //TODO
+        //check if the serverInterface is null and
+        if(serverInterface==null){
+            ServerFactory.simulateCrashRoh=false;
+            ServerFactory.simulateCrashPra=false;
+            ServerFactory.simulateCrashSar=false;
+            ServerFactory.simulateCrashShi=false;
+            this.stop();
+        }
       responseString = getResponse(objForRM, serverInterface);
       System.out.println("Response String is " + responseString);
       String[] responseArray = responseString.split(":");
@@ -124,7 +135,7 @@ public class ConcurrentRequestHandler extends Thread {
     if (responseString != null && (responseString.contains(RequestHandlerConstants.SUCCESS)
         || responseString
         .contains(RequestHandlerConstants.TRUE))) {
-      successfullyExecutedReq.add(objForRM);
+      requestHandlerMain.successfullyExecutedReq.add(objForRM);
     }
     return responseString;
   }
@@ -444,8 +455,7 @@ public class ConcurrentRequestHandler extends Thread {
         return responseString;
 }
 
-
-    private String appendStatusPras(String methodName, String responseString) {
+  private String appendStatusPras(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
       return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
@@ -538,19 +548,25 @@ public class ConcurrentRequestHandler extends Thread {
         }
     }
 
-    public void performOperationsToRecoverFromCrash(ArrayList<ClientRequestModel> requests) {
+    public void performOperationsToRecoverFromCrash() {
         //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
-        successfullyExecutedReq = new ArrayList<ClientRequestModel>();
-        for (ClientRequestModel request : requests) {
-            try {
-                ServerInterface serverInterface = ServerFactory
-                        .getServerObject(RequestHandlerMain.replicaName,
-                                request.getUserId().substring(0, 3));
-                getResponse(request, serverInterface);
-            } catch (Exception e) {
-                e.printStackTrace();
+
+        if(!(requestHandlerMain == null) && !(requestHandlerMain.successfullyExecutedReq == null)) {
+            if (!requestHandlerMain.successfullyExecutedReq.isEmpty()) {
+                ArrayList<ClientRequestModel> requests = new ArrayList<>(requestHandlerMain.successfullyExecutedReq);
+                requestHandlerMain.successfullyExecutedReq.clear();
+                for (ClientRequestModel request : requests) {
+                    try {
+                        ServerInterface serverInterface = ServerFactory
+                                .getServerObject(requestHandlerMain.replicaName,
+                                        request.getUserId().substring(0, 3));
+                        getResponse(request, serverInterface);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
-    }
+  }
 }
 

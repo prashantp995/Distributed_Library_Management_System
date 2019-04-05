@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Factory_Interface" />
     <orderEntry type="module" module-name="Model" />
+    <orderEntry type="module" module-name="ReplicaManager" />
   </component>
 </module>

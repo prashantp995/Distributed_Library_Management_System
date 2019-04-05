@@ -398,6 +398,11 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
     }
   }
 
+  @Override
+  public String simulateCrash(String username, String replicaName) {
+    return null;
+  }
+
   private boolean isValidReturn(String userId, LibraryModel model) {
     if (model == null) {
       return false;
