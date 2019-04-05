@@ -15,4 +15,5 @@ string returnItem(in string userId, in string itemID);
   string exchangeItem(in string userId,in string oldItemId ,in string newItemID) ;
   string validateUserName(in string userId);
   string simulateSoftwareBug(in string userId);
+  string simulateCrash(in string userId, in string replicaName);
 };

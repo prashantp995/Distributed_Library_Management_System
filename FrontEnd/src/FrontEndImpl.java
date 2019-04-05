@@ -9,7 +9,6 @@ import org.omg.CORBA.ORB;
 
 public class FrontEndImpl extends LibraryServicePOA {
 
-  InetSocketAddress sequencerAddress = new InetSocketAddress(9090);
   InetSocketAddress udpFrontEndAddress = new InetSocketAddress(9006);
   private ORB orb;
 
@@ -113,6 +112,13 @@ public class FrontEndImpl extends LibraryServicePOA {
         FrontEndConstants.METHOD_SIMULATE_SOFTWARE_BUG, userrId);
     return returnResult(request);
   }
+    @Override
+    public String simulateCrash(String userrId, String replicaName) {
+        ClientRequestModel request = new ClientRequestModel(
+                FrontEndConstants.METHOD_SIMULATE_CRASH, userrId);
+        request.setReplicaName(replicaName);
+        return returnResult(request);
+    }
 
   private void sendRequest(DatagramSocket socket, ClientRequestModel call) throws IOException {
     ByteArrayOutputStream bs = new ByteArrayOutputStream();

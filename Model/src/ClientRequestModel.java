@@ -15,8 +15,17 @@ public class ClientRequestModel implements Serializable {
   private int frontEndPort;
   private int quantity;
   private String newItemId; //this is for the exchange operation
+  private String replicaName;
 
-  public int getFrontEndPort() {
+    public String getReplicaName() {
+        return replicaName;
+    }
+
+    public void setReplicaName(String replicaName) {
+        this.replicaName = replicaName;
+    }
+
+    public int getFrontEndPort() {
     return frontEndPort;
   }
 
@@ -113,18 +122,19 @@ public class ClientRequestModel implements Serializable {
     this.requestId = requestId;
   }
 
-  @Override
-  public String toString() {
-    return "ClientRequestModel{" +
-        "methodName='" + methodName + '\'' +
-        ", itemName='" + itemName + '\'' +
-        ", itemId='" + itemId + '\'' +
-        ", userId='" + userId + '\'' +
-        ", numberOfDays=" + numberOfDays +
-        ", requestId=" + requestId +
-        ", frontEndPort=" + frontEndPort +
-        ", quantity=" + quantity +
-        ", newItemId='" + newItemId + '\'' +
-        '}';
-  }
+    @Override
+    public String toString() {
+        return "ClientRequestModel{" +
+                "methodName='" + methodName + '\'' +
+                ", itemName='" + itemName + '\'' +
+                ", itemId='" + itemId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", numberOfDays=" + numberOfDays +
+                ", requestId=" + requestId +
+                ", frontEndPort=" + frontEndPort +
+                ", quantity=" + quantity +
+                ", newItemId='" + newItemId + '\'' +
+                ", replicaName='" + replicaName + '\'' +
+                '}';
+    }
 }

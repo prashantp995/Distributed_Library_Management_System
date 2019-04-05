@@ -19,6 +19,7 @@ public class RequestHandlerMain extends Thread {
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
     public static boolean simulateSoftwareBug = true;
+    public static boolean simulateCrash = true;
     public ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<>();
 
 
@@ -29,6 +30,15 @@ public class RequestHandlerMain extends Thread {
     public static void setSimulateSoftwareBug(boolean simulateSoftwareBug) {
         RequestHandlerMain.simulateSoftwareBug = simulateSoftwareBug;
     }
+
+    public static void setSimulateCrash(boolean simulateCrash){
+        RequestHandlerMain.simulateCrash = simulateCrash;
+    }
+
+    public static boolean isSimulateCrash() {
+        return simulateCrash;
+    }
+
 
     public static void main(String[] args) {
         //RequestHandlerMain requestHandlerMain = new RequestHandlerMain(9003);
