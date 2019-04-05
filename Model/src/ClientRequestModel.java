@@ -112,4 +112,19 @@ public class ClientRequestModel implements Serializable {
   public void setRequestId(int requestId) {
     this.requestId = requestId;
   }
+
+  @Override
+  public String toString() {
+    return "ClientRequestModel{" +
+        "methodName='" + methodName + '\'' +
+        ", itemName='" + itemName + '\'' +
+        ", itemId='" + itemId + '\'' +
+        ", userId='" + userId + '\'' +
+        ", numberOfDays=" + numberOfDays +
+        ", requestId=" + requestId +
+        ", frontEndPort=" + frontEndPort +
+        ", quantity=" + quantity +
+        ", newItemId='" + newItemId + '\'' +
+        '}';
+  }
 }
