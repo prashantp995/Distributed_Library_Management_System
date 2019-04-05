@@ -18,15 +18,13 @@ public class ConcurrentRequestHandler extends Thread {
   InetAddress ip;
   ByteArrayOutputStream byteArrayOutputStream;
   ObjectOutputStream oos;
-
+  static ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<>();
 
   public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain,
       DatagramPacket requestReceived) {
     this.requestHandlerMain = requestHandlerMain;
     this.request = requestReceived;
   }
-
-  public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain){}
 
   @Override
   public void run() {
@@ -40,17 +38,8 @@ public class ConcurrentRequestHandler extends Thread {
       //need to add sequence number in the client request
       ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
       ServerInterface serverInterface = ServerFactory
-          .getServerObject(requestHandlerMain.replicaName,
+          .getServerObject(RequestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
-      //TODO
-        //check if the serverInterface is null and
-        if(serverInterface==null){
-            ServerFactory.simulateCrashRoh=false;
-            ServerFactory.simulateCrashPra=false;
-            ServerFactory.simulateCrashSar=false;
-            ServerFactory.simulateCrashShi=false;
-            this.stop();
-        }
       responseString = getResponse(objForRM, serverInterface);
       System.out.println("Response String is " + responseString);
       String[] responseArray = responseString.split(":");
@@ -135,7 +124,7 @@ public class ConcurrentRequestHandler extends Thread {
     if (responseString != null && (responseString.contains(RequestHandlerConstants.SUCCESS)
         || responseString
         .contains(RequestHandlerConstants.TRUE))) {
-      requestHandlerMain.successfullyExecutedReq.add(objForRM);
+      successfullyExecutedReq.add(objForRM);
     }
     return responseString;
   }
@@ -254,13 +243,11 @@ public class ConcurrentRequestHandler extends Thread {
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
         if(responseString.startsWith("Invalid itemId")){
-            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+            return RequestHandlerConstants.RES_ITEMID_NOT_VALID;
         }else if (responseString.startsWith("Can not borrow the same book again")){
             return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
         }else if (responseString.startsWith("you can not get two books from a foreign library")){
             return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
-        }else if(responseString.startsWith("waitlist")){
-            return RequestHandlerConstants.RES_WAIT_LIST_POSSIBLE;
         }else{
             return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
@@ -314,140 +301,151 @@ public class ConcurrentRequestHandler extends Thread {
         }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
-            if (responseString.toLowerCase().contains("validTrue User")) {
+            if (responseString.contains("Its a validTrue User")) {
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
             }
-            else{
+            else if(responseString.contains("Its a invalidFalse User")){
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
 
         }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_ITEM)) {
-            if (responseString.toLowerCase().contains("already listed")||(responseString.toLowerCase().contains("increased"))){
+            if (responseString.contains("already listed")||(responseString.toLowerCase().contains("increased"))){
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
             }
-            else if(responseString.toLowerCase().contains("the item has been issued")||responseString.toLowerCase().contains("waitlist  for the item the remaining")){
+            else if(responseString.contains("clear the waitlist, the item has been issued to")||responseString.toLowerCase().contains("waitlist  for the item the remaining")){
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
             }
-            else if(responseString.toLowerCase().contains("of the item has removed the item:")){
+            else if(responseString.contains("of the item has removed the item:")){
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
             }
-            else if(responseString.toLowerCase().contains("The  value entered is invalid")){
+            else if(responseString.contains("The  value entered is invalid")){
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
 
         }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
-            if(responseString.toLowerCase().contains("already in the waitlist")){
+            if(responseString.contains("already in the waitlist")){
                 return RequestHandlerConstants.RES_ALREADY_IN_WAIT_LIST;
             }
-            else if(responseString.toLowerCase().contains("sucessfully waitlisted")){
+            else if(responseString.contains("sucessfully waitlisted")){
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
             }
-            else if(responseString.toLowerCase().contains("Invalid response")) {
+            else if(responseString.contains("Invalid response")) {
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
         }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
-            if(responseString.toLowerCase().contains("already have a copy")){
-                return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
+            if(responseString.contains("already have a copy")){
+                return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
             }
-            else if(responseString.toLowerCase().contains("successfully borrowed")){
+            else if(responseString.contains("successfully borrowed")){
                 return RequestHandlerConstants.RES_TRUE_SUCCESS;
             }
-            else if(responseString.toLowerCase().contains("like to be added to the waitlist?")){
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
+            else if(responseString.contains("like to be added to the waitlist?")){
+                return RequestHandlerConstants.RES_WAITLIST_POSSIBLE;
             }
-            else if(responseString.toLowerCase().contains("Internal data error!")){
+            else if(responseString.contains("Internal data error!")){
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
-            else if(responseString.toLowerCase().contains("already borrowed an item from an outside library")){
+            else if(responseString.contains("already borrowed an item from an outside library")||responseString.contains("You alrrady have a book from")){
                 return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
             }
-            else if(responseString.toLowerCase().contains("no suitable server for this item")){
+            else if(responseString.contains("no suitable server for this item")){
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
-            else if(responseString.toLowerCase().contains("User is not authorized for this action")) {
+            else if(responseString.contains("User is not authorized for this action")) {
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
 
         }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_EXCHANGE_ITEM)) {
-            if(responseString.toLowerCase().contains("borrow is currently not available we cannot process the exchange")) {
+
+            if(responseString.contains("borrow is currently not available we cannot process the exchange")) {
+
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
-            else if(responseString.toLowerCase().contains("book you want to return in the exchange was never officially take under your ID")) {
+            else if(responseString.contains("book you want to return in the exchange was never officially take under your ID")) {
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
-            else if(responseString.toLowerCase().contains("please return the foreign library's book first")) {
+            else if(responseString.contains("please return the foreign library's book first")) {
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
-            else if(responseString.toLowerCase().contains("Exchange Successful")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
+            else if(responseString.contains("You alrrady have a book from")) {
+                return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
 
+            else if(responseString.toLowerCase().contains("exchange successful")) {
+                return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
+    }
 
         else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_REMOVE_ITEM)) {
 
-            if(responseString.toLowerCase().contains("item has not been listed in the library")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-            else if(responseString.toLowerCase().contains("All the copies are being recalled")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.toLowerCase().contains("manager of the item has removed the item:")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.toLowerCase().contains("been removed from the unborrowed section")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.toLowerCase().contains("entered value is more than the availablity")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-            else if(responseString.toLowerCase().contains("User is not authorized for this action")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
+        if(responseString.contains("item has not been listed in the library")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
         }
-
-        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
-            if(responseString.toLowerCase().contains("you don't have a copy of this item")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-            else if(responseString.toLowerCase().contains("successfully returned")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.toLowerCase().contains("added to the library")) {
-                return RequestHandlerConstants.RES_TRUE_SUCCESS;
-            }
-            else if(responseString.toLowerCase().contains("ID does not exist in the library")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-
-            else if(responseString.toLowerCase().contains("no suitable server for this item")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
-            else if(responseString.toLowerCase().contains("he User is not authorized for this actio")) {
-                return RequestHandlerConstants.RES_FALSE_FAILURE;
-            }
+        else if(responseString.contains("All the copies are being recalled")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
-
-        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
-            return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
-
+        else if(responseString.contains("manager of the item has removed the item:")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
-
-        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-            return appendForSFBug(responseString);
+        else if(responseString.contains("been removed from the unborrowed section")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
-        return responseString;
+        else if(responseString.contains("entered value is more than the availablity")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+        else if(responseString.contains("User is not authorized for this action")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
     }
 
-  private String appendStatusPras(String methodName, String responseString) {
+        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_RETURN_ITEM)) {
+        if(responseString.contains("you don't have a copy of this item")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_BORROWED;
+        }
+        else if(responseString.contains("successfully returned")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("added to the library")) {
+            return RequestHandlerConstants.RES_TRUE_SUCCESS;
+        }
+        else if(responseString.contains("ID does not exist in the library")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+
+        else if(responseString.contains("no suitable server for this item")) {
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        }
+        else if(responseString.contains("he User is not authorized for this actio")) {
+            return RequestHandlerConstants.RES_FALSE_FAILURE;
+        }
+    }
+
+        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
+
+        if(!(responseString.contains("ITEMNAME=")&&(responseString.contains("ITEMID="))&&(responseString.contains("QUANTITY= ")))){
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
+        }
+        else{
+            return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
+        }
+    }
+
+        else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
+        return appendForSFBug(responseString);
+    }
+        return responseString;
+}
+
+
+    private String appendStatusPras(String methodName, String responseString) {
     if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_LIST_ITEM)) {
       return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_VALIDATE_USER_NAME)) {
@@ -540,25 +538,19 @@ public class ConcurrentRequestHandler extends Thread {
         }
     }
 
-    public void performOperationsToRecoverFromCrash() {
+    public void performOperationsToRecoverFromCrash(ArrayList<ClientRequestModel> requests) {
         //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
-
-        if(!(requestHandlerMain == null) && !(requestHandlerMain.successfullyExecutedReq == null)) {
-            if (!requestHandlerMain.successfullyExecutedReq.isEmpty()) {
-                ArrayList<ClientRequestModel> requests = new ArrayList<>(requestHandlerMain.successfullyExecutedReq);
-                requestHandlerMain.successfullyExecutedReq.clear();
-                for (ClientRequestModel request : requests) {
-                    try {
-                        ServerInterface serverInterface = ServerFactory
-                                .getServerObject(requestHandlerMain.replicaName,
-                                        request.getUserId().substring(0, 3));
-                        getResponse(request, serverInterface);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+        successfullyExecutedReq = new ArrayList<ClientRequestModel>();
+        for (ClientRequestModel request : requests) {
+            try {
+                ServerInterface serverInterface = ServerFactory
+                        .getServerObject(RequestHandlerMain.replicaName,
+                                request.getUserId().substring(0, 3));
+                getResponse(request, serverInterface);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-  }
+    }
 }
 

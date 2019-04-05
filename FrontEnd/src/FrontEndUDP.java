@@ -101,7 +101,7 @@ class MessageHandler implements Runnable{
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
-                if(i==2){
+                if(i==0){
                     reply = getMajority(replies);
                     DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
                     frontEndSocket.send(response);

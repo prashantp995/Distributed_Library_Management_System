@@ -5,10 +5,9 @@ public class ServerFactory {
   private static ServerSARReplica serverSARReplicaConcordia = null;
   private static ServerSARReplica serverSARReplicaMontreal = null;
   private static ServerSARReplica serverSARReplicaMcGill = null;
-  public static boolean simulateCrashSar = true;
-  public static boolean simulateCrashPra = false;
-  public static boolean simulateCrashShi = false;
-  public static boolean simulateCrashRoh = false;
+  /*private static ConServer conServer;
+  private static MonServer monServer;
+  private static McgServer mcgServer;*/
   static boolean shivamServerFlag = false;
   static boolean pras_serverFlag = false;
   private static Server_Base concordiaLib;
@@ -21,6 +20,8 @@ public class ServerFactory {
       concordiaLib = new Server_Base("CONCORDIA");
       mcgillLib = new Server_Base("MCGILL");;
       montrealuLib = new Server_Base("MONTREALU");
+      ReplicaManager replicaManager = new ReplicaManager(10001,"`Rohit");
+      replicaManager.start();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -30,44 +31,35 @@ public class ServerFactory {
 
     switch (serverName) {
       case "Sarvesh":
-        if(!simulateCrashSar)
-          return getSarveshServerObject(lib);
-        return null;
+        return getSarveshServerObject(lib);
       case "Pras":
-        if(!simulateCrashPra)
-          return getObjForPrashantReplica(lib);
-        return null;
+        return getObjForPrashantReplica(lib);
       case "Rohit":
-        if(!simulateCrashRoh)
-          return getRohitServerObject(lib);
-        return null;
+        return getRohitServerObject(lib);
       case "Shivam":
-        if(!simulateCrashShi) {
-          if (!shivamServerFlag) {
-            runInterServer();
-          }
-          switch (lib) {
-            case "CON":
+        if (!shivamServerFlag) {
+          runInterServer();
+        }
+        switch (lib) {
+          case "CON":
             /*if (conServer == null) {
               conServer = new ConServer();
             }*/
 
-              return ConServer.getConcordiaObject();
-            case "MCG":
+            return ConServer.getConcordiaObject();
+          case "MCG":
             /*if (mcgServer == null)
               mcgServer = new McgServer();*/
 
-              return McgServer.getMcgillObject();
-            case "MON":
+            return McgServer.getMcgillObject();
+          case "MON":
            /* if (monServer == null) {
               monServer = new MonServer();
             }*/
-              return MonServer.getMonObject();
-            default:
-              return null;
-          }
+            return MonServer.getMonObject();
+          default:
+            return null;
         }
-        return null;
     }
     return null;
   }
@@ -78,6 +70,8 @@ public class ServerFactory {
       ConcordiaRemoteServiceImpl.getConcordiaObject();
       MonRemoteServiceImpl.getMontrealObject();
       McGillRemoteServiceImpl.getMcGillObject();
+      ReplicaManager replicaManager = new ReplicaManager(10001,"pras");
+      replicaManager.start();
       pras_serverFlag = true;
     }
     if (lib.equalsIgnoreCase("CON")) {
@@ -96,6 +90,8 @@ public class ServerFactory {
           serverSARReplicaMcGill = new ServerSARReplica("MCG");
           serverSARReplicaMontreal = new ServerSARReplica("MON");
           ServerFactory.initIS();
+          ReplicaManager replicaManager = new ReplicaManager(10001,"pras");
+          replicaManager.start();
           sarveshIS = false;
       }
     switch (lib) {
@@ -126,33 +122,54 @@ public class ServerFactory {
   }
 
   public static Server_Base getRohitServerObject(String lib) {
-    if (lib.equalsIgnoreCase("CON")) {
-      try {
-        concordiaLib = new Server_Base("CONCORDIA");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      return concordiaLib;
-    } else if (lib.equalsIgnoreCase("MCG")) {
-      try {
-        mcgillLib = new Server_Base("MCGILL");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      return mcgillLib;
-    } else if (lib.equalsIgnoreCase("MON")) {
-      try {
-        montrealuLib = new Server_Base("MONTREALU");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+        if (lib.equalsIgnoreCase("CON")) {
+            if (concordiaLib == null)
+            {
+                try {
+                    concordiaLib = new Server_Base("CONCORDIA");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return concordiaLib;
+            }
+            else {
+                return concordiaLib;
+            }
 
-      return montrealuLib;
+        } else if (lib.equalsIgnoreCase("MCG")) {
+            if (mcgillLib == null)
+            {
+                try {
+                    mcgillLib = new Server_Base("MCGILL");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return mcgillLib;
+            }
+            else {
+                return mcgillLib;
+            }
+
+        } else if (lib.equalsIgnoreCase("MON")) {
+            if (montrealuLib == null)
+            {
+                try {
+                    montrealuLib = new Server_Base("MONTREALU");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return montrealuLib;
+            }
+            else {
+                return montrealuLib;
+            }
+
+        }
+        return null;
     }
-    return null;
-  }
 
-  private static void runInterServer(){
+
+    private static void runInterServer(){
     shivamServerFlag = true;
     InterServComServer con = new InterServComServer(3, null, ConServer.getConcordiaObject());
     Thread interServCon = new Thread(con);
@@ -165,6 +182,8 @@ public class ServerFactory {
     InterServComServer mon = new InterServComServer(2, null, MonServer.getMonObject());
     Thread interServMon = new Thread(mon);
     interServMon.start();
+    ReplicaManager replicaManager = new ReplicaManager(10001,"Shivam");
+    replicaManager.start();
   }
 
   private static void initIS(){

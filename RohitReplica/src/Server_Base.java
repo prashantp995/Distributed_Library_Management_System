@@ -93,7 +93,7 @@ public class Server_Base implements Runnable, ServerInterface {
         this.syncHeap = new HashMap<String, String>();
         this.userUpdateMessages = new HashMap<String, ArrayList<String>>();
         //this.ds = new DatagramSocket();
-        this.t = new Thread(this, getServername());
+        this.t = new Thread(this, getServername().substring(0,3));
         this.loadServerRec(this.servername);
         this.ds1 = new DatagramSocket(this.universalPort);
         System.out.println("The server "+this.getServername()+ "is up"+this.ds1.getPort());
@@ -204,14 +204,12 @@ public class Server_Base implements Runnable, ServerInterface {
                 e.printStackTrace();
             }
             HashMap<String, ArrayList<String>> tempStore = new HashMap<String, ArrayList<String>>();
-            tempStore.put("MON0001", new ArrayList<String>(Arrays.asList("DSD", "5")));
-            tempStore.put("MON0002", new ArrayList<String>(Arrays.asList("ALGO", "0")));
 
             HashMap<String, ArrayList<String>> tempHash1 = new HashMap<String, ArrayList<String>>();
-
+            tempHash1.put("MON0001", new ArrayList<String>(Arrays.asList("DSD", "5")));
+            tempHash1.put("MON0002", new ArrayList<String>(Arrays.asList("ALGO", "0")));
 
             HashMap<String, ArrayList<String>> tempHash2 = new HashMap<String, ArrayList<String>>();
-
 
             this.setLibLendingRec(tempStore);
             this.setLibBooksRec(tempHash1);
@@ -246,6 +244,8 @@ public class Server_Base implements Runnable, ServerInterface {
 
             if (getLibBooksRec().containsKey(itemID)) {
                 System.out.println(getLibBooksRec().get(itemID));
+                System.out.println(getWaitlistRec().get(itemID));
+                System.out.println(getLibLendingRec().get(itemID));
                 ArrayList<String> value = (ArrayList<String>) getLibBooksRec().get(itemID);
                 if (quantity > 0) {
                     this.syncHeap.put(itemID, managerID);
@@ -258,9 +258,15 @@ public class Server_Base implements Runnable, ServerInterface {
                         return ("This item " + itemID + " is already listed in the " + getServername() + " library and the quantity is increased by " + Integer.toString(quantity));
                     } else {
                         int least = 0;
+                        ArrayList<String> lendHolder;
                         ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(itemID);
-                        ArrayList<String> lendHolder = (ArrayList<String>) getLibLendingRec().get(itemID);
-                        getLibLendingRec().remove(itemID);
+                        if(getLibLendingRec().containsKey(itemID)) {
+                            lendHolder = (ArrayList<String>) getLibLendingRec().get(itemID);
+                            getLibLendingRec().remove(itemID);
+                        }
+                        else{
+                            lendHolder = new ArrayList<String>();
+                        }
                         getWaitlistRec().remove(itemID);
                         if (quantity < waitHolder.size())
                             least = quantity;
@@ -275,6 +281,8 @@ public class Server_Base implements Runnable, ServerInterface {
                             appendStrToFile("Item " + itemID + " is automatically used to clear the waitlist, the item has been issued to " + waitHolder.get(0)+"\n");
                             finalString = finalString + ("Item " + itemID + " is automatically used to clear the waitlist, the item has been issued to " + waitHolder.get(0) + "\n");
                             appendStrToFile(finalString);
+                            System.out.println(lendHolder);
+                            System.out.println(waitHolder.get(0));
                             lendHolder.add(waitHolder.get(0));
                             waitHolder.remove(waitHolder.get(0));
                             iter = iter + 1;
@@ -289,8 +297,17 @@ public class Server_Base implements Runnable, ServerInterface {
                             finalString = finalString + ("After clearing the waitlist  for the item the remaining " + Integer.toString(quantity - least) + " copies of the item were added to the library. \n");
                             appendStrToFile(finalString);
                         }
-                        getWaitlistRec().put(itemID, waitHolder);
-                        getLibLendingRec().put(itemID, lendHolder);
+                        if(!(waitHolder.isEmpty()))
+                        {
+                            System.out.println("The waitlist after adding is "+waitHolder);
+                            getWaitlistRec().put(itemID, waitHolder);
+                        }
+                        if(!(lendHolder.isEmpty())){
+                            getLibLendingRec().put(itemID, lendHolder);
+                            System.out.println("The lend list after adding is "+lendHolder);
+                        }
+
+
                     }
                     this.syncHeap.remove(itemID);
                 } else {
@@ -566,9 +583,10 @@ public class Server_Base implements Runnable, ServerInterface {
             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
 
                 //System.out.print(entry.getKey());
-                ArrayList<String> temp_holder = (ArrayList<String>) entry.getValue();
+                ArrayList<String> valueHolder = (ArrayList<String>) entry.getValue();
                 //System.out.println(": Name: "+temp_holder[0]+", "+"Availability: "+temp_holder[1]+"\n");
-                prepString = prepString + entry.getKey() + ": Name: " + temp_holder.get(0) + ", " + "Availability: " + temp_holder.get(1) + "\n";
+                prepString = prepString  + "["+"ITEMNAME="   +"'"+ valueHolder.get(0)+"'" +", "+"ITEMID=" +"'"+ entry.getKey()+"'" +", "+  "QUANTITY= " + valueHolder.get(1)+ "]";
+
             }
             System.out.println(prepString);
             return prepString;
@@ -581,36 +599,46 @@ public class Server_Base implements Runnable, ServerInterface {
 
     }
 
-    public String addUserInWaitingList(String userId, String ItemId, int numberOfDays) {
+    public String addUserInWaitingList(String userId  , String ItemId, int numberOfDays) {
         {
             int sport =0 ;
             if (true) {
                 if(this.getServername().substring(0,3).equals(ItemId.substring(0,3))) {
                     if (getWaitlistRec().containsKey(ItemId)) {
                         ArrayList<String> waitHolder = (ArrayList<String>) getWaitlistRec().get(ItemId);
+                        getWaitlistRec().remove(ItemId);
                         if (waitHolder.contains(userId)) {
                             appendStrToFile("You are already in the waitlist for this item");
                             System.out.println("You are already in the waitlist for this item");
+                            if(!(waitHolder.isEmpty()))
+                            {
+                                getWaitlistRec().put(ItemId, waitHolder);
+                            }
+                            System.out.println("The waitlist for the item "+ItemId + "is"+getWaitlistRec()+ "at server" + getServername());
                             return ("You are already in the waitlist for this item");
                         } else {
-                            getWaitlistRec().remove(ItemId);
                             waitHolder.add(userId);
-                            getWaitlistRec().put(ItemId, waitHolder);
+                            if(!(waitHolder.isEmpty()))
+                            {
+                                getWaitlistRec().put(ItemId, waitHolder);
+                            }
+
                             appendStrToFile("You have been sucessfully waitlisted for the item " + ItemId);
                             System.out.println("You have been sucessfully waitlisted for the item " + ItemId);
                             System.out.println(this.getServername());
                             System.out.println("The waitlidt for the item" + ItemId + " is " + getWaitlistRec().get(ItemId));
+                            System.out.println("The waitlist for the item "+ItemId + "is"+getWaitlistRec()+ "at server" + getServername());
                             return ("You have been sucessfully waitlisted for the item " + ItemId);
                         }
                     } else {
                         ArrayList<String> waitHolder = new ArrayList<String>();
-                        ArrayList<String> bRecHolder = (ArrayList<String>) getLibBooksRec().get(ItemId);
                         waitHolder.add(userId);
                         getWaitlistRec().put(ItemId, waitHolder);
                         appendStrToFile("You have been sucessfully waitlisted for the item " + ItemId);
                         System.out.println("You have been sucessfully waitlisted for the item " + ItemId);
                         System.out.println("I am in here" + this.getServername());
                         System.out.println("The waitlidt for the item" + ItemId + " is " + getWaitlistRec().get(ItemId));
+                        System.out.println("The waitlist for the item "+ItemId + "is"+getWaitlistRec()+ "at server" + getServername());
                         return ("You have been sucessfully waitlisted for the item " + ItemId);
 
                     }
@@ -629,8 +657,8 @@ public class Server_Base implements Runnable, ServerInterface {
                     {
                         sport = 8083;
                     }
-                    System.out.println("I want to go to"+ItemId.substring(0,3)+ "to return my book");
-                    appendStrToFile("I want to go go to"+ItemId.substring(0,3)+ "to return my book\n");
+                    System.out.println("I want to go to"+ItemId.substring(0,3)+ "to borrow my book");
+                    appendStrToFile("I want to go go to"+ItemId.substring(0,3)+ "to borrow my book\n");
                     System.out.println("UDP for calling the correct server on the client's behalf");
                     appendStrToFile("UDP for calling the correct server on the client's behalf\n");
                     String i = "W" + ";" + userId + "#" + ItemId + "$" + "@" + Integer.toString(this.universalPort) + "|" + Integer.toString(sport);
@@ -664,10 +692,10 @@ public class Server_Base implements Runnable, ServerInterface {
                     System.out.println("");
                     System.out.println("I am in " + getServername());
                     appendStrToFile("I am in \" + getServername()\n");
-                    System.out.println("This is inside the method:" + this.globalString);
+                    System.out.println(this.globalString);
                     String finalString = "";
-                    finalString  = finalString + this.globalString;
-                    appendStrToFile(finalString);
+                    finalString  = this.globalString;
+                    //appendStrToFile(finalString);
                     this.globalString = "";
                     return finalString;
                 }
@@ -952,7 +980,7 @@ public class Server_Base implements Runnable, ServerInterface {
      */
     public String findItem(String userID, String itemName) {
         String personal ="";
-        String finalString = "Items matching your entry at " + getServername() + " are:\n";
+        String finalString = "";
         appendStrToFile(finalString);
         if (userID.substring(3, 4).equals("U")) {
             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
@@ -962,7 +990,7 @@ public class Server_Base implements Runnable, ServerInterface {
                 System.out.println(valueHolder.get(1));
                 if (valueHolder.get(0).startsWith(itemName) ) {
                     //&& (valueHolder.get(1) != "0")
-                    finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                    finalString = "ITEMNAME="   +"'"+ valueHolder.get(0)+"'" +", "+"ITEMID=" +"'"+ entry.getKey()+"'" +", "+  "QUANTITY= " + valueHolder.get(1);
                     System.out.println(finalString);
                 }
             }
@@ -988,7 +1016,6 @@ public class Server_Base implements Runnable, ServerInterface {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    finalString = finalString + "The call to the remote server has been made \n";
                     appendStrToFile(finalString);
                     synchronized (lock) {
                         try {
@@ -1026,7 +1053,6 @@ public class Server_Base implements Runnable, ServerInterface {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    finalString = finalString + "The call to the remote server has been made \n";
                     appendStrToFile(finalString);
                     synchronized (lock) {
                         try {
@@ -1068,7 +1094,6 @@ public class Server_Base implements Runnable, ServerInterface {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        finalString = finalString + "The call to the remote server has been made \n";
                         appendStrToFile(finalString);
                         synchronized (lock) {
                             try {
@@ -1322,8 +1347,10 @@ public class Server_Base implements Runnable, ServerInterface {
 
     }
 
-    public String exchangeItem(String userID, String newItemID, String oldItemID)
+    public String exchangeItem(String userID, String oldItemID, String newItemID)
     {
+        System.out.println("The old item is  = " +oldItemID);
+        System.out.println("The new item is  = " +newItemID);
         String finalString = null;
         boolean parm1 = itemAvailabilityCheck(newItemID);
         boolean parm2 = itemBorrowedCheck(userID,oldItemID);
@@ -1335,7 +1362,7 @@ public class Server_Base implements Runnable, ServerInterface {
         else if(parm2 == false)
         {
             System.out.println("The value of the parm2 to check the boroow validation is :false");
-            return "The book you want to return in the exchange was never officially take under your ID, hence we cannot process the exchange";
+            return "The book you want to return in the exchange was never officially take under your ID, hence we cannot process the exchange "+":"+ServerConstants.FAILURE;
         }
         else if(parm1 == true && parm2 == true)
         {
@@ -1344,6 +1371,7 @@ public class Server_Base implements Runnable, ServerInterface {
                 finalString = this.returnItem(userID, oldItemID);
                 try {
                     finalString = finalString + this.borrowItem(userID, newItemID, 1);
+                    finalString = finalString +" Exchange Successful ";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1355,7 +1383,8 @@ public class Server_Base implements Runnable, ServerInterface {
                     System.out.println("both parm1 and parm 2 are true");
                     finalString = this.returnItem(userID, oldItemID);
                     try {
-                        finalString = finalString + this.borrowItem(userID, newItemID, 1)+"Exchange Successful";
+                        finalString = finalString + this.borrowItem(userID, newItemID, 1);
+                        finalString = finalString +" Exchange Successful";
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1363,7 +1392,7 @@ public class Server_Base implements Runnable, ServerInterface {
                 }
                 else
                 {
-                    return "You already have a borrowed book outside your own library, if you want to get another one from outside, please return the foreign library's book first, or get it exchanged with that one.";
+                    return "You already have a borrowed book outside your own library, if you want to get another one from outside, please return the foreign library's book first, or get it exchanged with that one. "+":"+ServerConstants.FAILURE;
                 }
 
             }
@@ -1372,27 +1401,25 @@ public class Server_Base implements Runnable, ServerInterface {
                 System.out.println("both parm1 and parm 2 are true");
                 finalString = this.returnItem(userID, oldItemID);
                 try {
-                    finalString = finalString + this.borrowItem(userID, newItemID, 1)+"Exchange Successful"
-                    ;
+                    finalString = finalString + this.borrowItem(userID, newItemID, 1);
+                    finalString = finalString +" Exchange Successful";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-
+        System.out.println("+++++++++++++++++++"+finalString+"++++++++++++++++++++");
         return finalString;
     }
     public String validateUser(String userId) {
         String returnString;
         if(this.userlist.contains(userId))
         {
-            returnString = verify(userId);
-            returnString =returnString + "Its a validTrue User";
+            return("Its a validTrue User"+ServerConstants.SUCCESS);
         }
         else {
-            return ("Its a invalidFalse User");
+            return ("Its a invalidFalse User"+ServerConstants.FAILURE);
         }
-        return returnString;
     }
 
     /**This method verifies the ID and the connection
@@ -1413,7 +1440,7 @@ public class Server_Base implements Runnable, ServerInterface {
             System.out.println("The ID is not present on this server");
             appendStrToFile("The ID is not present on this server");
             finalString = finalString + "The ID has vaild user type.\n";
-            return ("The ID is incorrect on this server");
+            return ("false");
         }
         if (ID.substring(3, 4).equals("M") || ID.substring(3, 4).equals("U")) {
             System.out.println("The ID has correct user type");
@@ -1421,7 +1448,7 @@ public class Server_Base implements Runnable, ServerInterface {
             finalString = finalString + "The ID has vaild user type.\n";
         } else {
             System.out.println("The user type is incorrect");
-            return ("The user type is incorrect");
+            return ("false");
         }
         try {
             if (userUpdateMessages.containsKey(ID)) {
@@ -1440,20 +1467,12 @@ public class Server_Base implements Runnable, ServerInterface {
         }
         if (ID.substring(3, 4).equals("M")) {
             System.out.println("I am inside here in the options panel");
-            finalString = finalString + "Your options are: \n1. Press 1 for adding an item to the library.\n";
-            finalString = finalString + "2. Press 2 for removing an item from the library.\n";
-            finalString = finalString + "3. Press 3 for checking the available list of items.\n";
-            finalString = finalString + "0. Press 0 for exit.\n true";
+            finalString =  "true";
 
         }
         if (ID.substring(3, 4).equals("U")) {
-            finalString = finalString + "Your options are: \n1. Press 1 for borrowing an item.\n";
-            finalString = finalString + "2. Press 2 for finding an item.\n";
-            finalString = finalString + "3. Press 3 for returning an item\n";
-            finalString = finalString + "4. Press 4 for exchanging an item you currently own with another one\n";
-            finalString = finalString + "0. Press 0 for exit.\n";
-            finalString = finalString + "Note: Only select the borrow and remove options if you know the correct item ID.\n";
-            finalString = finalString + "Else you can lookup using our find item feature.\n true";
+
+            finalString = "true";
         }
 
         appendStrToFile(finalString);
@@ -1501,7 +1520,7 @@ public class Server_Base implements Runnable, ServerInterface {
 
         } catch (NullPointerException E) {
             System.out.println("The action is incorrect, item has never been borrowed yet at " + getServername());
-            appendStrToFile("The action is incorrect, item has never been borrowed yet at " + getServername());
+            appendStrToFile("The action is incorrect, item has never been borrowhaned yet at " + getServername());
             ArrayList<String> returnParm = new ArrayList<String>();
             returnParm.add("null");
             return returnParm;
@@ -1700,10 +1719,7 @@ public class Server_Base implements Runnable, ServerInterface {
                 System.out.println(result);
                 System.out.println(result.charAt(0));
                 if (result.startsWith("F")) {
-                    System.out.println("Find the appropriate method to be called and call that using a dummy variable");
                     appendStrToFile("Find the appropriate method to be called and call that using a dummy variable");
-
-                    System.out.println("Get back the return string convert it to byte and send it back making prefix as B");
                     appendStrToFile("Get back the return string convert it to byte and send it back making prefix as B");
                     result = result.trim();
                     String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
@@ -1729,7 +1745,6 @@ public class Server_Base implements Runnable, ServerInterface {
                         ia = InetAddress.getLocalHost();
                         this.dps = new DatagramPacket(b, b.length, ia, 9999);
                         //this.dps = new DatagramPacket(b, b.length, address, Integer.parseInt(result.substring(result.indexOf('|') + 1)));
-                        System.out.println("I am sending the packet");
                         appendStrToFile("I am sending the packet");
                         this.ds.send(this.dps);
                     } catch (UnknownHostException e) {
@@ -1754,14 +1769,15 @@ public class Server_Base implements Runnable, ServerInterface {
                         result = result.trim();
                         String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
                         String vitemName = result.substring(result.indexOf("#") + 1, result.indexOf("@"));
-                        String finalString = "Items matching your entry at " + getServername() + " are:\n";
+                        String finalString = "No item available with entered name in "+this.getServername();
                         if (vuserID.substring(3, 4).equals("U")) {
                             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
                             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                                 ArrayList<String> valueHolder = entry.getValue();
                                 if (valueHolder.get(0).matches(vitemName) ) {
                                     //&& (valueHolder.get(1) != "0")
-                                    finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                                    //finalString = "ITEMNAME: " + valueHolder.get(0) +"ITEMID: " + entry.getKey() +  ", QUANTITY: " + valueHolder.get(1);
+                                    finalString = "ITEMNAME="   +"'"+ valueHolder.get(0)+"'" +", "+"ITEMID=" +"'"+ entry.getKey()+"'" +", "+  "QUANTITY= " + valueHolder.get(1);
                                 }
                             }
 
@@ -1921,8 +1937,9 @@ public class Server_Base implements Runnable, ServerInterface {
                         String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
                         String vitemID = result.substring(result.indexOf("#") + 1, result.indexOf("$"));
                         String finalResult = null;
-                        finalResult = this.addToWait("Y",vitemID,vuserID);
-                        System.out.println("zzzzzzzzzzzzzz"+finalResult);
+                        System.out.println("I have reached "+getServername());
+                        finalResult = this.addUserInWaitingList(vuserID,vitemID,1);
+                        System.out.println(finalResult);
                         String rece = "V" + ";" + finalResult + result.substring(result.indexOf("@"));
                         byte[] b = (rece + "").getBytes();
                         InetAddress ia = null;
@@ -2030,14 +2047,16 @@ public class Server_Base implements Runnable, ServerInterface {
                         result = result.trim();
                         String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
                         String vitemName = result.substring(result.indexOf("#") + 1, result.indexOf("@"));
-                        String finalString = "Items matching your entry at " + getServername() + " are:\n";
+                        String finalString = "No item available with entered name in "+this.getServername();
                         if (vuserID.substring(3, 4).equals("U")) {
                             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
                             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                                 ArrayList<String> valueHolder = entry.getValue();
                                 if (valueHolder.get(0).matches(vitemName) ) {
                                     //&& (valueHolder.get(1) != "0")
-                                    finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                                    //finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                                    //finalString = "ITEMNAME: " + valueHolder.get(0) +"ITEMID: " + entry.getKey() +  ", QUANTITY: " + valueHolder.get(1);
+                                    finalString = "ITEMNAME="   +"'"+ valueHolder.get(0)+"'" +", "+"ITEMID=" +"'"+ entry.getKey()+"'" +", "+  "QUANTITY= " + valueHolder.get(1);
                                 }
                             }
                             System.out.println(finalString);
@@ -2200,7 +2219,7 @@ public class Server_Base implements Runnable, ServerInterface {
                         String finalResult = null;
                         System.out.println(vitemID);
                         System.out.println(vuserID);
-                        finalResult = this.addToWait("Y",vitemID,vuserID);
+                        finalResult = this.addUserInWaitingList(vuserID,vitemID,1);
                         System.out.println("Zzzzzzzzzzzzzzzzz" + finalResult);
                         String rece = "V" + ";" + finalResult + result.substring(result.indexOf("@"));
                         byte[] b = (rece + "").getBytes();
@@ -2311,14 +2330,16 @@ public class Server_Base implements Runnable, ServerInterface {
                             result = result.trim();
                             String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
                             String vitemName = result.substring(result.indexOf("#") + 1, result.indexOf("@"));
-                            String finalString = "Items matching your entry at " + getServername() + " are:\n";
+                            String finalString = "No item available with entered name in "+this.getServername();
                             if (vuserID.substring(3, 4).equals("U")) {
                                 Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
                                 for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
                                     ArrayList<String> valueHolder = entry.getValue();
                                     if (valueHolder.get(0).matches(vitemName) ) {
                                         //&& (valueHolder.get(1) != "0")
-                                        finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                                        //finalString = finalString + "Code: " + entry.getKey() + ", Name: " + valueHolder.get(0) + ", Availability: " + valueHolder.get(1) + "\n";
+                                        //finalString = "ITEMNAME: " + valueHolder.get(0) +"ITEMID: " + entry.getKey() +  ", QUANTITY: " + valueHolder.get(1);
+                                        finalString = "ITEMNAME="   +"'"+ valueHolder.get(0)+"'" +", "+"ITEMID=" +"'"+ entry.getKey()+"'" +", "+  "QUANTITY= " + valueHolder.get(1);
                                     }
                                 }
                                 System.out.println(finalString);
@@ -2480,7 +2501,7 @@ public class Server_Base implements Runnable, ServerInterface {
                             String vuserID = result.substring(result.indexOf(";") + 1, result.indexOf("#"));
                             String vitemID = result.substring(result.indexOf("#") + 1, result.indexOf("$"));
                             String finalResult = null;
-                            finalResult = this.addToWait("Y",vitemID,vuserID);
+                            finalResult = this.addUserInWaitingList(vuserID,vitemID,1);
                             System.out.println("zzzzzzzzzzzzzzzzzzzz"+finalResult);
                             String rece = "V" + ";" + finalResult + result.substring(result.indexOf("@"));
                             byte[] b = (rece + "").getBytes();
@@ -2521,6 +2542,7 @@ public class Server_Base implements Runnable, ServerInterface {
         if (itemID.substring(0, 3).equals(getServername().substring(0, 3))) {
             ArrayList tempList = new ArrayList<String>();
             tempList = getLendingDetail(itemID);
+            System.out.println(tempList);
             if (tempList.contains(userID)) {
                 return true;
             } else {
@@ -2860,7 +2882,7 @@ public class Server_Base implements Runnable, ServerInterface {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(str);
             //System.out.println("Write was successful");
-            bw.newLine();
+            //bw.newLine();
             bw.close();
 
         }
@@ -2878,5 +2900,7 @@ public class Server_Base implements Runnable, ServerInterface {
             return RequestHandlerConstants.BUGGY;
         }
     }
+
+
 
 }
