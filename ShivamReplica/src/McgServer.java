@@ -530,8 +530,8 @@ public class McgServer implements Runnable, ServerInterface {
             pack1.setItemName(itemName);
             String replyCON = temp.operate(pack);
             String replyMON = temp1.operate(pack1);
-            reply += replyCON;
             reply += replyMON;
+            reply += replyCON;
         }
         logger.info(reply);
         return reply;

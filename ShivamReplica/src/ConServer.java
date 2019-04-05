@@ -797,6 +797,7 @@ public class ConServer implements Runnable, ServerInterface {
                 }else if(avail.startsWith("0")){
                     return "The new item is not available";
                 }
+
                 try {
                     reply = returnItem(userId,oldItem);
                     if(reply.startsWith("Succ")) {
