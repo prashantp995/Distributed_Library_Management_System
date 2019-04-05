@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.*;
 import java.nio.file.FileSystems;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -18,6 +19,9 @@ public class RequestHandlerMain extends Thread {
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
     public static boolean simulateSoftwareBug = true;
+    public ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<>();
+
+
     public static boolean isSimulateSoftwareBug() {
         return simulateSoftwareBug;
     }
@@ -31,6 +35,8 @@ public class RequestHandlerMain extends Thread {
         //  RequestHandlerMain requestHandlerMain1 = new RequestHandlerMain(9001);
         replicaName = args[0];
         RequestHandlerMain requestHandlerMain2 = new RequestHandlerMain(9001);
+        ReplicaManager replicaManager = new ReplicaManager(10001,replicaName, requestHandlerMain2);
+        replicaManager.start();
         // RequestHandlerMain requestHandlerMain3 = new RequestHandlerMain(9004);
         // requestHandlerMain.start();
         // requestHandlerMain1.start();
@@ -47,7 +53,6 @@ public class RequestHandlerMain extends Thread {
     public void run() {
         byte requestBuffer[] = new byte[1000];
         try {
-
             requestHandlerSocket = new MulticastSocket(requestHandlerPort);
             if(replicaName.equalsIgnoreCase("Rohit")){
                 requestHandlerSocket.setNetworkInterface(NetworkInterface.getByName("en0"));
@@ -69,7 +74,7 @@ public class RequestHandlerMain extends Thread {
             DatagramPacket requestReceived = new DatagramPacket(requestBuffer, requestBuffer.length);
             try {
                 System.out.println("RequestHandler is listening at " + requestHandlerPort);
-                logger.info("Sequencer is listening at " + requestHandlerPort);
+                logger.info("RequestHandler is listening at " + requestHandlerPort);
                 requestHandlerSocket.receive(requestReceived);
                 ois = new ObjectInputStream(new ByteArrayInputStream(requestReceived.getData()));
                 requestObject = (ClientRequestModel) ois.readObject();
@@ -107,6 +112,7 @@ public class RequestHandlerMain extends Thread {
 
                     }
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -115,6 +121,10 @@ public class RequestHandlerMain extends Thread {
         }
     }
 
+    public void resolveCrashFailure(){
+        ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this);
+        concurrentSequencer.performOperationsToRecoverFromCrash();
+    }
     public static Logger setupLogger(Logger logger, String fileName, boolean showlogsInConsole)
             throws IOException {
 
