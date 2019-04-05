@@ -3,6 +3,7 @@ import javafx.scene.chart.PieChart;
 import javax.xml.ws.Response;
 import java.io.*;
 import java.net.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,12 +63,17 @@ class MessageHandler implements Runnable{
 
     @Override
     public void run() {
+        long timeSarvesh, timePras, timeRohit,timeShivam;
+        timeSarvesh=timePras=timeRohit=timeShivam=0;
+        long lastReceived=0;
         try {
             byteArrayOutputStream = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(byteArrayOutputStream);
             byteArrayInputStream = new ByteArrayInputStream(receiver.getData());
             ois = new ObjectInputStream(byteArrayInputStream);
             ClientRequestModel requestModel = (ClientRequestModel) ois.readObject();
+
+            long startTime = System.currentTimeMillis();
             sendRequest(mySocket,requestModel);
             ArrayList<ResponseModel> replies = new ArrayList<>();
             String reply="";
@@ -79,24 +85,43 @@ class MessageHandler implements Runnable{
                 ObjectInputStream iStream ;
                 iStream = new ObjectInputStream(new ByteArrayInputStream(messageFromRH.getData()));
                 responseFromRH =(ResponseModel) iStream.readObject();
-              /*  String reply = new String(messageFromRH.getData());
-                reply = reply.trim();
-                System.out.println(reply + " " + i);*/
+
+                if(responseFromRH.getReplicaName().equalsIgnoreCase("Sarvesh")){
+                    timeSarvesh = startTime - System.currentTimeMillis();
+                    lastReceived = timeSarvesh;
+                }if(responseFromRH.getReplicaName().equalsIgnoreCase("Pras")){
+                    timePras = startTime - System.currentTimeMillis();
+                    lastReceived = timePras;
+                }if(responseFromRH.getReplicaName().equalsIgnoreCase("Shivam")){
+                    timeShivam = startTime - System.currentTimeMillis();
+                    lastReceived = timeShivam;
+                }if(responseFromRH.getReplicaName().equalsIgnoreCase("Rohit")){
+                    timeRohit = startTime - System.currentTimeMillis();
+                    lastReceived = timeRohit;
+                }
                 replies.add(responseFromRH);
                 if(i==2){
                     reply = getMajority(replies);
                     DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
                     frontEndSocket.send(response);
                     notifySoftwareBug();
-
-                    // logic for crash check and check delay of 4th response
+                    mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*2)));
+                    mySocket.receive(messageFromRH);
                 }
             }
-            /*DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
-            frontEndSocket.send(response);*/
 
-
-        }catch (IOException | ClassNotFoundException c){
+        }catch (IOException c){
+            String replica="";
+            if(timePras==0)
+                replica += "Pras";
+            else if(timeRohit==0)
+                replica += "Rohit";
+            else if (timeSarvesh==0)
+                replica += "Sarvesh";
+            else if(timeShivam==0)
+                replica += "Shivam";
+            notifyRMAboutHardwareBug("crash"+":"+replica);
+        }catch( ClassNotFoundException c){
             c.printStackTrace();
         }
     }
@@ -123,6 +148,22 @@ class MessageHandler implements Runnable{
     }
 
     private void notifyRMAboutSoftwareBug(String reply) {
+        DatagramSocket sendToRM=null;
+        try {
+            sendToRM = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        try {
+            DatagramPacket dataPacket = new DatagramPacket(reply.getBytes(),reply.length(), InetAddress.getByName("230.1.1.6"),10001);
+            sendToRM.send(dataPacket);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void notifyRMAboutHardwareBug(String reply) {
         DatagramSocket sendToRM=null;
         try {
             sendToRM = new DatagramSocket();
