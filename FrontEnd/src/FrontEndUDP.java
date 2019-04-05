@@ -88,16 +88,16 @@ class MessageHandler implements Runnable{
                 responseFromRH =(ResponseModel) iStream.readObject();
                 System.out.println(responseFromRH);
                 if(responseFromRH.getReplicaName().equalsIgnoreCase("Sarvesh")){
-                    timeSarvesh = startTime - System.currentTimeMillis();
+                    timeSarvesh =   System.currentTimeMillis()-startTime;
                     lastReceived = timeSarvesh;
                 }if(responseFromRH.getReplicaName().equalsIgnoreCase("Pras")){
-                    timePras = startTime - System.currentTimeMillis();
+                    timePras =   System.currentTimeMillis()-startTime;
                     lastReceived = timePras;
                 }if(responseFromRH.getReplicaName().equalsIgnoreCase("Shivam")){
-                    timeShivam = startTime - System.currentTimeMillis();
+                    timeShivam =   System.currentTimeMillis()-startTime;
                     lastReceived = timeShivam;
                 }if(responseFromRH.getReplicaName().equalsIgnoreCase("Rohit")){
-                    timeRohit = startTime - System.currentTimeMillis();
+                    timeRohit =  System.currentTimeMillis()-startTime;
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
