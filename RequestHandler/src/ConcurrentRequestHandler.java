@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 public class ConcurrentRequestHandler extends Thread {
 
@@ -17,6 +18,7 @@ public class ConcurrentRequestHandler extends Thread {
   InetAddress ip;
   ByteArrayOutputStream byteArrayOutputStream;
   ObjectOutputStream oos;
+  static ArrayList<ClientRequestModel> successfullyExecutedReq = new ArrayList<ClientRequestModel>();
 
   public ConcurrentRequestHandler(RequestHandlerMain requestHandlerMain,
       DatagramPacket requestReceived) {
@@ -115,6 +117,12 @@ public class ConcurrentRequestHandler extends Thread {
     responseString = responseString.trim();
     responseString = appendStatus(objForRM.getMethodName(), responseString,
         RequestHandlerMain.replicaName);
+    //TODO Add more conditions below based on response
+    if (responseString != null && (responseString.contains(RequestHandlerConstants.SUCCESS)
+        || responseString
+        .contains(RequestHandlerConstants.TRUE))) {
+      successfullyExecutedReq.add(objForRM);
+    }
     return responseString;
   }
 
@@ -397,5 +405,22 @@ public class ConcurrentRequestHandler extends Thread {
       return "Rohit";
     }
     return null;
+  }
+
+  //TODO this method should be called from  ReplicaManager
+  public void performOperationsToRecoverFromCrash(ArrayList<ClientRequestModel> requests) {
+    //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
+    successfullyExecutedReq = new ArrayList<ClientRequestModel>();
+    for (ClientRequestModel request : requests) {
+      try {
+        ServerInterface serverInterface = ServerFactory
+            .getServerObject(RequestHandlerMain.replicaName,
+                request.getUserId().substring(0, 3));
+        getResponse(request, serverInterface);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 }
