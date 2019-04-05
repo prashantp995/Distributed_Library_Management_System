@@ -110,8 +110,9 @@ public class Client {
         System.out.println(" 1  for addItem");
         System.out.println(" 2  for removeItem");
         System.out.println(" 3  for ListItemAvailability");
-        System.out.println(" 4  to simulate Software bug handling");
-        System.out.println(" 5  to simulate Crash");
+        System.out.println(" 4  Multi Threading");
+        System.out.println(" 5  to simulate Software bug");
+        System.out.println(" 6  to simulate crash");
         System.out.println(" 0  Exit");
         Scanner scanner = new Scanner(System.in);
         try {
@@ -128,7 +129,7 @@ public class Client {
               System.exit(0);
               break;
             }
-            if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
+            if (choice >= 1 && choice <= 6) {
               performManagerOperation(choice, username);
             } else {
               System.out.println("please enter valid choice");
@@ -203,10 +204,15 @@ public class Client {
       case 4:
         System.out.println("simulate Software Bug");
         logger.info(username + " choose to simulate software bug");
-        simulateSoftwareBug(username);
+        performMultiThreading();
         break;
       case 5:
-        System.out.println("simulate Crash");
+        System.out.println("simulate software bug");
+        logger.info(username + " choose to simulate crash");
+        simulateSoftwareBug(username);
+        break;
+      case 6:
+        System.out.println("simulate crash");
         logger.info(username + " choose to simulate crash");
         simulateCrash(username);
         break;
