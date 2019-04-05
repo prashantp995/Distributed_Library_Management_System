@@ -86,9 +86,9 @@ public class ServerFactory {
 
   public static ServerSARReplica getSarveshServerObject(String lib) {
       if(sarveshIS){
-          serverSARReplicaConcordia = new ServerSARReplica(lib);
-          serverSARReplicaMcGill = new ServerSARReplica(lib);
-          serverSARReplicaMontreal = new ServerSARReplica(lib);
+          serverSARReplicaConcordia = new ServerSARReplica("CON");
+          serverSARReplicaMcGill = new ServerSARReplica("MCG");
+          serverSARReplicaMontreal = new ServerSARReplica("MON");
           ServerFactory.initIS();
           ReplicaManager replicaManager = new ReplicaManager(10001,"pras");
           replicaManager.start();

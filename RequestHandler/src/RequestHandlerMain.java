@@ -13,7 +13,7 @@ public class RequestHandlerMain extends Thread {
     MulticastSocket requestHandlerSocket = null;
     int requestHandlerPort; //change this based on your implementation
     static Logger logger = null;
-    private static Stack<Integer> requestIds = new Stack<>();
+    private final static Stack<Integer> requestIds = new Stack<>();
     ObjectInputStream ois; //To get the clientRequestModel from the packed received.
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
@@ -82,9 +82,12 @@ public class RequestHandlerMain extends Thread {
                             requestReceived);
                     concurrentSequencer.start();
                 } else {
+                    System.out.println(requestObject.getRequestId());
+                    System.out.println(requestIds.toString());
                     if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
                         int nextExpectedRequest = requestIds.peek();
-                        if(nextExpectedRequest++ == requestObject.getRequestId()){ // if req is equal to expected req
+                        nextExpectedRequest++;
+                        if(nextExpectedRequest == requestObject.getRequestId()){ // if req is equal to expected req
                         requestIds.push(requestObject.getRequestId());
                         System.out.println("Request received");
                         String requestReceivedFromSeq = new String(requestReceived.getData());

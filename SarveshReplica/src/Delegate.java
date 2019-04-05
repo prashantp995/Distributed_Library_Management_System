@@ -104,7 +104,7 @@ class RequestHandler implements Runnable {
                 Item requestedItem;
                 synchronized (lock) {requestedItem = myServer.item.get(itemID);}
                 if(requestedItem.getItemCount() == 0){
-                    reply = "Unsuccessful"+ServerConstants.FAILURE;
+                    reply = "waitlist"+ServerConstants.SUCCESS;
                     break;
                 }
                 User currentUser = new User(userID);
@@ -125,7 +125,6 @@ class RequestHandler implements Runnable {
                 }
                 synchronized (lock) {entry.put(requestedItem, numberOfDays);
                     myServer.borrow.put(currentUser, entry);
-                    myServer.borrowedItemDays.put(itemID,numberOfDays);
                 }
                 reply = "Successful";
                 break;
@@ -137,14 +136,15 @@ class RequestHandler implements Runnable {
                 }
                 itemName = request[2];
                 Iterator<Map.Entry<String, Item>> iterator;
-                ArrayList<Item> items = new ArrayList<>();
+                Item items ;
                 synchronized (lock) {iterator = myServer.item.entrySet().iterator();}
                 while(iterator.hasNext()){
                     Map.Entry<String, Item> pair = iterator.next();
-                    if(pair.getValue().getItemName().equals(itemName))
-                        items.add(pair.getValue());
+                    if(pair.getValue().getItemName().equals(itemName)){
+                        items = pair.getValue();
+                        reply = items.toString();
+                    }
                 }
-                reply = items.toString();
                 break;
 
             case "returnToOther" :
@@ -174,7 +174,6 @@ class RequestHandler implements Runnable {
                     if(pair.getKey().getItemID().equals(itemID)){
                         synchronized (lock) {
                             myServer.borrow.get(currentUser).remove(pair.getKey());
-                            myServer.borrowedItemDays.remove(itemID);
                             myServer.user.remove(userID);
                             myServer.increamentItemCount(itemID);
                             myServer.automaticAssignmentOfBooks(itemID);
