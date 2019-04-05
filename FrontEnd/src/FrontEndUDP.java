@@ -77,9 +77,10 @@ class MessageHandler implements Runnable{
             sendRequest(mySocket,requestModel);
             ArrayList<ResponseModel> replies = new ArrayList<>();
             String reply="";
-            for (int i = 0 ; i < 4 ; i++){
+            for (int i = 0 ; i < 1 ; i++){
                 byte[] buffer = new byte[1024];
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
+                mySocket.setSoTimeout(100);
                 mySocket.receive(messageFromRH);
                 ResponseModel responseFromRH;
                 ObjectInputStream iStream ;
@@ -100,7 +101,7 @@ class MessageHandler implements Runnable{
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
-                if(i==2){
+                if(i==0){
                     reply = getMajority(replies);
                     DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
                     frontEndSocket.send(response);
