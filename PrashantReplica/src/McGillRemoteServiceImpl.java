@@ -68,8 +68,18 @@ public class McGillRemoteServiceImpl extends Thread implements ServerInterface {
   }
 
   @Override
-  public String simulateCrash(String username, String replicaName) {
-    return null;
+  public String simulateCrash(String username,String replicaName) {
+    if(replicaName.equalsIgnoreCase("pras")){
+      if (RequestHandlerMain.isSimulateCrash("pras")) {
+        return RequestHandlerConstants.CRASH;
+      } else {
+        //alternative implementation in case of software bug
+        return RequestHandlerConstants.RECOVER;
+      }
+    }
+    else {
+      return "false";
+    }
   }
 
   public String findItem(String userId, String itemName) {
