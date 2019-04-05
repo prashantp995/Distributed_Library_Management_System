@@ -38,11 +38,9 @@ public class ConcurrentRequestHandler extends Thread {
       byteArrayInputStream = new ByteArrayInputStream(request.getData());
       ois = new ObjectInputStream(byteArrayInputStream);
       //need to add sequence number in the client request
-
-        //TODO
       ClientRequestModel objForRM = (ClientRequestModel) ois.readObject();
       ServerInterface serverInterface = ServerFactory
-          .getServerObject(RequestHandlerMain.replicaName,
+          .getServerObject(requestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
       //TODO
         //check if the serverInterface is null and
@@ -532,18 +530,23 @@ public class ConcurrentRequestHandler extends Thread {
 
     public void performOperationsToRecoverFromCrash() {
         //if this method is executed , means crash happened . need to reset successfullyExecutedReq and start performing operations again
-        ArrayList<ClientRequestModel> requests = new ArrayList<>(requestHandlerMain.successfullyExecutedReq);
-        requestHandlerMain.successfullyExecutedReq.clear();
-        for (ClientRequestModel request : requests) {
-            try {
-                ServerInterface serverInterface = ServerFactory
-                        .getServerObject(requestHandlerMain.replicaName,
-                                request.getUserId().substring(0, 3));
-                getResponse(request, serverInterface);
-            } catch (Exception e) {
-                e.printStackTrace();
+
+        if(!(requestHandlerMain == null) && !(requestHandlerMain.successfullyExecutedReq == null)) {
+            if (!requestHandlerMain.successfullyExecutedReq.isEmpty()) {
+                ArrayList<ClientRequestModel> requests = new ArrayList<>(requestHandlerMain.successfullyExecutedReq);
+                requestHandlerMain.successfullyExecutedReq.clear();
+                for (ClientRequestModel request : requests) {
+                    try {
+                        ServerInterface serverInterface = ServerFactory
+                                .getServerObject(requestHandlerMain.replicaName,
+                                        request.getUserId().substring(0, 3));
+                        getResponse(request, serverInterface);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
-    }
+  }
 }
 

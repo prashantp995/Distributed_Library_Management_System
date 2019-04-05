@@ -43,7 +43,7 @@ public class ReplicaManager extends Thread {
                 DatagramPacket receiver = new DatagramPacket(collector,collector.length);
                 mySocket.receive(receiver);
                 FailureHandler newThread = new FailureHandler(mySocket,receiver,this.replicaName, requestHandlerMain);
-                newThread.run();
+                newThread.start();
             }catch(IOException e){
                 System.out.println("Input/Output exception");
                 e.printStackTrace();
@@ -82,7 +82,8 @@ class FailureHandler extends Thread {
     }
 
     private void handleCrashFailure(String replica) {
-        requestHandlerMain.resolveCrashFailure();
+        if(replicaName.equalsIgnoreCase(replica))
+            requestHandlerMain.resolveCrashFailure();
     }
 
     private void hadleSoftwareBug(String replica) {

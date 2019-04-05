@@ -86,7 +86,7 @@ class MessageHandler implements Runnable{
                 ObjectInputStream iStream ;
                 iStream = new ObjectInputStream(new ByteArrayInputStream(messageFromRH.getData()));
                 responseFromRH =(ResponseModel) iStream.readObject();
-
+                System.out.println(responseFromRH);
                 if(responseFromRH.getReplicaName().equalsIgnoreCase("Sarvesh")){
                     timeSarvesh = startTime - System.currentTimeMillis();
                     lastReceived = timeSarvesh;
@@ -101,7 +101,7 @@ class MessageHandler implements Runnable{
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
-                if(i==0){
+                if(i==2){
                     reply = getMajority(replies);
                     DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
                     frontEndSocket.send(response);
@@ -113,15 +113,15 @@ class MessageHandler implements Runnable{
 
         }catch (IOException c){
             String replica="";
-            if(timePras==0)
-                replica += "Pras";
+            if (timeSarvesh==0)
+                replica += "Sarvesh";
             else if(timeRohit==0)
                 replica += "Rohit";
-            else if (timeSarvesh==0)
-                replica += "Sarvesh";
+            else if(timePras==0)
+                replica += "Pras";
             else if(timeShivam==0)
                 replica += "Shivam";
-            notifyRMAboutHardwareBug("crash"+":"+replica);
+            notifyRMAboutHardwareBug("crash"+" "+replica);
         }catch( ClassNotFoundException c){
             c.printStackTrace();
         }
