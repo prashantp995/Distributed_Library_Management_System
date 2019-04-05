@@ -530,8 +530,8 @@ public class McgServer implements Runnable, ServerInterface {
             pack1.setItemName(itemName);
             String replyCON = temp.operate(pack);
             String replyMON = temp1.operate(pack1);
-            reply += replyCON;
             reply += replyMON;
+            reply += replyCON;
         }
         logger.info(reply);
         return reply;
@@ -745,7 +745,7 @@ public class McgServer implements Runnable, ServerInterface {
     }
 
     @Override
-    public String exchangeItem(String userId, String newItem, String oldItem) {
+    public String exchangeItem(String userId, String oldItem, String newItem) {
         logger.info("exchangeItem");
 
         logger.info(userId+" "+newItem+" "+oldItem);

@@ -242,11 +242,13 @@ public class ConcurrentRequestHandler extends Thread {
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
         if(responseString.startsWith("Invalid itemId")){
-            return RequestHandlerConstants.RES_ITEMID_NOT_VALID;
+            return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
         }else if (responseString.startsWith("Can not borrow the same book again")){
             return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
         }else if (responseString.startsWith("you can not get two books from a foreign library")){
             return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
+        }else if(responseString.startsWith("waitlist")){
+            return RequestHandlerConstants.RES_WAIT_LIST_POSSIBLE;
         }else{
             return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }

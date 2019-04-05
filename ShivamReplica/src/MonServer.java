@@ -530,9 +530,9 @@ public class MonServer implements Runnable, ServerInterface{
             pack1.setUserId(userId);
             pack1.setItemName(itemName);
             String replyMCG = temp.operate(pack);
-            String replyMON = temp1.operate(pack1);
+            String replyCON = temp1.operate(pack1);
+            reply += replyCON;
             reply += replyMCG;
-            reply += replyMON;
         }
         logger.info(reply);
         return reply;
