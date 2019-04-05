@@ -11,9 +11,12 @@ public class RequestHandlerConstants {
   static final String METHOD_VALIDATE_USER_NAME = "validateUser";
   static final String METHOD_FIND_ITEM = "findITem";
   static final String METHOD_SIMULATE_SOFTWARE_BUG = "sfBug";
+  static final String METHOD_SIMULATE_CRASH = "crash";
   static final String SUCCESS = "Success";
   static final String FAIL = "Fail";
   static final String TRUE = "True";
+  static final String CRASH = "crashed";
+  static final String RECOVER = "recovered";
   static final String BUGGY = "sending buggy result";
   static final String CORRECT = "sending correct result";
   static final String RES_TRUE_SUCCESS = "true:success";

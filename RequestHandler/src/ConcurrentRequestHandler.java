@@ -113,6 +113,9 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (objForRM.getMethodName()
         .equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
       responseString = serverInterface.simulateSoftwareBug(objForRM.getUserId());
+    } else if (objForRM.getMethodName()
+            .equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_CRASH)) {
+        responseString = serverInterface.simulateCrash(objForRM.getUserId(),objForRM.getReplicaName());
     }
     responseString = responseString.trim();
     responseString = appendStatus(objForRM.getMethodName(), responseString,
@@ -207,6 +210,8 @@ public class ConcurrentRequestHandler extends Thread {
         return responseString;
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
         return appendForSFBug(responseString);
+    } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_CRASH)) {
+        return appendForCrash(responseString);
     }
     return responseString;
   }
@@ -520,6 +525,13 @@ public class ConcurrentRequestHandler extends Thread {
 
     private String appendForSFBug(String responseString) {
         if (responseString.trim().equalsIgnoreCase(RequestHandlerConstants.BUGGY)) {
+            return responseString + RequestHandlerConstants.RES_APPEND_FAILURE;
+        } else {
+            return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
+        }
+    }
+    private String appendForCrash(String responseString) {
+        if (responseString.trim().equalsIgnoreCase(RequestHandlerConstants.CRASH)) {
             return responseString + RequestHandlerConstants.RES_APPEND_FAILURE;
         } else {
             return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;

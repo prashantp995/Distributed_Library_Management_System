@@ -82,8 +82,10 @@ class FailureHandler extends Thread {
     }
 
     private void handleCrashFailure(String replica) {
-        if(replicaName.equalsIgnoreCase(replica))
+        if(replicaName.equalsIgnoreCase(replica)){
             requestHandlerMain.resolveCrashFailure();
+            RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash());
+        }
     }
 
     private void hadleSoftwareBug(String replica) {
@@ -112,7 +114,7 @@ class FailureHandler extends Thread {
         if(replica.equalsIgnoreCase("sarvesh")){
             ReplicaManager.failCountSarvesh++;
             if(ReplicaManager.failCountSarvesh>=counterThreshold && this.replicaName.equalsIgnoreCase("sarvesh")){
-                RequestHandlerMain.setSimulateSoftwareBug(false);
+                RequestHandlerMain.setSimulateSoftwareBug(!RequestHandlerMain.isSimulateSoftwareBug());
                 ReplicaManager.failCountSarvesh=0;
             }
         }

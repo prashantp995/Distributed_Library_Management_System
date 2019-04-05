@@ -20,4 +20,6 @@ public interface ServerInterface {
 
   String simulateSoftwareBug(String username);
 
+  String simulateCrash(String username,String replicaName);
+
 }
