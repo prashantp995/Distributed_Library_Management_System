@@ -311,6 +311,49 @@ public class InterServer_Base extends Thread {
                     e.printStackTrace();
                 }
             }
+            else if (received.startsWith("W")) {
+                String temp1 = received.substring(2, received.indexOf('@'));
+                //int rece1 = Integer.parseInt(temp1);
+                //rece1 = rece1 * rece1;
+                String rece = received.substring(0, 2) + temp1 + received.substring(received.indexOf("@"));
+                byte[] b = (rece + "").getBytes();
+                InetAddress ia = null;
+                try {
+                    ia = InetAddress.getLocalHost();
+                    //  temp.dps = new DatagramPacket(b, b.length, ia, 9999);
+
+                    System.out.println(received);
+                    appendStrToFile(received);
+                    DatagramPacket packet3 = new DatagramPacket(b, b.length, address, Integer.parseInt(received.substring(received.indexOf('|') + 1, received.indexOf('|') + 5)));
+                    System.out.println("I am sending the packet");
+                    appendStrToFile("I am sending the packet");
+                    tempSock.send(packet3);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else if(received.startsWith("V"))
+            {
+                String temp1 = received.substring(2, received.indexOf('@'));
+                //int rece1 = Integer.parseInt(temp1);
+                //rece1 = rece1 * rece1;
+                String rece = received.substring(0, 2) + temp1 + received.substring(received.indexOf("@"));
+                byte[] b = (rece + "").getBytes();
+                InetAddress ia = null;
+                try {
+                    ia = InetAddress.getLocalHost();
+                    //  temp.dps = new DatagramPacket(b, b.length, ia, 9999);
+                    DatagramPacket packet3 = new DatagramPacket(b, b.length, address, Integer.parseInt(received.substring(received.indexOf('@')+1, received.indexOf('@')+5)));
+                    System.out.println("I am sending the packet");
+                    appendStrToFile("I am sending the packet");
+                    tempSock.send(packet3);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             System.out.println("I am going for another iteration");
             appendStrToFile("I am going for another iteration");
         }
