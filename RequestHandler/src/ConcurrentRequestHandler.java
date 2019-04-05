@@ -143,7 +143,9 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_ITEM)) {
         if (responseString.toLowerCase().contains("success")) {
             return RequestHandlerConstants.RES_TRUE_SUCCESS;
-        } else{
+        }else if(responseString.toLowerCase().contains("item id and name does not match")){
+            return RequestHandlerConstants.RES_ITEM_NAME_ERROR;
+        }else{
             return RequestHandlerConstants.RES_FALSE_FAILURE;
         }
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_ADD_USER_IN_WAITLIST)) {
