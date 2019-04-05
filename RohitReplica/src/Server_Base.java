@@ -1355,7 +1355,7 @@ public class Server_Base implements Runnable, ServerInterface {
                     System.out.println("both parm1 and parm 2 are true");
                     finalString = this.returnItem(userID, oldItemID);
                     try {
-                        finalString = finalString + this.borrowItem(userID, newItemID, 1);
+                        finalString = finalString + this.borrowItem(userID, newItemID, 1)+"Exchange Successful";
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1372,7 +1372,8 @@ public class Server_Base implements Runnable, ServerInterface {
                 System.out.println("both parm1 and parm 2 are true");
                 finalString = this.returnItem(userID, oldItemID);
                 try {
-                    finalString = finalString + this.borrowItem(userID, newItemID, 1);
+                    finalString = finalString + this.borrowItem(userID, newItemID, 1)+"Exchange Successful"
+                    ;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1386,9 +1387,10 @@ public class Server_Base implements Runnable, ServerInterface {
         if(this.userlist.contains(userId))
         {
             returnString = verify(userId);
+            returnString =returnString + "Its a validTrue User";
         }
         else {
-            return ("Its not a valid User");
+            return ("Its a invalidFalse User");
         }
         return returnString;
     }
@@ -2870,10 +2872,10 @@ public class Server_Base implements Runnable, ServerInterface {
     public static boolean simulateSoftwareBug = true;
     public String simulateSoftwareBug(String username) {
         if (simulateSoftwareBug) {
-            return "false";
+            return RequestHandlerConstants.CORRECT;
         } else {
             //alternative implementation in case of software bug
-            return "true";
+            return RequestHandlerConstants.BUGGY;
         }
     }
 

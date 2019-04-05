@@ -25,9 +25,9 @@ public class ReplicaManager extends Thread {
         MulticastSocket mySocket = null;
         try {
             mySocket = new MulticastSocket(this.port);
-            /*if(RequestHandlerMain.replicaName.equalsIgnoreCase("Rohit")){
+            if(RequestHandlerMain.replicaName.equalsIgnoreCase("Rohit")){
                 mySocket.setNetworkInterface(NetworkInterface.getByName("en0"));
-            }*/
+            }
             InetAddress ip = InetAddress.getByName("230.1.1.6");
             mySocket.joinGroup(ip);
         } catch (SocketException e) {
