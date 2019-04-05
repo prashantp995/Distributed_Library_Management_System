@@ -10,10 +10,12 @@ public class ReplicaManager extends Thread {
     public static int failCountShivam =0;
     public static int failCountSarvesh =0;
     public static int failCountRohit =0;
+    private RequestHandlerMain requestHandlerMain;
 
-    public ReplicaManager(int port, String replicaName){
+    public ReplicaManager(int port, String replicaName, RequestHandlerMain requestHandlerMain){
         this.port = port;
         this.replicaName = replicaName;
+        this.requestHandlerMain = requestHandlerMain;
     }
 
    /* public static void main(String[] args){
@@ -40,7 +42,7 @@ public class ReplicaManager extends Thread {
                 byte collector[] = new byte[1024];
                 DatagramPacket receiver = new DatagramPacket(collector,collector.length);
                 mySocket.receive(receiver);
-                FailureHandler newThread = new FailureHandler(mySocket,receiver,this.replicaName);
+                FailureHandler newThread = new FailureHandler(mySocket,receiver,this.replicaName, requestHandlerMain);
                 newThread.run();
             }catch(IOException e){
                 System.out.println("Input/Output exception");
@@ -56,9 +58,12 @@ class FailureHandler extends Thread {
     private final Object lock;
     private String replicaName;
     private int counterThreshold = 3 ;
-    public FailureHandler(DatagramSocket mySocket,DatagramPacket receiver,String replicaName){
+    private RequestHandlerMain requestHandlerMain;
+
+    public FailureHandler(DatagramSocket mySocket,DatagramPacket receiver,String replicaName, RequestHandlerMain requestHandlerMain){
         this.mySocket = mySocket;
         this.receiver = receiver;
+        this.requestHandlerMain = requestHandlerMain;
         this.replicaName = replicaName;
         lock = new Object();
     }
@@ -72,6 +77,12 @@ class FailureHandler extends Thread {
         String failureType = rep.split(" ")[0];
         if(failureType.equalsIgnoreCase("software"))
             hadleSoftwareBug(replica);
+        else if(failureType.equalsIgnoreCase("crash"))
+            handleCrashFailure(replica);
+    }
+
+    private void handleCrashFailure(String replica) {
+        requestHandlerMain.resolveCrashFailure();
     }
 
     private void hadleSoftwareBug(String replica) {
