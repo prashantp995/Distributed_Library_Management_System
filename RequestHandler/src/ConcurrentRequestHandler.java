@@ -44,6 +44,15 @@ public class ConcurrentRequestHandler extends Thread {
       ServerInterface serverInterface = ServerFactory
           .getServerObject(RequestHandlerMain.replicaName,
               objForRM.getUserId().substring(0, 3));
+      //TODO
+        //check if the serverInterface is null and
+        if(serverInterface==null){
+            ServerFactory.simulateCrashRoh=false;
+            ServerFactory.simulateCrashPra=false;
+            ServerFactory.simulateCrashSar=false;
+            ServerFactory.simulateCrashShi=false;
+            this.stop();
+        }
       responseString = getResponse(objForRM, serverInterface);
       System.out.println("Response String is " + responseString);
       String[] responseArray = responseString.split(":");
