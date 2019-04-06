@@ -555,12 +555,14 @@ public class ConcurrentRequestHandler extends Thread {
             if (!requestHandlerMain.successfullyExecutedReq.isEmpty()) {
                 ArrayList<ClientRequestModel> requests = new ArrayList<>(requestHandlerMain.successfullyExecutedReq);
                 requestHandlerMain.successfullyExecutedReq.clear();
+                requestHandlerMain.requestIds.clear();
                 for (ClientRequestModel request : requests) {
                     try {
                         ServerInterface serverInterface = ServerFactory
                                 .getServerObject(RequestHandlerMain.replicaName,
                                         request.getUserId().substring(0, 3));
                         getResponse(request, serverInterface);
+                        requestHandlerMain.requestIds.push(request.getRequestId());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

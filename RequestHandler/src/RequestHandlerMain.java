@@ -14,7 +14,7 @@ public class RequestHandlerMain extends Thread {
     MulticastSocket requestHandlerSocket = null;
     int requestHandlerPort; //change this based on your implementation
     static Logger logger = null;
-    private final static Stack<Integer> requestIds = new Stack<>();
+    public final Stack<Integer> requestIds = new Stack<>();
     ObjectInputStream ois; //To get the clientRequestModel from the packed received.
     ClientRequestModel requestObject;//to get the object in the request received(To check the duplicate request)
     public static String replicaName = null;
