@@ -334,6 +334,10 @@ public class ConcurrentRequestHandler extends Thread {
             else if(responseString.contains("The  value entered is invalid")){
                 return RequestHandlerConstants.RES_FALSE_FAILURE;
             }
+            else if(responseString.contains("item was not listed in the library a new entry has been made")){
+                return RequestHandlerConstants.RES_TRUE_SUCCESS;
+            }
+
 
         }
 
