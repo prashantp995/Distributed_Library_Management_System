@@ -111,32 +111,35 @@ public class RequestHandlerMain extends Thread {
                             requestReceived);
                     concurrentSequencer.start();
                 } else {
-                    System.out.println(requestObject.getRequestId());
-                    System.out.println(requestIds.toString());
-                    if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
-                        int nextExpectedRequest = requestIds.peek();
-                        nextExpectedRequest++;
-                        if(nextExpectedRequest == requestObject.getRequestId()){ // if req is equal to expected req
-                        requestIds.push(requestObject.getRequestId());
-                        System.out.println("Request received");
-                        String requestReceivedFromSeq = new String(requestReceived.getData());
-                        System.out.println(requestReceivedFromSeq.trim());
-                        //once request received , there should be new unique thread to handle the request.
-                        //Concurrent Sequencer will handle the request
-                        ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
-                                requestReceived);
-                        concurrentSequencer.start();
-                        }else{
-                            LostPacketModel lostPacketModel = new LostPacketModel(requestObject.getRequestId());
-                            byte[] lostPacketArray = lostPacketModel.getByteArrayOfObj();
-                            DatagramPacket rm1packet = new DatagramPacket(lostPacketArray, lostPacketArray.length, requestReceived.getAddress(), 9090);
-                            DatagramSocket socket = new DatagramSocket();
-                            socket.send(rm1packet);
-                        }
+                    if (requestObject != null) {
 
+
+                        System.out.println(requestObject.getRequestId());
+                        System.out.println(requestIds.toString());
+                        if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
+                            int nextExpectedRequest = requestIds.peek();
+                            nextExpectedRequest++;
+                            if (nextExpectedRequest == requestObject.getRequestId()) { // if req is equal to expected req
+                                requestIds.push(requestObject.getRequestId());
+                                System.out.println("Request received");
+                                String requestReceivedFromSeq = new String(requestReceived.getData());
+                                System.out.println(requestReceivedFromSeq.trim());
+                                //once request received , there should be new unique thread to handle the request.
+                                //Concurrent Sequencer will handle the request
+                                ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
+                                        requestReceived);
+                                concurrentSequencer.start();
+                            } else {
+                                LostPacketModel lostPacketModel = new LostPacketModel(requestObject.getRequestId());
+                                byte[] lostPacketArray = lostPacketModel.getByteArrayOfObj();
+                                DatagramPacket rm1packet = new DatagramPacket(lostPacketArray, lostPacketArray.length, requestReceived.getAddress(), 9090);
+                                DatagramSocket socket = new DatagramSocket();
+                                socket.send(rm1packet);
+                            }
+
+                        }
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
