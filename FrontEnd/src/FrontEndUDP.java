@@ -64,7 +64,7 @@ class MessageHandler implements Runnable{
     @Override
     public void run() {
         long timeSarvesh, timePras, timeRohit,timeShivam;
-        timeSarvesh=timePras=timeRohit=timeShivam=0;
+        timeSarvesh=timePras=timeRohit=timeShivam=1;
         long lastReceived=0;
         try {
             byteArrayOutputStream = new ByteArrayOutputStream();
@@ -77,15 +77,15 @@ class MessageHandler implements Runnable{
             sendRequest(mySocket,requestModel);
             ArrayList<ResponseModel> replies = new ArrayList<>();
             String reply="";
-            for (int i = 1 ; i < 2 ; i++){
+            for (int i = 0 ; i < 4 ; i++){
                 byte[] buffer = new byte[1024];
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
-                mySocket.setSoTimeout(100);
+               // mySocket.setSoTimeout(10000*(i+1));
                 mySocket.receive(messageFromRH);
                 ResponseModel responseFromRH;
                 ObjectInputStream iStream ;
                 iStream = new ObjectInputStream(new ByteArrayInputStream(messageFromRH.getData()));
-                responseFromRH =(ResponseModel) iStream.readObject();
+c v                responseFromRH =(ResponseModel) iStream.readObject();
                 System.out.println(responseFromRH);
                 if(responseFromRH.getReplicaName().equalsIgnoreCase("Sarvesh")){
                     timeSarvesh =   System.currentTimeMillis()-startTime;
@@ -101,27 +101,35 @@ class MessageHandler implements Runnable{
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
-                if(i==1){
+                if(i==2){
                     reply = getMajority(replies);
                     DatagramPacket response = new DatagramPacket(reply.getBytes(),reply.length(),receiver.getAddress(),receiver.getPort());
                     frontEndSocket.send(response);
                     notifySoftwareBug();
-//                    mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*2)));
-//                    mySocket.receive(messageFromRH);
+                    System.out.println(lastReceived);
+                    try{
+                    mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*200)));
+                    mySocket.receive(messageFromRH);}
+                    catch(Exception e){
+                        e.printStackTrace();
+                        String replica="";
+                        if (timeSarvesh==1)
+                            replica += "Sarvesh";
+                        else if(timeRohit==1)
+                            replica += "Rohit";
+                        else if(timePras==1)
+                            replica += "Pras";
+                        else if(timeShivam==1)
+                            replica += "Shivam";
+                        notifyRMAboutHardwareBug("crash"+" "+replica);
+                    }finally {
+                        System.out.println("need to close socket for "+responseFromRH.getReplicaName());
+                    }
                 }
             }
 
         }catch (IOException c){
-            String replica="";
-            if (timeSarvesh==0)
-                replica += "Sarvesh";
-            else if(timeRohit==0)
-                replica += "Rohit";
-            else if(timePras==0)
-                replica += "Pras";
-            else if(timeShivam==0)
-                replica += "Shivam";
-            notifyRMAboutHardwareBug("crash"+" "+replica);
+            c.printStackTrace();
         }catch( ClassNotFoundException c){
             c.printStackTrace();
         }
