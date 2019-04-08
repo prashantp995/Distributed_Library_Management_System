@@ -401,7 +401,7 @@ public class Client {
     String response = libraryService.borrowItem(username, itemId, numberOfDays);
     logger.info("Response Received from the server is " + response);
     System.out.println("Response Received from the server is " + response);
-    if (response.equalsIgnoreCase("waitList")) {
+    if (response.toLowerCase().contains("waitlist")) {
       Scanner scanner = new Scanner(System.in);
       System.out.println(
           "Item is not available now , WaitList Possible, Do you wish to enroll your self in waitList "
@@ -496,7 +496,7 @@ public class Client {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        getResponseOfAddItem("CONM1111", "CON1015", "DSD", 1);
+        getResponseOfAddItem("CONU0001", "CON0002", "ALGO", 11);
       }
     };
 
@@ -504,14 +504,14 @@ public class Client {
       @Override
       public void run() {
         //getResponseOfAddItem("CONM1111", "CON1015", "DSD", 1);
-        getResponseFromRemoveItem("CONM1111", "CON1015", 5);
+        getResponseFromRemoveItem("CONU0001", "CON0001", 5);
         //getReturnItemResponse("CONU1111", "CON1012");
       }
     };
     Runnable runnable3 = new Runnable() {
       @Override
       public void run() {
-        getReturnItemResponse("CONU1111", "CON1015");
+        getReturnItemResponse("CONU0001", "CON1015");
       }
     };
     Thread thread = new Thread(runnable);

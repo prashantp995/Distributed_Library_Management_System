@@ -259,6 +259,8 @@ public class ConcurrentRequestHandler extends Thread {
             return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
         }else if (responseString.startsWith("you can not get two books from a foreign library")){
             return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
+        }else if(responseString.toLowerCase().contains("wait")) {
+            return RequestHandlerConstants.RES_WAITLIST_POSSIBLE;
         }else{
             return RequestHandlerConstants.RES_TRUE_SUCCESS;
         }
