@@ -85,7 +85,7 @@ class MessageHandler implements Runnable{
                 ResponseModel responseFromRH;
                 ObjectInputStream iStream ;
                 iStream = new ObjectInputStream(new ByteArrayInputStream(messageFromRH.getData()));
-c v                responseFromRH =(ResponseModel) iStream.readObject();
+                responseFromRH =(ResponseModel) iStream.readObject();
                 System.out.println(responseFromRH);
                 if(responseFromRH.getReplicaName().equalsIgnoreCase("Sarvesh")){
                     timeSarvesh =   System.currentTimeMillis()-startTime;

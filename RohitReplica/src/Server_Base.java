@@ -96,7 +96,7 @@ public class Server_Base implements Runnable, ServerInterface {
         this.t = new Thread(this, getServername().substring(0,3));
         this.loadServerRec(this.servername);
         this.ds1 = new DatagramSocket(this.universalPort);
-        System.out.println("The server "+this.getServername()+ "is up"+this.ds1.getPort());
+        //System.out.println("The server "+this.getServername()+ "is up"+this.ds1.getPort());
         this.t.start();
 
     }
@@ -577,7 +577,7 @@ public class Server_Base implements Runnable, ServerInterface {
 //    }
 
     public String listItem(String managerId) {
-        String prepString = "";
+        String prepString = "[";
         if (managerId.substring(3, 4).equals("M")) {
             Set<Map.Entry<String, ArrayList<String>>> tempSet = getLibBooksRec().entrySet();
             for (Map.Entry<String, ArrayList<String>> entry : tempSet) {
@@ -585,9 +585,11 @@ public class Server_Base implements Runnable, ServerInterface {
                 //System.out.print(entry.getKey());
                 ArrayList<String> valueHolder = (ArrayList<String>) entry.getValue();
                 //System.out.println(": Name: "+temp_holder[0]+", "+"Availability: "+temp_holder[1]+"\n");
-                prepString = prepString  + "["+"ITEMNAME="   +"'"+ valueHolder.get(0)+"'" +", "+"ITEMID=" +"'"+ entry.getKey()+"'" +", "+  "QUANTITY= " + valueHolder.get(1)+ "]";
+                prepString = prepString +"itemName="   +"'"+ valueHolder.get(0)+"'" +", "+"itemId=" +"'"+ entry.getKey()+"'" +", "+  "quantity=" + valueHolder.get(1)+", ";
 
             }
+            prepString = prepString.substring(0,prepString.length()-2);
+            prepString = prepString + "]";
             System.out.println(prepString);
             return prepString;
         } else {
