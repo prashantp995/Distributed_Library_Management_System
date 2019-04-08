@@ -10,6 +10,19 @@ public class ResponseModel implements Serializable {
   private String note;
   private String replicaName;
 
+  @Override
+  public String toString() {
+    return "ResponseModel{" +
+            "status='" + status + '\'' +
+            ", response='" + response + '\'' +
+            ", requestId=" + requestId +
+            ", clientId='" + clientId + '\'' +
+            ", itemId='" + itemId + '\'' +
+            ", note='" + note + '\'' +
+            ", replicaName='" + replicaName + '\'' +
+            '}';
+  }
+
   public ResponseModel() {
   }
 
