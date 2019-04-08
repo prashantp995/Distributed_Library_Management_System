@@ -226,7 +226,9 @@ public class ServerSARReplica implements ServerInterface{
                         item.put(itemID, currentItem);
                     }
                     message = "Successful" + ServerConstants.SUCCESS;
+                    for(int i = 0 ; i < quantity;i++ ){
                     automaticAssignmentOfBooks(itemID);
+                    }
                 }else{
                     message = "itemidanditemnamedoesnotmatch";
                 }
@@ -236,7 +238,9 @@ public class ServerSARReplica implements ServerInterface{
                     item.put(itemID, currentItem);
                 }
                 message = "Successful" + ServerConstants.SUCCESS;
-                automaticAssignmentOfBooks(itemID);
+                for(int i = 0 ; i < quantity;i++ ){
+                    automaticAssignmentOfBooks(itemID);
+                }
             }
             writeToLogFile(message);
             return message;
