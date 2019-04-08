@@ -806,7 +806,7 @@ public class McgServer implements Runnable, ServerInterface {
         try{
         synchronized (lock) {
             ArrayList<DataModel> list = mcgWaitlist.get(itemId);
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size() || i<mcgLibrary.get(itemId).getQuantity(); i++) {
                 if (mcgLibrary.get(itemId).getQuantity() != 0) {
                     DataModel user = list.get(i);
                     reply = this.borrowItem(user.getUserId(), itemId, user.getDaysToBorrow());
