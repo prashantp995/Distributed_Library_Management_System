@@ -64,7 +64,7 @@ class MessageHandler implements Runnable{
     @Override
     public void run() {
         long timeSarvesh, timePras, timeRohit,timeShivam;
-        timeSarvesh=timePras=timeRohit=timeShivam=0;
+        timeSarvesh=timePras=timeRohit=timeShivam=1;
         long lastReceived=0;
         try {
             byteArrayOutputStream = new ByteArrayOutputStream();
@@ -77,7 +77,7 @@ class MessageHandler implements Runnable{
             sendRequest(mySocket,requestModel);
             ArrayList<ResponseModel> replies = new ArrayList<>();
             String reply="";
-            for (int i = 0 ; i < 4 ; i++){
+            for (int i = 0 ; i < 2 ; i++){
                 byte[] buffer = new byte[1024];
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
                // mySocket.setSoTimeout(10000*(i+1));
@@ -105,7 +105,7 @@ class MessageHandler implements Runnable{
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
-                if(i==2){
+                if(i==0){
                     i++;
                     GetMajority getMajority = new GetMajority(replies,frontEndSocket,receiver);
                     getMajority.start();
@@ -127,13 +127,13 @@ class MessageHandler implements Runnable{
                     }catch(Exception e){
                         e.printStackTrace();
                         String replica="";
-                        if (timeSarvesh==1)
+                        if (timeSarvesh==1 && FrontEndMain.sarveshUp)
                             replica += "Sarvesh";
-                        else if(timeRohit==1)
+                        else if(timeRohit==1 && FrontEndMain.rohitUp)
                             replica += "Rohit";
-                        else if(timePras==1)
+                        else if(timePras==1 && FrontEndMain.prasUp)
                             replica += "Pras";
-                        else if(timeShivam==1)
+                        else if(timeShivam==1 && FrontEndMain.shivamUp)
                             replica += "Shivam";
                         notifyRMAboutHardwareBug("crash"+" "+replica);
                     }finally {
