@@ -284,6 +284,10 @@ public class Server_Base implements Runnable, ServerInterface {
                             System.out.println(lendHolder);
                             System.out.println(waitHolder.get(0));
                             lendHolder.add(waitHolder.get(0));
+                            if(!(waitHolder.get(0).substring(0,3).equals(getServername().substring(0,3))))
+                            {
+                                this.interLibraryBlockUsers.add(waitHolder.get(0));
+                            }
                             waitHolder.remove(waitHolder.get(0));
                             iter = iter + 1;
                             System.out.println(iter);
@@ -2905,7 +2909,8 @@ public class Server_Base implements Runnable, ServerInterface {
 
     public String simulateCrash(String username,String replicaName) {
         if(replicaName.equalsIgnoreCase("rohit")){
-            if (RequestHandlerMain.isSimulateCrash("Rohit")) {
+            if (!(RequestHandlerMain.isSimulateCrash("Rohit"))) {
+                RequestHandlerMain.setSimulateCrash((!RequestHandlerMain.isSimulateCrash("rohit")),"Rohit");
                 return RequestHandlerConstants.CRASH;
             } else {
                 //alternative implementation in case of software bug
@@ -2913,7 +2918,7 @@ public class Server_Base implements Runnable, ServerInterface {
             }
         }
         else {
-            return "false";
+            return "alive";
         }
     }
 
