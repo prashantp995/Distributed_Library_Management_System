@@ -701,13 +701,10 @@ public class ServerSARReplica implements ServerInterface{
      * automatically assign the item to the first user and send
      * a message to the user.*/
     protected void automaticAssignmentOfBooks(String itemID) {
-        System.out.println("---------------------------------In autoAssignement." + itemID);
         if(waitingQueue.containsKey(itemID)){
             HashMap<String,Integer> userList = waitingQueue.get(itemID);
             Iterator<Map.Entry<String,Integer>> iterator = userList.entrySet().iterator();
-            System.out.println("---------------------------------in Autoassignment.");
             if(iterator.hasNext()){
-
                 Map.Entry<String, Integer> pair = iterator.next();
                 String message = borrowItem(pair.getKey(),itemID,pair.getValue());
                 System.out.println(message);
@@ -773,13 +770,14 @@ public class ServerSARReplica implements ServerInterface{
     public String simulateCrash(String username,String replicaName) {
         if(replicaName.equalsIgnoreCase("sarvesh")){
         if (!RequestHandlerMain.isSimulateCrash("Sarvesh")) {
+            RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash(replicaName),replicaName);
             return RequestHandlerConstants.CRASH;
         } else {
             return RequestHandlerConstants.RECOVER;
         }
         }
         else {
-            return "false";
+            return "alive";
         }
     }
 }
