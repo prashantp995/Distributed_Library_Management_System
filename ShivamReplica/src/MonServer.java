@@ -900,8 +900,8 @@ public class MonServer implements Runnable, ServerInterface{
 
     @Override
     public String simulateCrash(String username, String replicaName) {
-        if(replicaName.equalsIgnoreCase(replicaName)){
-            if (!RequestHandlerMain.isSimulateCrash(replicaName)) {
+        if(replicaName.equalsIgnoreCase("shivam")){
+            if (!RequestHandlerMain.isSimulateCrash("Shivam")) {
                 RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash(replicaName),replicaName);
                 return RequestHandlerConstants.CRASH;
             } else {

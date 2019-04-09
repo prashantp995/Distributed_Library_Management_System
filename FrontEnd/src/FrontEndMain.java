@@ -15,7 +15,10 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
  * ConcordiaServerImpl
  */
 public class FrontEndMain {
-
+  static boolean shivamUp = false;
+  static boolean prasUp = false;
+  static boolean sarveshUp = false;
+  static boolean rohitUp = false;
   public static void main(String[] args) {
     try {
       Thread frontEndUDP = new Thread(new FrontEndUDP());

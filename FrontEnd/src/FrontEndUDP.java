@@ -64,7 +64,7 @@ class MessageHandler implements Runnable{
     @Override
     public void run() {
         long timeSarvesh, timePras, timeRohit,timeShivam;
-        timeSarvesh=timePras=timeRohit=timeShivam=1;
+        timeSarvesh=timePras=timeRohit=timeShivam=0;
         long lastReceived=0;
         try {
             byteArrayOutputStream = new ByteArrayOutputStream();
@@ -88,15 +88,19 @@ class MessageHandler implements Runnable{
                 responseFromRH =(ResponseModel) iStream.readObject();
                 System.out.println(responseFromRH);
                 if(responseFromRH.getReplicaName().equalsIgnoreCase("Sarvesh")){
+                    FrontEndMain.sarveshUp=true;
                     timeSarvesh =   System.currentTimeMillis()-startTime;
                     lastReceived = timeSarvesh;
                 }if(responseFromRH.getReplicaName().equalsIgnoreCase("Pras")){
+                    FrontEndMain.prasUp=true;
                     timePras =   System.currentTimeMillis()-startTime;
                     lastReceived = timePras;
                 }if(responseFromRH.getReplicaName().equalsIgnoreCase("Shivam")){
+                    FrontEndMain.shivamUp=true;
                     timeShivam =   System.currentTimeMillis()-startTime;
                     lastReceived = timeShivam;
                 }if(responseFromRH.getReplicaName().equalsIgnoreCase("Rohit")){
+                    FrontEndMain.rohitUp=true;
                     timeRohit =  System.currentTimeMillis()-startTime;
                     lastReceived = timeRohit;
                 }
@@ -111,16 +115,17 @@ class MessageHandler implements Runnable{
                     //notifySoftwareBug();
                     System.out.println(lastReceived);
                     try{
-                   mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*15)));
+                   mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*50)));
                     mySocket.receive(messageFromRH);
                         iStream = new ObjectInputStream(new ByteArrayInputStream(messageFromRH.getData()));
                         responseFromRH =(ResponseModel) iStream.readObject();
-                        System.out.println(responseFromRH);
+                        System.out.println(responseFromRH.getReplicaName());
                         replies.add(responseFromRH);
                         GetMajority getMajority1 = new GetMajority(replies,frontEndSocket,receiver,false);
                         getMajority1.start();
 
                     }catch(Exception e){
+                        e.printStackTrace();
                         String replica="";
                         if (timeSarvesh==1)
                             replica += "Sarvesh";
