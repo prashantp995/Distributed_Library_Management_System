@@ -299,11 +299,9 @@ public class ConcurrentRequestHandler extends Thread {
         }
 
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_SOFTWARE_BUG)) {
-        if(responseString.startsWith("TRUE")){
-            return RequestHandlerConstants.RES_TRUE_SUCCESS;
-        }else{
-            return RequestHandlerConstants.RES_FALSE_FAILURE;
-        }
+        return appendForSFBug(responseString);
+    } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_SIMULATE_CRASH)) {
+        return appendForCrash(responseString);
     }
     return responseString;
   }
