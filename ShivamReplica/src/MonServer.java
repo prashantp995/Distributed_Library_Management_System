@@ -728,7 +728,7 @@ public class MonServer implements Runnable, ServerInterface{
         try{
         synchronized (lock) {
             ArrayList<DataModel> list = monWaitlist.get(itemId);
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size()||i<monLibrary.get(itemId).getQuantity(); i++) {
                 if (monLibrary.get(itemId).getQuantity() != 0) {
                     DataModel user = list.get(i);
                     reply = this.borrowItem(user.getUserId(), itemId, user.getDaysToBorrow());

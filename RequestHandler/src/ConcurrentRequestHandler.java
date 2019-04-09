@@ -51,6 +51,7 @@ public class ConcurrentRequestHandler extends Thread {
             ServerFactory.simulateCrashShi=false;
             this.stop();
         }
+        System.out.println(objForRM);
       responseString = getResponse(objForRM, serverInterface);
       System.out.println("Response String is " + responseString);
       String[] responseArray = responseString.split(":");
@@ -182,7 +183,7 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_BORROW_ITEM)) {
         if (responseString.toLowerCase().contains("external library")) {
             return RequestHandlerConstants.RES_FOREIGN_LIB_ERROR;
-        } else if (responseString.equalsIgnoreCase("waitlist")) {
+        } else if (responseString.toLowerCase().contains("waitlist")) {
             return RequestHandlerConstants.RES_WAITLIST_POSSIBLE;
         } else if (responseString.toLowerCase().contains("already borrowed")) {
             return RequestHandlerConstants.RES_ITEM_ALREADY_BORROWED;
@@ -551,6 +552,7 @@ public class ConcurrentRequestHandler extends Thread {
             return responseString + RequestHandlerConstants.RES_APPEND_SUCCESS;
         }
     }
+
     private String appendForCrash(String responseString) {
         if (responseString.trim().equalsIgnoreCase(RequestHandlerConstants.CRASH)) {
             return responseString + RequestHandlerConstants.RES_APPEND_FAILURE;

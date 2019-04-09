@@ -734,7 +734,7 @@ public class ConServer implements Runnable, ServerInterface {
 
         synchronized (lock) {
             ArrayList<DataModel> list = conWaitlist.get(itemId);
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size()||i<conLibrary.get(itemId).getQuantity(); i++) {
                 if (conLibrary.get(itemId).getQuantity() != 0) {
                     DataModel user = list.get(i);
                     reply = this.borrowItem(user.getUserId(), itemId, user.getDaysToBorrow());
