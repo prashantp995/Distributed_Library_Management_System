@@ -111,8 +111,15 @@ class MessageHandler implements Runnable{
                     //notifySoftwareBug();
                     System.out.println(lastReceived);
                     try{
-                   mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*3)));
+                   mySocket.setSoTimeout(new Integer(Long.toString(lastReceived*15)));
                     mySocket.receive(messageFromRH);
+                        iStream = new ObjectInputStream(new ByteArrayInputStream(messageFromRH.getData()));
+                        responseFromRH =(ResponseModel) iStream.readObject();
+                        System.out.println(responseFromRH);
+                        replies.add(responseFromRH);
+                        GetMajority getMajority1 = new GetMajority(replies,frontEndSocket,receiver,false);
+                        getMajority1.start();
+
                     }catch(Exception e){
                         String replica="";
                         if (timeSarvesh==1)
@@ -254,6 +261,7 @@ class GetMajority extends Thread {
     private int failCountShivam = 0;
     private int failCountSarvesh = 0;
     private int failCountRohit = 0;
+    boolean flag = true;
 
     public GetMajority(ArrayList<ResponseModel> replies, DatagramSocket frontEndSocket,
                        DatagramPacket receiver) {
@@ -263,15 +271,24 @@ class GetMajority extends Thread {
 
     }
 
+    public GetMajority(ArrayList<ResponseModel> replies, DatagramSocket frontEndSocket, DatagramPacket receiver, boolean b) {
+        this.replies = replies;
+        this.frontEndSocket = frontEndSocket;
+        this.receiver = receiver;
+        flag = b;
+    }
+
     @Override
     public void run() {
         String reply = getMajority(replies);
         DatagramPacket response = new DatagramPacket(reply.getBytes(), reply.length(),
                 receiver.getAddress(), receiver.getPort());
-        try {
-            frontEndSocket.send(response);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(this.flag) {
+            try {
+                frontEndSocket.send(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         notifySoftwareBug();
     }
@@ -279,7 +296,9 @@ class GetMajority extends Thread {
     private String getMajority(ArrayList<ResponseModel> replies) {
         String result = "";
         Map<String, Integer> stringsCount = new HashMap<>();
-        for (ResponseModel rm : replies) {
+       /* for (ResponseModel rm : replies) */
+        for(int i=0;i<replies.size();i++){
+            ResponseModel rm = replies.get(i);
             String s = rm.getResponse();
             rm.setResponse(s.toUpperCase());
             s = rm.getResponse();
