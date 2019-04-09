@@ -84,7 +84,7 @@ class FailureHandler extends Thread {
     private void handleCrashFailure(String replica) {
         if(replicaName.equalsIgnoreCase(replica)){
             requestHandlerMain.resolveCrashFailure();
-            RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash(replicaName),replicaName);
+            RequestHandlerMain.setSimulateCrash(false,replicaName);
         }
     }
 

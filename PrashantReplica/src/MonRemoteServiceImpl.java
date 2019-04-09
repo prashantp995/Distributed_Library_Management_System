@@ -71,7 +71,8 @@ public class MonRemoteServiceImpl extends Thread implements ServerInterface {
   @Override
   public String simulateCrash(String username,String replicaName) {
     if(replicaName.equalsIgnoreCase("pras")){
-      if (RequestHandlerMain.isSimulateCrash("pras")) {
+      if (!RequestHandlerMain.isSimulateCrash("pras")) {
+        RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash(replicaName),replicaName);
         return RequestHandlerConstants.CRASH;
       } else {
         //alternative implementation in case of software bug
@@ -79,7 +80,7 @@ public class MonRemoteServiceImpl extends Thread implements ServerInterface {
       }
     }
     else {
-      return "false";
+      return "alive";
     }
   }
 
@@ -693,15 +694,11 @@ public class MonRemoteServiceImpl extends Thread implements ServerInterface {
   }
 
   private String getData(HashMap<String, LibraryModel> data) {
-    StringBuilder response = new StringBuilder();
+    ArrayList<LibraryModel> response = new ArrayList<>();
     for (Entry<String, LibraryModel> letterEntry : data.entrySet()) {
-      String letter = letterEntry.getKey();
-      response.append("ItemId " + letter);
       LibraryModel libraryModel = letterEntry.getValue();
-      response.append(" IeamName " + libraryModel.getItemName());
-      response.append(" Quantity " + libraryModel.getQuantity() + "\n");
-      response.append(" WaitingList " + libraryModel.getWaitingList() + "\n");
-      response.append(" Current Borrowers" + libraryModel.getCurrentBorrowerList() + "\n");
+      libraryModel.setItemId(letterEntry.getKey());
+      response.add(libraryModel);
     }
     return response.toString();
   }

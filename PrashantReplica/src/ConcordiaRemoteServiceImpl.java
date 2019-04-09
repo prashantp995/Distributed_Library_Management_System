@@ -401,7 +401,8 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
   @Override
   public String simulateCrash(String username,String replicaName) {
     if(replicaName.equalsIgnoreCase("pras")){
-      if (RequestHandlerMain.isSimulateCrash("pras")) {
+      if (!RequestHandlerMain.isSimulateCrash("pras")) {
+        RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash(replicaName),replicaName);
         return RequestHandlerConstants.CRASH;
       } else {
         //alternative implementation in case of software bug
@@ -409,7 +410,7 @@ public class ConcordiaRemoteServiceImpl extends Thread implements ServerInterfac
       }
     }
     else {
-      return "false";
+      return "alive";
     }
   }
 
