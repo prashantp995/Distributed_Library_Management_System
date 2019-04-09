@@ -105,15 +105,11 @@ public class RequestHandlerMain extends Thread {
                 if (requestIds.size() == 0) {
                     requestIds.push(requestObject.getRequestId());
                     System.out.println("First Request received.");
-                    String requestReceivedFromSeq = new String(requestReceived.getData());
-                    System.out.println(requestReceivedFromSeq.trim());
                     ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,
                             requestReceived);
                     concurrentSequencer.start();
                 } else {
                     if (requestObject != null) {
-
-
                         System.out.println(requestObject.getRequestId());
                         System.out.println(requestIds.toString());
                         if (!requestIds.contains(requestObject.getRequestId())) { // if request already processed
@@ -122,8 +118,8 @@ public class RequestHandlerMain extends Thread {
                             if (nextExpectedRequest == requestObject.getRequestId()) { // if req is equal to expected req
                                 requestIds.push(requestObject.getRequestId());
                                 System.out.println("Request received");
-                                String requestReceivedFromSeq = new String(requestReceived.getData());
-                                System.out.println(requestReceivedFromSeq.trim());
+                                //String requestReceivedFromSeq = new String(requestReceived.getData());
+                                //System.out.println(requestReceivedFromSeq.trim());
                                 //once request received , there should be new unique thread to handle the request.
                                 //Concurrent Sequencer will handle the request
                                 ConcurrentRequestHandler concurrentSequencer = new ConcurrentRequestHandler(this,

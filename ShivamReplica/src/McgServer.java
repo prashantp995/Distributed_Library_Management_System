@@ -806,11 +806,13 @@ public class McgServer implements Runnable, ServerInterface {
         try{
         synchronized (lock) {
             ArrayList<DataModel> list = mcgWaitlist.get(itemId);
-            for (int i = 0; i < list.size(); i++) {
+            int size = list.size();
+            for (int i = 0; i < size; i++) {
                 if (mcgLibrary.get(itemId).getQuantity() != 0) {
-                    DataModel user = list.get(i);
+                    DataModel user = list.get(0);
                     reply = this.borrowItem(user.getUserId(), itemId, user.getDaysToBorrow());
                     if (reply.startsWith("Succ")) {
+                        user.setBooksMcg(1);
                         list.remove(user);
                         logger.info("User: "+user.getUserId() +" :automatically given the book: " + itemId);
                     } else {
@@ -900,8 +902,9 @@ public class McgServer implements Runnable, ServerInterface {
     @Override
     public String simulateCrash(String username, String replicaName) {
 
-        if(replicaName.equalsIgnoreCase("Shivam")){
-            if (RequestHandlerMain.isSimulateCrash("Shivam")) {
+        if(replicaName.equalsIgnoreCase(replicaName)){
+            if (!RequestHandlerMain.isSimulateCrash(replicaName)) {
+                RequestHandlerMain.setSimulateCrash(!RequestHandlerMain.isSimulateCrash(replicaName),replicaName);
                 return RequestHandlerConstants.CRASH;
             } else {
                 //alternative implementation in case of software bug
@@ -909,7 +912,7 @@ public class McgServer implements Runnable, ServerInterface {
             }
         }
         else {
-            return "false";
+            return "alive";
         }
     }
 }

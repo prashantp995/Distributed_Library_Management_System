@@ -254,6 +254,17 @@ class RequestHandler implements Runnable {
                     curruntItem = new Item(itemID,itemID.substring(0,3),1);
                 }
                 myServer.item.put(itemID,curruntItem);
+                switch (itemID.substring(0,3)){
+                    case "CON":
+                        currentUser.getOutsourced()[0] = true;
+                        break;
+                    case "MCG":
+                        currentUser.getOutsourced()[1] = true;
+                        break;
+                    case "MON":
+                        currentUser.getOutsourced()[2] = true;
+                        break;
+                }
                 break;
             default:
                 reply = "Unsuccessful";
