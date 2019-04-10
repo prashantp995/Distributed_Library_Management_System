@@ -569,6 +569,7 @@ public class MonServer implements Runnable, ServerInterface{
                             DataModel item = monLibrary.get(itemId);
                             int quantity = item.getQuantity();
                             item.setQuantity(quantity + 1);
+                            monLibrary.put(itemId,item);
                             reply = this.moveWaitlist(itemId);
 
                             if (value.getBorrowedBooks().isEmpty()) {
@@ -620,7 +621,7 @@ public class MonServer implements Runnable, ServerInterface{
                 }
             }
             logger.info(reply);
-
+            try{   monLibrary.get(itemId).setQuantity(monLibrary.get(itemId).getQuantity()+1); }catch(Exception e){}
             return reply;
         } catch (Exception e) {
             return "Exception: " + e.getStackTrace();

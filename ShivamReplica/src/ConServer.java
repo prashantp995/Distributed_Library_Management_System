@@ -550,6 +550,7 @@ public class ConServer implements Runnable, ServerInterface {
                             DataModel item = conLibrary.get(itemId);
                             int quantity = item.getQuantity();
                             item.setQuantity(quantity + 1);
+                            conLibrary.put(itemId,item);
                         }
                         reply = this.moveWaitlist(itemId);
 
@@ -607,7 +608,7 @@ public class ConServer implements Runnable, ServerInterface {
                 }
             }
             logger.info(reply);
-
+         try{   conLibrary.get(itemId).setQuantity(conLibrary.get(itemId).getQuantity()+1); }catch(Exception e){}
             return reply;
         }catch(Exception e){
             return "Exception: "+e.getStackTrace();

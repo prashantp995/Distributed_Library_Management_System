@@ -571,6 +571,7 @@ public class McgServer implements Runnable, ServerInterface {
                         DataModel item = mcgLibrary.get(itemId);
                         int quantity = item.getQuantity();
                         item.setQuantity(quantity + 1);
+                        mcgLibrary.put(itemId,item);
                         reply = this.moveWaitlist(itemId);
 
                         if (value.getBorrowedBooks().isEmpty()) {
@@ -624,7 +625,7 @@ public class McgServer implements Runnable, ServerInterface {
             }
         }
         logger.info(reply);
-
+      try{  mcgLibrary.get(itemId).setQuantity(mcgLibrary.get(itemId).getQuantity()+1);}catch(Exception e){}
         return reply;
     }catch (Exception e){
             return "Exception: "+e.getStackTrace();

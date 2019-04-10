@@ -77,7 +77,7 @@ class MessageHandler implements Runnable{
             sendRequest(mySocket,requestModel);
             ArrayList<ResponseModel> replies = new ArrayList<>();
             String reply="";
-            for (int i = 0 ; i < 2 ; i++){
+            for (int i = 0 ; i <3 ; i++){
                 byte[] buffer = new byte[1024];
                 DatagramPacket messageFromRH = new DatagramPacket(buffer,buffer.length);
                // mySocket.setSoTimeout(10000*(i+1));
@@ -105,7 +105,7 @@ class MessageHandler implements Runnable{
                     lastReceived = timeRohit;
                 }
                 replies.add(responseFromRH);
-                if(i==0){
+                if(i==2){
                     i++;
                     GetMajority getMajority = new GetMajority(replies,frontEndSocket,receiver);
                     getMajority.start();
@@ -326,7 +326,9 @@ class GetMajority extends Thread {
 /*
             System.out.println("Most common string: " + mostRepeated.getKey());
 */
-        for (ResponseModel rm : replies) {
+        /* for (ResponseModel rm : replies) */
+        for(int i=0;i<replies.size();i++){
+            ResponseModel rm = replies.get(i);
             if (!rm.getResponse().equalsIgnoreCase(result)) {
                 if (rm.getReplicaName().equalsIgnoreCase("Pras")) {
                     failCountPras += 1;

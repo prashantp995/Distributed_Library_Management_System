@@ -295,7 +295,7 @@ public class ConcurrentRequestHandler extends Thread {
     } else if (methodName.equalsIgnoreCase(RequestHandlerConstants.METHOD_FIND_ITEM)) {
         if(responseString.startsWith("Item not found")){
             return RequestHandlerConstants.RES_ITEM_NOT_EROOR;
-        }else{
+        }else if(responseString.startsWith("")){
             return responseString+RequestHandlerConstants.RES_APPEND_SUCCESS;
         }
 
